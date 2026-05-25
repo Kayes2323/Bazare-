@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Dashboard — Bazare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    body { background: var(--gray-100); }
+
+    .dash-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: calc(100vh - var(--nav-height));
+    }
+
+    /* Sidebar */
+    .dash-sidebar {
+      background: var(--green-deeper);
+      padding: 32px 0 32px;
+      position: sticky;
+      top: var(--nav-height);
+      height: calc(100vh - var(--nav-height));
+      overflow-y: auto;
+    }
+    .seller-profile-box {
+      padding: 0 20px 28px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .seller-avi {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: var(--green-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 12px;
+      border: 3px solid rgba(255,255,255,0.15);
+    }
+    .seller-sname {
+      font-family: var(--font-heading);
+      font-size: 16px; font-weight: 700;
+      color: white; margin-bottom: 6px;
+    }
+    .seller-stag {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(34,160,82,0.3);
+      border: 1px solid rgba(34,160,82,0.5);
+      border-radius: var(--r-full);
+      padding: 3px 10px;
+      font-size: 11px; font-weight: 700;
+      color: #7cebb0;
+    }
+
+    .dash-menu-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 24px;
+      font-size: 14px; font-weight: 500;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      transition: all var(--t-fast);
+      border-left: 3px solid transparent;
+      position: relative;
+    }
+    .dash-menu-item:hover { background: rgba(255,255,255,0.06); color: white; }
+    .dash-menu-item.active {
+      background: rgba(34,160,82,0.15);
+      color: white;
+      border-left-color: var(--green-light);
+      font-weight: 600;
+    }
+    .menu-dot {
+      position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+      width: 8px; height: 8px;
+      background: var(--red); border-radius: 50%;
+    }
+
+    /* Main */
+    .dash-main { padding: 28px; overflow-y: auto; }
+
+    .dash-page-title {
+      font-family: var(--font-heading);
+      font-size: 24px; font-weight: 800;
+      color: var(--black); margin-bottom: 4px;
+    }
+    .dash-page-sub { font-size: 14px; color: var(--gray-500); margin-bottom: 28px; }
+
+    /* Stats */
+    .stat-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: white;
+      border-radius: var(--r-lg);
+      padding: 20px 22px;
+      border: 1px solid var(--gray-100);
+      box-shadow: var(--shadow-xs);
+      transition: all var(--t-normal);
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .stat-card-icon { font-size: 28px; margin-bottom: 10px; }
+    .stat-card-label { font-size: 12px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .stat-card-value { font-family: var(--font-heading); font-size: 28px; font-weight: 900; color: var(--black); line-height: 1; margin-bottom: 6px; }
+    .stat-card-change { font-size: 12px; font-weight: 600; color: var(--green); }
+    .stat-card-change.down { color: var(--red); }
+
+    /* Dashboard card */
+    .dash-card {
+      background: white;
+      border-radius: var(--r-lg);
+      border: 1px solid var(--gray-100);
+      box-shadow: var(--shadow-xs);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .dash-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .dash-card-title {
+      font-family: var(--font-heading);
+      font-size: 16px; font-weight: 700;
+      color: var(--black);
+    }
+    .dash-card-body { padding: 20px 22px; }
+
+    /* Orders Table */
+    .orders-table {
+      width: 100%; border-collapse: collapse;
+    }
+    .orders-table th {
+      text-align: left; padding: 10px 14px;
+      font-size: 11px; font-weight: 700;
+      color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px;
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .orders-table td {
+      padding: 14px 14px;
+      font-size: 14px; color: var(--gray-700);
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .orders-table tr:last-child td { border-bottom: none; }
+    .orders-table tr:hover td { background: var(--gray-50); }
+
+    .order-status {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px;
+      border-radius: var(--r-full);
+      font-size: 11px; font-weight: 700;
+    }
+    .status-pending   { background: var(--yellow-light); color: var(--yellow); }
+    .status-confirmed { background: var(--green-pale);   color: var(--green); }
+    .status-delivered { background: var(--blue-light);   color: var(--blue); }
+    .status-cancelled { background: var(--red-light);    color: var(--red); }
+
+    .action-btn {
+      padding: 6px 14px;
+      border-radius: var(--r-full);
+      border: 1.5px solid var(--green);
+      background: transparent;
+      color: var(--green);
+      font-size: 12px; font-weight: 600;
+      cursor: pointer;
+      transition: all var(--t-fast);
+      font-family: var(--font-body);
+    }
+    .action-btn:hover { background: var(--green); color: white; }
+
+    /* Add product form */
+    .product-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-full { grid-column: 1 / -1; }
+    .form-actions {
+      display: flex; gap: 12px; justify-content: flex-end;
+      grid-column: 1 / -1;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .stat-cards { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .dash-layout { grid-template-columns: 1fr; }
+      .dash-sidebar { display: none; }
+      .stat-cards { grid-template-columns: repeat(2, 1fr); }
+      .product-form-grid { grid-template-columns: 1fr; }
+      .form-full { grid-column: 1; }
+      .form-actions { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Bazar<span class="logo-e">e</span></a>
+    <div style="flex:1"></div>
+    <div class="nav-actions">
+      <a href="index.html" class="btn btn-ghost btn-sm">🏠 হোম</a>
+      <button class="btn btn-outline btn-sm" onclick="logout()">লগআউট</button>
+    </div>
+  </div>
+</nav>
+
+<div class="dash-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="dash-sidebar">
+    <div class="seller-profile-box">
+      <div class="seller-avi">👩</div>
+      <div class="seller-sname">Ritu's Collection</div>
+      <div class="seller-stag">✓ Verified Seller</div>
+    </div>
+
+    <div class="dash-menu-item active">📊 Dashboard</div>
+    <div class="dash-menu-item">📦 আমার পণ্য <span class="menu-dot"></span></div>
+    <div class="dash-menu-item">🛒 নতুন অর্ডার <span class="menu-dot"></span></div>
+    <div class="dash-menu-item">✅ সম্পন্ন অর্ডার</div>
+    <div class="dash-menu-item">💰 আয় ও পেমেন্ট</div>
+    <div class="dash-menu-item">⭐ রিভিউ</div>
+    <div class="dash-menu-item">⚙️ সেটিংস</div>
+    <div style="margin-top:auto; padding: 20px 24px 0;">
+      <a href="index.html" class="btn btn-outline btn-sm" style="width:100%; justify-content:center; border-color:rgba(255,255,255,0.2); color:rgba(255,255,255,0.7);">🏠 Marketplace দেখুন</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dash-main">
+    <div class="dash-page-title">Dashboard</div>
+    <div class="dash-page-sub">আপনার দোকানের সর্বশেষ অবস্থা</div>
+
+    <!-- STAT CARDS -->
+    <div class="stat-cards stagger">
+      <div class="stat-card">
+        <div class="stat-card-icon">💰</div>
+        <div class="stat-card-label">এই মাসের আয়</div>
+        <div class="stat-card-value">৳১২,৪৮০</div>
+        <div class="stat-card-change">↑ ২৪% বৃদ্ধি</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon">📦</div>
+        <div class="stat-card-label">মোট অর্ডার</div>
+        <div class="stat-card-value">৮৪</div>
+        <div class="stat-card-change">↑ ১৮% বৃদ্ধি</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon">⏳</div>
+        <div class="stat-card-label">Pending অর্ডার</div>
+        <div class="stat-card-value" style="color:var(--red)">৭</div>
+        <div class="stat-card-change down">এখনই Confirm করুন</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon">🏷️</div>
+        <div class="stat-card-label">মোট পণ্য</div>
+        <div class="stat-card-value">২৩</div>
+        <div class="stat-card-change down">৩টি Out of Stock</div>
+      </div>
+    </div>
+
+    <!-- ORDERS TABLE -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">🔔 নতুন অর্ডার</div>
+        <span style="background:var(--accent);color:var(--black);border-radius:var(--r-full);padding:4px 14px;font-size:12px;font-weight:700;">৭টি Pending</span>
+      </div>
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>পণ্য</th>
+            <th>কাস্টমার</th>
+            <th>পরিমাণ</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>#BZ-2847</strong></td>
+            <td>কটন ফ্রক (লাল, ৬মাস)</td>
+            <td>রহিমা বেগম</td>
+            <td><strong>৳৫২০</strong></td>
+            <td><span class="order-status status-pending">⏳ Pending</span></td>
+            <td><button class="action-btn">Confirm</button></td>
+          </tr>
+          <tr>
+            <td><strong>#BZ-2846</strong></td>
+            <td>ফ্রক সেট × ২</td>
+            <td>কামরুন নাহার</td>
+            <td><strong>৳১,০৪০</strong></td>
+            <td><span class="order-status status-confirmed">✅ Confirmed</span></td>
+            <td><button class="action-btn">Ship করুন</button></td>
+          </tr>
+          <tr>
+            <td><strong>#BZ-2841</strong></td>
+            <td>বাচ্চার পাজামা সেট</td>
+            <td>সালমা খানম</td>
+            <td><strong>৳৩৮০</strong></td>
+            <td><span class="order-status status-delivered">🚚 Delivered</span></td>
+            <td><button class="action-btn">Details</button></td>
+          </tr>
+          <tr>
+            <td><strong>#BZ-2839</strong></td>
+            <td>শার্ট × ৩</td>
+            <td>ফারহান আহমেদ</td>
+            <td><strong>৳৯৬০</strong></td>
+            <td><span class="order-status status-pending">⏳ Pending</span></td>
+            <td><button class="action-btn">Confirm</button></td>
+          </tr>
+          <tr>
+            <td><strong>#BZ-2835</strong></td>
+            <td>জামা সেট (বয়েজ)</td>
+            <td>নাজমা আক্তার</td>
+            <td><strong>৳৬৫০</strong></td>
+            <td><span class="order-status status-cancelled">❌ Cancelled</span></td>
+            <td><button class="action-btn">Details</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ADD PRODUCT FORM -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">➕ নতুন পণ্য যোগ করুন</div>
+      </div>
+      <div class="dash-card-body">
+        <div class="product-form-grid">
+          <div class="form-group">
+            <label class="form-label">পণ্যের নাম *</label>
+            <input type="text" class="form-control" placeholder="যেমন: বাচ্চাদের কটন ফ্রক">
+          </div>
+          <div class="form-group">
+            <label class="form-label">ক্যাটাগরি *</label>
+            <select class="form-control form-select">
+              <option value="">ক্যাটাগরি বেছে নিন</option>
+              <option>বাচ্চাদের পোশাক</option>
+              <option>Organic মেহেদি</option>
+              <option>Organic তেল</option>
+              <option>ফুলের বীজ</option>
+              <option>দেশি ডিম</option>
+              <option>পাখি</option>
+              <option>Organic খাবার</option>
+              <option>হাতের কাজ</option>
+              <option>গাছপালা</option>
+              <option>গিফট আইটেম</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">মূল দাম (৳) *</label>
+            <input type="number" class="form-control" placeholder="৳ ০">
+          </div>
+          <div class="form-group">
+            <label class="form-label">ছাড়ের দাম (৳)</label>
+            <input type="number" class="form-control" placeholder="৳ ০ (Optional)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">স্টক পরিমাণ *</label>
+            <input type="number" class="form-control" placeholder="কতটি আছে">
+          </div>
+          <div class="form-group">
+            <label class="form-label">ডেলিভারি চার্জ (৳)</label>
+            <input type="number" class="form-control" placeholder="৳ ৬০">
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label">পণ্যের বিবরণ</label>
+            <textarea class="form-control form-textarea" rows="4" placeholder="পণ্য সম্পর্কে বিস্তারিত লিখুন — উপাদান, মাপ, ব্যবহারবিধি..."></textarea>
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label">পণ্যের ছবি</label>
+            <div class="upload-zone" onclick="document.getElementById('product-img').click()">
+              <div class="upload-icon">📷</div>
+              <div class="upload-title">ছবি আপলোড করুন</div>
+              <div class="upload-sub">PNG, JPG — সর্বোচ্চ ৫MB প্রতিটি, সর্বোচ্চ ৫টি</div>
+            </div>
+            <input type="file" id="product-img" accept="image/*" multiple style="display:none">
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-outline btn-md">📝 Draft সেভ করুন</button>
+            <button class="btn btn-primary btn-md">✅ পণ্য Publish করুন</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast -->
+<div id="toast-container"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/firebase.js"></script>
+<script>
+  // Sidebar menu active state
+  document.querySelectorAll('.dash-menu-item').forEach(item => {
+    item.addEventListener('click', function() {
+      document.querySelectorAll('.dash-menu-item').forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
