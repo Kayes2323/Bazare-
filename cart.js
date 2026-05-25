@@ -1,76 +1,45 @@
 // ============================================================
 // BAZARE — Cart System
-// cart.js  (localStorage for guests, Firestore for logged-in)
+// cart.js
 // ============================================================
 
-function getLocalCart() {
-  try { return JSON.parse(localStorage.getItem('bazare_cart') || '[]'); }
-  catch { return []; }
+function getCart() {
+  try { return JSON.parse(localStorage.getItem('bazare_cart') || '[]'); } catch { return []; }
 }
-
-function saveLocalCart(cart) {
+function saveCart(cart) {
   localStorage.setItem('bazare_cart', JSON.stringify(cart));
   updateCartBadge();
 }
-
-// ── Add to Cart ──
-function addToCart(product, btn = null) {
-  requireAuth(async () => {
-    const cart = getLocalCart();
-    const existing = cart.find(i => i.id === product.id);
-
-    if (existing) existing.qty = (existing.qty || 1) + 1;
+function addToCart(product, btn) {
+  requireAuth(() => {
+    const cart = getCart();
+    const ex   = cart.find(i => i.id === product.id);
+    if (ex) ex.qty = (ex.qty || 1) + 1;
     else cart.push({ ...product, qty: 1 });
-
-    saveLocalCart(cart);
-
+    saveCart(cart);
     if (btn) {
       const orig = btn.textContent;
       btn.textContent = '✓ যোগ হয়েছে';
-      btn.style.background = '#f0b429';
-      btn.style.color = '#000';
-      setTimeout(() => {
-        btn.textContent = orig;
-        btn.style.background = '';
-        btn.style.color = '';
-      }, 1500);
+      btn.style.cssText += 'background:#f0b429;color:#000;';
+      setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.style.color = ''; }, 1500);
     }
-
-    showToast(`🛒 কার্টে যোগ হয়েছে`, 'success');
-    updateCartBadge();
+    showToast('🛒 কার্টে যোগ হয়েছে', 'success');
   });
 }
-
-// ── Remove from Cart ──
-function removeFromCart(productId) {
-  const cart = getLocalCart().filter(i => i.id !== productId);
-  saveLocalCart(cart);
+function removeFromCart(id) { saveCart(getCart().filter(i => i.id !== id)); }
+function updateQty(id, qty) {
+  if (qty <= 0) { removeFromCart(id); return; }
+  const cart = getCart();
+  const item = cart.find(i => i.id === id);
+  if (item) { item.qty = qty; saveCart(cart); }
 }
-
-// ── Update Quantity ──
-function updateQty(productId, qty) {
-  const cart = getLocalCart();
-  const item = cart.find(i => i.id === productId);
-  if (!item) return;
-  if (qty <= 0) removeFromCart(productId);
-  else { item.qty = qty; saveLocalCart(cart); }
-}
-
-// ── Totals ──
-function getCartCount() {
-  return getLocalCart().reduce((s, i) => s + (i.qty || 1), 0);
-}
-function getCartTotal() {
-  return getLocalCart().reduce((s, i) => s + (i.price * (i.qty || 1)), 0);
-}
-
-// ── Update Badge ──
+function getCartCount() { return getCart().reduce((s, i) => s + (i.qty || 1), 0); }
+function getCartTotal() { return getCart().reduce((s, i) => s + (i.price * (i.qty || 1)), 0); }
 function updateCartBadge() {
-  const count = getCartCount();
+  const n = getCartCount();
   document.querySelectorAll('.cart-badge').forEach(el => {
-    el.textContent = count;
-    el.style.display = count > 0 ? 'flex' : 'none';
+    el.textContent = n;
+    el.style.display = n > 0 ? 'flex' : 'none';
   });
 }
-
 document.addEventListener('DOMContentLoaded', updateCartBadge);

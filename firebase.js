@@ -1,5 +1,5 @@
 // ============================================================
-// BAZARE — Firebase Configuration
+// BAZARE — Firebase Config (real credentials)
 // firebase-config.js
 // ============================================================
 
@@ -13,35 +13,18 @@ const firebaseConfig = {
   measurementId:     "G-3PT69DDP7E"
 };
 
-// Initialize Firebase (compat SDK via CDN)
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-const auth = firebase.auth();
-const db   = firebase.firestore();
+const auth    = firebase.auth();
+const db      = firebase.firestore();
 const storage = firebase.storage();
 
-// ── Firestore Collections ──
-const COLLECTIONS = {
-  USERS:    'users',       // all users (buyer + seller)
-  SELLERS:  'sellers',     // seller profiles (pending/approved/rejected)
-  PRODUCTS: 'products',    // all products
-  ORDERS:   'orders',      // all orders
-  REVIEWS:  'reviews',     // product reviews
-  CART:     'carts',       // user carts
-};
-
-// ── User Roles ──
-const ROLES = {
-  BUYER:  'buyer',
-  SELLER: 'seller',
-  ADMIN:  'admin',
-};
-
-// ── Seller Status ──
-const SELLER_STATUS = {
-  PENDING:  'pending',
-  APPROVED: 'approved',
-  REJECTED: 'rejected',
+// Collections
+const COL = {
+  USERS:    'users',
+  SELLERS:  'sellers',
+  PRODUCTS: 'products',
+  ORDERS:   'orders',
 };
