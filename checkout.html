@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — Bazare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: var(--off-white); }
+    .checkout-page { max-width: 1100px; margin: 0 auto; padding: 28px 24px; }
+    .checkout-layout { display: grid; grid-template-columns: 1fr 380px; gap: 24px; align-items: start; }
+    .checkout-title { font-family: var(--font-heading); font-size: 24px; font-weight: 800; margin-bottom: 24px; }
+
+    .checkout-card { background: white; border-radius: 16px; border: 1px solid var(--gray-100); margin-bottom: 16px; overflow: hidden; }
+    .checkout-card-header { padding: 16px 20px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; gap: 10px; }
+    .checkout-card-num { width: 28px; height: 28px; background: var(--green); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+    .checkout-card-title { font-family: var(--font-heading); font-size: 15px; font-weight: 700; }
+    .checkout-card-body { padding: 20px; }
+
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-full { grid-column: 1/-1; }
+
+    /* Payment methods */
+    .payment-options { display: flex; flex-direction: column; gap: 10px; }
+    .payment-option {
+      display: flex; align-items: center; gap: 14px;
+      border: 2px solid var(--gray-200); border-radius: 12px; padding: 14px 16px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .payment-option:hover { border-color: var(--green); background: var(--green-pale); }
+    .payment-option.selected { border-color: var(--green); background: var(--green-pale); }
+    .payment-option input[type="radio"] { width: 18px; height: 18px; accent-color: var(--green); flex-shrink: 0; }
+    .payment-option-icon { font-size: 24px; width: 40px; text-align: center; flex-shrink: 0; }
+    .payment-option-label { font-weight: 700; font-size: 15px; color: var(--black); }
+    .payment-option-sub { font-size: 12px; color: var(--gray-400); }
+    .payment-option-badge { margin-left: auto; background: var(--green-pale); color: var(--green); border-radius: 99px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
+
+    /* bKash/Nagad number input */
+    .mobile-pay-input { display: none; margin-top: 12px; padding: 12px 14px; border: 1.5px solid var(--gray-200); border-radius: 10px; font-size: 14px; font-family: var(--font-body); outline: none; width: 100%; }
+    .mobile-pay-input:focus { border-color: var(--green); }
+    .mobile-pay-input.show { display: block; animation: fadeUp 0.3s ease; }
+
+    /* Order summary */
+    .order-summary { background: white; border-radius: 16px; border: 1px solid var(--gray-100); padding: 20px; position: sticky; top: 88px; }
+    .summary-title { font-family: var(--font-heading); font-size: 17px; font-weight: 800; margin-bottom: 16px; }
+    .order-item { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--gray-100); }
+    .order-item:last-of-type { border-bottom: none; }
+    .order-item-img { width: 48px; height: 48px; border-radius: 8px; background: var(--gray-100); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; overflow: hidden; }
+    .order-item-img img { width: 100%; height: 100%; object-fit: cover; }
+    .order-item-name { font-size: 13px; font-weight: 600; flex: 1; }
+    .order-item-qty { font-size: 12px; color: var(--gray-400); }
+    .order-item-price { font-size: 14px; font-weight: 700; color: var(--green); }
+    .summary-row { display: flex; justify-content: space-between; font-size: 14px; padding: 6px 0; }
+    .summary-divider { border: none; border-top: 1px solid var(--gray-100); margin: 8px 0; }
+    .summary-total { font-family: var(--font-heading); font-size: 20px; font-weight: 900; display: flex; justify-content: space-between; padding-top: 8px; }
+    .summary-total span:last-child { color: var(--green); }
+
+    /* Place order btn */
+    .place-order-btn { width: 100%; height: 56px; background: var(--green); color: white; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; cursor: pointer; font-family: var(--font-body); transition: all 0.2s; margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .place-order-btn:hover { background: var(--green-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,122,60,0.3); }
+    .place-order-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+    /* Success page */
+    .order-success { display: none; text-align: center; padding: 60px 20px; max-width: 500px; margin: 0 auto; }
+    .order-success.show { display: block; animation: scaleIn 0.4s ease; }
+    .success-check { width: 80px; height: 80px; background: var(--green-pale); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 20px; }
+    .order-id-box { background: var(--green-pale); border-radius: 12px; padding: 16px; margin: 20px 0; }
+    .order-id-label { font-size: 12px; color: var(--green-dark); margin-bottom: 4px; }
+    .order-id-val { font-family: var(--font-heading); font-size: 22px; font-weight: 900; color: var(--green); }
+
+    @media (max-width: 768px) {
+      .checkout-layout { grid-template-columns: 1fr; }
+      .order-summary { position: static; order: -1; }
+      .form-grid-2 { grid-template-columns: 1fr; }
+      .form-full { grid-column: 1; }
+      .checkout-page { padding: 16px; padding-bottom: 90px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Bazar<span class="logo-e">e</span></a>
+    <div style="flex:1;"></div>
+    <div class="nav-actions">
+      <a href="cart.html" class="btn btn-ghost btn-sm">← কার্টে ফিরুন</a>
+      <button class="btn btn-primary btn-sm" id="nav-login-btn" onclick="showAuthModal()">লগইন</button>
+      <div id="nav-user-menu" style="display:none;align-items:center;gap:8px;">
+        <div class="user-avatar" id="nav-user-avatar" style="width:32px;height:32px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;">?</div>
+        <span id="nav-user-name" style="font-size:13px;font-weight:600;color:var(--green-dark);"></span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="checkout-page">
+
+  <!-- Success screen -->
+  <div class="order-success" id="order-success">
+    <div class="success-check">🎉</div>
+    <h2 style="font-family:var(--font-heading);font-size:26px;font-weight:800;margin-bottom:10px;">অর্ডার সফল হয়েছে!</h2>
+    <p style="font-size:15px;color:var(--gray-500);line-height:1.7;margin-bottom:16px;">আপনার অর্ডার পেয়েছি। Seller শীঘ্রই confirm করবেন।</p>
+    <div class="order-id-box">
+      <div class="order-id-label">আপনার Order ID</div>
+      <div class="order-id-val" id="success-order-id">#BZ-000000</div>
+    </div>
+    <p style="font-size:13px;color:var(--gray-400);margin-bottom:24px;">আপনার ফোনে SMS আসবে। <a href="orders.html" style="color:var(--green);">অর্ডার ট্র্যাক করুন →</a></p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="orders.html" class="btn btn-primary btn-md">📦 আমার অর্ডার</a>
+      <a href="index.html" class="btn btn-outline btn-md">🏠 হোমে ফিরুন</a>
+    </div>
+  </div>
+
+  <!-- Checkout form -->
+  <div id="checkout-form">
+    <div class="checkout-title">🛒 Checkout</div>
+    <div class="checkout-layout">
+      <div>
+        <!-- Step 1: Address -->
+        <div class="checkout-card">
+          <div class="checkout-card-header">
+            <div class="checkout-card-num">১</div>
+            <div class="checkout-card-title">ডেলিভারি ঠিকানা</div>
+          </div>
+          <div class="checkout-card-body">
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">পুরো নাম *</label>
+                <input type="text" class="form-control" id="c-name" placeholder="আপনার নাম">
+              </div>
+              <div class="form-group">
+                <label class="form-label">ফোন নম্বর *</label>
+                <input type="tel" class="form-control" id="c-phone" placeholder="01XXXXXXXXX">
+              </div>
+              <div class="form-group form-full">
+                <label class="form-label">পুরো ঠিকানা *</label>
+                <textarea class="form-control form-textarea" id="c-address" rows="2" placeholder="বাড়ি নং, রাস্তা, এলাকা..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">জেলা *</label>
+                <select class="form-control form-select" id="c-district">
+                  <option value="">বেছে নিন</option>
+                  <option>ঢাকা</option><option>চট্টগ্রাম</option><option>সিলেট</option>
+                  <option>রাজশাহী</option><option>খুলনা</option><option>বরিশাল</option>
+                  <option>ময়মনসিংহ</option><option>রংপুর</option><option>কুমিল্লা</option>
+                  <option>নারায়ণগঞ্জ</option><option>গাজীপুর</option><option>ফেনী</option>
+                  <option>নোয়াখালী</option><option>লক্ষ্মীপুর</option><option>অন্যান্য</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">উপজেলা</label>
+                <input type="text" class="form-control" id="c-upazila" placeholder="উপজেলা">
+              </div>
+              <div class="form-group form-full">
+                <label class="form-label">বিশেষ নির্দেশনা (Optional)</label>
+                <input type="text" class="form-control" id="c-note" placeholder="যেমন: গেটের বাইরে রাখুন">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Payment -->
+        <div class="checkout-card">
+          <div class="checkout-card-header">
+            <div class="checkout-card-num">২</div>
+            <div class="checkout-card-title">পেমেন্ট পদ্ধতি</div>
+          </div>
+          <div class="checkout-card-body">
+            <div class="payment-options">
+
+              <label class="payment-option" onclick="selectPayment('bkash',this)">
+                <input type="radio" name="payment" value="bkash">
+                <div class="payment-option-icon">💗</div>
+                <div>
+                  <div class="payment-option-label">bKash</div>
+                  <div class="payment-option-sub">বিকাশ মোবাইল ব্যাংকিং</div>
+                </div>
+                <span class="payment-option-badge">সবচেয়ে জনপ্রিয়</span>
+              </label>
+              <input type="tel" class="mobile-pay-input" id="bkash-number" placeholder="bKash নম্বর (01XXXXXXXXX)" maxlength="11">
+
+              <label class="payment-option" onclick="selectPayment('nagad',this)">
+                <input type="radio" name="payment" value="nagad">
+                <div class="payment-option-icon">🟠</div>
+                <div>
+                  <div class="payment-option-label">Nagad</div>
+                  <div class="payment-option-sub">নগদ মোবাইল ব্যাংকিং</div>
+                </div>
+              </label>
+              <input type="tel" class="mobile-pay-input" id="nagad-number" placeholder="Nagad নম্বর (01XXXXXXXXX)" maxlength="11">
+
+              <label class="payment-option" onclick="selectPayment('cod',this)">
+                <input type="radio" name="payment" value="cod">
+                <div class="payment-option-icon">💵</div>
+                <div>
+                  <div class="payment-option-label">Cash on Delivery</div>
+                  <div class="payment-option-sub">পণ্য পেলে টাকা দিন</div>
+                </div>
+              </label>
+
+            </div>
+            <div id="payment-note" style="display:none;background:var(--accent-light);border-radius:10px;padding:12px;margin-top:14px;font-size:13px;color:#92611a;line-height:1.6;"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Order Summary -->
+      <div class="order-summary">
+        <div class="summary-title">অর্ডার সারসংক্ষেপ</div>
+        <div id="checkout-items"></div>
+        <hr class="summary-divider">
+        <div class="summary-row"><span>উপমোট</span><span id="c-subtotal">৳০</span></div>
+        <div class="summary-row"><span>ডেলিভারি</span><span id="c-delivery">৳৬০</span></div>
+        <hr class="summary-divider">
+        <div class="summary-total"><span>মোট</span><span id="c-total">৳০</span></div>
+        <button class="place-order-btn" id="place-order-btn" onclick="placeOrder()">
+          ✅ অর্ডার দিন
+        </button>
+        <p style="font-size:12px;color:var(--gray-400);text-align:center;margin-top:10px;">🔒 আপনার তথ্য সম্পূর্ণ নিরাপদ</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Mobile NAV -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <a href="index.html" class="mobile-nav-item"><span class="mobile-nav-icon">🏠</span><span class="mobile-nav-label">হোম</span></a>
+    <a href="listing.html" class="mobile-nav-item"><span class="mobile-nav-icon">🔍</span><span class="mobile-nav-label">খুঁজুন</span></a>
+    <a href="cart.html" class="mobile-nav-cart"><div class="mobile-nav-cart-inner" style="position:relative;">🛒</div></a>
+    <a href="seller-dashboard.html" class="mobile-nav-item"><span class="mobile-nav-icon">🏪</span><span class="mobile-nav-label">দোকান</span></a>
+    <a href="#" class="mobile-nav-item" onclick="showAuthModal();return false;"><span class="mobile-nav-icon">👤</span><span class="mobile-nav-label">প্রোফাইল</span></a>
+  </div>
+</nav>
+
+<!-- AUTH MODAL -->
+<div class="modal-backdrop hidden" id="auth-modal">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="hideAuthModal()">✕</button>
+    <div class="modal-header"><div class="modal-logo">Bazar<span>e</span></div><div class="modal-title">লগইন করুন</div><div class="modal-sub" id="auth-hint">অর্ডার দিতে লগইন প্রয়োজন</div></div>
+    <div class="modal-body auth-step" id="auth-step-main">
+      <button class="auth-btn" onclick="loginWithGoogle()"><div class="auth-btn-icon" style="background:white;border:1px solid #e0e0e0;"><svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg></div>Google দিয়ে লগইন</button>
+      <div class="auth-divider">অথবা</div>
+      <button class="auth-btn" onclick="showAuthStep('phone-enter')"><div class="auth-btn-icon" style="background:var(--green);color:white;font-size:16px;">📱</div>ফোন নম্বর দিয়ে লগইন</button>
+    </div>
+    <div class="modal-body auth-step hidden" id="auth-step-phone-enter">
+      <button class="btn btn-ghost btn-sm" onclick="showAuthStep('main')" style="align-self:flex-start;">← ফিরে যান</button>
+      <div class="input-group"><label class="input-label">ফোন নম্বর</label><input class="input-field" type="tel" id="phone-input" placeholder="01XXXXXXXXX" maxlength="11"></div>
+      <button class="btn btn-primary btn-lg" id="send-otp-btn" onclick="sendOTP()" style="width:100%">OTP পাঠান</button>
+      <div id="recaptcha-container"></div>
+    </div>
+    <div class="modal-body auth-step hidden" id="auth-step-phone-otp">
+      <button class="btn btn-ghost btn-sm" onclick="showAuthStep('phone-enter')" style="align-self:flex-start;">← ফিরে যান</button>
+      <p style="font-size:14px;color:var(--gray-500);text-align:center;"><span id="otp-sent-to"></span> তে OTP</p>
+      <div class="otp-row"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"></div>
+      <button class="btn btn-primary btn-lg" id="verify-otp-btn" onclick="verifyOTP()" style="width:100%;margin-top:8px;">নিশ্চিত করুন</button>
+    </div>
+    <div class="modal-footer"><p>লগইন করে আমাদের <a href="#" style="color:var(--green);">Terms</a>-তে সম্মত হচ্ছেন।</p></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth.js"></script>
+<script src="cart.js"></script>
+<script>
+const emojiBg = {'👗':'#fce7f3','🌿':'#d1fae5','🧴':'#fef3c7','🌸':'#ede9fe','🥚':'#fef3c7','🦜':'#dbeafe','🍯':'#ffedd5','🧶':'#fce7f3','🪴':'#d1fae5','🎁':'#fee2e2'};
+let selectedPayment = '';
+
+document.addEventListener('DOMContentLoaded', () => {
+  requireAuth(() => {});
+  renderCheckoutSummary();
+
+  // Pre-fill from user profile
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) return;
+    const snap = await db.collection(COL.USERS).doc(user.uid).get();
+    const p = snap.data();
+    if (p?.name)  document.getElementById('c-name').value  = p.name;
+    if (p?.phone) document.getElementById('c-phone').value = p.phone;
+  });
+});
+
+function renderCheckoutSummary() {
+  const cart     = getCart();
+  const subtotal = cart.reduce((s,i) => s + (i.price*(i.qty||1)), 0);
+  const delivery = subtotal > 999 ? 0 : 60;
+  const total    = subtotal + delivery;
+
+  document.getElementById('c-subtotal').textContent = '৳' + subtotal.toLocaleString('bn');
+  document.getElementById('c-delivery').textContent = delivery === 0 ? 'Free 🎉' : '৳' + delivery;
+  document.getElementById('c-total').textContent    = '৳' + total.toLocaleString('bn');
+
+  document.getElementById('checkout-items').innerHTML = cart.map(item => `
+    <div class="order-item">
+      <div class="order-item-img" style="background:${item.imageUrl ? '' : (emojiBg[item.emoji]||'#e8f5ed')}">
+        ${item.imageUrl ? `<img src="${item.imageUrl}">` : item.emoji||'📦'}
+      </div>
+      <div class="order-item-name">${item.name}<div class="order-item-qty">× ${item.qty||1}</div></div>
+      <div class="order-item-price">৳${(item.price*(item.qty||1)).toLocaleString('bn')}</div>
+    </div>`).join('');
+}
+
+function selectPayment(method, el) {
+  selectedPayment = method;
+  document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.querySelectorAll('.mobile-pay-input').forEach(i => i.classList.remove('show'));
+
+  const noteEl = document.getElementById('payment-note');
+  if (method === 'bkash') {
+    document.getElementById('bkash-number').classList.add('show');
+    noteEl.style.display = 'block';
+    noteEl.innerHTML = '💗 <strong>bKash নির্দেশনা:</strong> অর্ডার confirm হলে আপনাকে আমাদের bKash নম্বরে payment করতে বলা হবে। Screenshot পাঠালে অর্ডার ship হবে।';
+  } else if (method === 'nagad') {
+    document.getElementById('nagad-number').classList.add('show');
+    noteEl.style.display = 'block';
+    noteEl.innerHTML = '🟠 <strong>Nagad নির্দেশনা:</strong> অর্ডার confirm হলে আপনাকে আমাদের Nagad নম্বরে payment করতে বলা হবে।';
+  } else if (method === 'cod') {
+    noteEl.style.display = 'block';
+    noteEl.innerHTML = '💵 <strong>Cash on Delivery:</strong> পণ্য হাতে পেলে Delivery man-কে টাকা দিন। ডেলিভারি চার্জ আলাদা।';
+  }
+}
+
+async function placeOrder() {
+  if (!currentUser) {
+    showAuthModal('অর্ডার দিতে লগইন করুন');
+    return;
+  }
+
+  const name     = document.getElementById('c-name').value.trim();
+  const phone    = document.getElementById('c-phone').value.trim();
+  const address  = document.getElementById('c-address').value.trim();
+  const district = document.getElementById('c-district').value;
+
+  if (!name || !phone || !address || !district) {
+    showToast('ডেলিভারি ঠিকানার সব তথ্য পূরণ করুন', 'error'); return;
+  }
+  if (!selectedPayment) {
+    showToast('পেমেন্ট পদ্ধতি বেছে নিন', 'error'); return;
+  }
+
+  const cart = getCart();
+  if (!cart.length) {
+    showToast('কার্ট খালি', 'error'); window.location.href = 'cart.html'; return;
+  }
+
+  const btn = document.getElementById('place-order-btn');
+  btn.disabled = true; btn.textContent = 'অর্ডার দেওয়া হচ্ছে...';
+
+  try {
+    const subtotal = cart.reduce((s,i) => s + (i.price*(i.qty||1)), 0);
+    const delivery = subtotal > 999 ? 0 : 60;
+    const total    = subtotal + delivery;
+
+    // Group items by seller and create orders
+    const sellerGroups = {};
+    cart.forEach(item => {
+      const sid = item.sellerId || 'unknown';
+      if (!sellerGroups[sid]) sellerGroups[sid] = [];
+      sellerGroups[sid].push(item);
+    });
+
+    const orderIds = [];
+
+    for (const [sellerId, items] of Object.entries(sellerGroups)) {
+      const orderTotal = items.reduce((s,i) => s + (i.price*(i.qty||1)), 0) + (delivery / Object.keys(sellerGroups).length);
+
+      const orderRef = await db.collection(COL.ORDERS).add({
+        buyerId:       currentUser.uid,
+        buyerName:     name,
+        buyerPhone:    phone,
+        sellerId,
+        items,
+        productName:   items.map(i => i.name).join(', '),
+        address: { full: address, district, upazila: document.getElementById('c-upazila').value, note: document.getElementById('c-note').value },
+        paymentMethod: selectedPayment,
+        paymentPhone:  selectedPayment === 'bkash' ? document.getElementById('bkash-number').value : selectedPayment === 'nagad' ? document.getElementById('nagad-number').value : '',
+        subtotal:      items.reduce((s,i) => s + (i.price*(i.qty||1)), 0),
+        deliveryCharge: delivery,
+        total:         orderTotal,
+        status:        'pending',
+        createdAt:     firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      orderIds.push(orderRef.id);
+
+      // Update product sold count
+      items.forEach(item => {
+        if (item.id) {
+          db.collection(COL.PRODUCTS).doc(item.id).update({
+            sold: firebase.firestore.FieldValue.increment(item.qty || 1),
+            stock: firebase.firestore.FieldValue.increment(-(item.qty || 1)),
+          }).catch(()=>{});
+        }
+      });
+    }
+
+    // Clear cart
+    saveLocalCart([]);
+
+    // Show success
+    document.getElementById('checkout-form').style.display = 'none';
+    const successEl = document.getElementById('order-success');
+    successEl.classList.add('show');
+    const shortId = orderIds[0].slice(-6).toUpperCase();
+    document.getElementById('success-order-id').textContent = '#BZ-' + shortId;
+
+  } catch (err) {
+    showToast('❌ অর্ডার দিতে সমস্যা হয়েছে: ' + err.message, 'error');
+    btn.disabled = false; btn.textContent = '✅ অর্ডার দিন';
+  }
+}
+</script>
+</body>
+</html>

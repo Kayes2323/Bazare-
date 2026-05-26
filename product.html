@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>পণ্যের বিবরণ — Bazare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .product-page { max-width: 1280px; margin: 0 auto; padding: 28px 24px; }
+    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray-400); margin-bottom: 24px; }
+    .breadcrumb a { color: var(--green); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .product-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+
+    /* Images */
+    .product-images { position: sticky; top: 88px; height: fit-content; }
+    .main-image {
+      aspect-ratio: 1; border-radius: 20px; overflow: hidden;
+      background: var(--gray-50); display: flex; align-items: center; justify-content: center;
+      font-size: 120px; margin-bottom: 12px; border: 1px solid var(--gray-100);
+      cursor: zoom-in;
+    }
+    .main-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+    .main-image:hover img { transform: scale(1.08); }
+    .thumb-row { display: flex; gap: 10px; }
+    .thumb {
+      width: 72px; height: 72px; border-radius: 10px; overflow: hidden;
+      border: 2px solid var(--gray-200); cursor: pointer; transition: border-color 0.15s;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--gray-50); font-size: 28px;
+    }
+    .thumb.active { border-color: var(--green); }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Info */
+    .product-info {}
+    .product-badges { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .product-title { font-family: var(--font-heading); font-size: 26px; font-weight: 800; color: var(--black); line-height: 1.3; margin-bottom: 12px; }
+    .product-meta { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+    .product-rating-row { display: flex; align-items: center; gap: 6px; }
+    .product-rating-stars { color: var(--accent); font-size: 16px; }
+    .product-rating-num { font-size: 14px; font-weight: 700; color: var(--black); }
+    .product-rating-count { font-size: 13px; color: var(--gray-400); }
+    .product-sold { font-size: 13px; color: var(--gray-500); }
+
+    .product-price-box { background: var(--green-pale); border-radius: 14px; padding: 16px 20px; margin-bottom: 20px; }
+    .product-price-new { font-family: var(--font-heading); font-size: 34px; font-weight: 900; color: var(--green); line-height: 1; }
+    .product-price-old { font-size: 16px; color: var(--gray-400); text-decoration: line-through; margin-top: 4px; }
+    .product-discount { display: inline-flex; align-items: center; background: var(--red); color: white; border-radius: 6px; padding: 3px 8px; font-size: 12px; font-weight: 700; margin-left: 10px; }
+
+    /* Delivery info */
+    .delivery-box { border: 1px solid var(--gray-200); border-radius: 12px; padding: 14px 16px; margin-bottom: 20px; }
+    .delivery-row { display: flex; align-items: center; gap: 10px; font-size: 14px; padding: 5px 0; }
+    .delivery-row:not(:last-child) { border-bottom: 1px solid var(--gray-100); padding-bottom: 10px; margin-bottom: 5px; }
+    .delivery-icon { font-size: 18px; flex-shrink: 0; }
+    .delivery-label { color: var(--gray-500); flex: 1; }
+    .delivery-value { font-weight: 600; color: var(--black); }
+
+    /* Quantity */
+    .qty-row { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .qty-label { font-size: 14px; font-weight: 600; color: var(--gray-700); }
+    .qty-ctrl { display: flex; align-items: center; border: 2px solid var(--gray-200); border-radius: 10px; overflow: hidden; }
+    .qty-btn { width: 40px; height: 40px; border: none; background: var(--gray-50); font-size: 18px; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; justify-content: center; }
+    .qty-btn:hover { background: var(--green-pale); }
+    .qty-num { width: 48px; text-align: center; font-size: 16px; font-weight: 700; font-family: var(--font-heading); border: none; outline: none; }
+
+    /* CTA buttons */
+    .product-cta { display: flex; gap: 12px; margin-bottom: 20px; }
+    .product-cta .btn { flex: 1; font-size: 16px; height: 54px; border-radius: 14px; }
+
+    /* Seller card */
+    .seller-card { border: 1px solid var(--gray-200); border-radius: 14px; padding: 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 20px; cursor: pointer; transition: all 0.2s; }
+    .seller-card:hover { border-color: var(--green); background: var(--green-pale); }
+    .seller-avi-lg { width: 52px; height: 52px; border-radius: 50%; background: var(--green-pale); display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid var(--green-pale2); overflow: hidden; flex-shrink: 0; }
+    .seller-avi-lg img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .seller-card-name { font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: var(--black); }
+    .seller-card-meta { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+
+    /* Product description */
+    .product-desc-section { margin-bottom: 40px; }
+    .product-desc-title { font-family: var(--font-heading); font-size: 20px; font-weight: 800; margin-bottom: 16px; }
+    .product-desc-text { font-size: 15px; color: var(--gray-700); line-height: 1.8; white-space: pre-line; }
+
+    /* Reviews */
+    .reviews-section { margin-bottom: 40px; }
+    .review-card { background: white; border: 1px solid var(--gray-100); border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; }
+    .review-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .reviewer-avi { width: 36px; height: 36px; border-radius: 50%; background: var(--green-pale); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--green); }
+    .reviewer-name { font-weight: 700; font-size: 14px; }
+    .review-date { font-size: 12px; color: var(--gray-400); margin-left: auto; }
+    .review-stars { color: var(--accent); font-size: 13px; margin-bottom: 6px; }
+    .review-text { font-size: 14px; color: var(--gray-700); line-height: 1.6; }
+
+    /* Related products */
+    .related-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+
+    /* Sticky mobile CTA */
+    .mobile-sticky-cta { display: none; position: fixed; bottom: 64px; left: 0; right: 0; background: white; border-top: 1px solid var(--gray-100); padding: 12px 16px; z-index: 300; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
+    .mobile-sticky-cta-inner { display: flex; gap: 10px; max-width: 600px; margin: 0 auto; }
+
+    @media (max-width: 768px) {
+      .product-layout { grid-template-columns: 1fr; gap: 20px; }
+      .product-images { position: static; }
+      .product-title { font-size: 20px; }
+      .product-price-new { font-size: 28px; }
+      .product-cta { display: none; }
+      .mobile-sticky-cta { display: block; }
+      .related-grid { grid-template-columns: repeat(2,1fr); }
+      .product-page { padding: 16px; padding-bottom: 140px; }
+    }
+    @media (max-width: 1024px) { .related-grid { grid-template-columns: repeat(3,1fr); } }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Bazar<span class="logo-e">e</span></a>
+    <div class="nav-search">
+      <input type="text" id="main-search" placeholder="পণ্য খুঁজুন..." onkeydown="if(event.key==='Enter')doSearch()">
+      <button class="nav-search-btn" onclick="doSearch()">🔍 খুঁজুন</button>
+    </div>
+    <div class="nav-actions">
+      <a href="seller-register.html" class="btn btn-outline btn-sm" id="nav-become-seller">🏪 Seller হোন</a>
+      <a href="seller-dashboard.html" class="btn btn-outline btn-sm" id="nav-seller-link" style="display:none">🏪 দোকান</a>
+      <a href="admin.html" class="btn btn-sm" id="nav-admin-link" style="display:none;background:var(--red);color:white;">Admin</a>
+      <button class="btn btn-primary btn-sm" id="nav-login-btn" onclick="showAuthModal()">লগইন</button>
+      <div id="nav-user-menu" style="display:none;align-items:center;gap:8px;position:relative;">
+        <button class="user-btn" onclick="toggleUserDropdown()">
+          <div class="user-avatar" id="nav-user-avatar">?</div>
+          <span class="user-btn-label" id="nav-user-name">আপনি</span>
+        </button>
+        <div id="user-dropdown" style="display:none;position:absolute;top:44px;right:0;background:white;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.12);border:1px solid var(--gray-100);min-width:180px;z-index:600;overflow:hidden;">
+          <a href="orders.html" style="display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:14px;color:var(--gray-700);" onmouseover="this.style.background='#f4f7f5'" onmouseout="this.style.background='white'">📦 আমার অর্ডার</a>
+          <div style="border-top:1px solid var(--gray-100);"></div>
+          <button onclick="logout()" style="display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:14px;color:var(--red);background:none;border:none;cursor:pointer;width:100%;font-family:var(--font-body);">🚪 লগআউট</button>
+        </div>
+      </div>
+      <a href="cart.html" style="position:relative;display:flex;align-items:center;justify-content:center;width:46px;height:46px;background:var(--green-pale);border-radius:50%;font-size:20px;text-decoration:none;transition:all 0.25s;">
+        🛒
+        <span class="cart-badge" style="display:none;position:absolute;top:-5px;right:-5px;background:var(--accent);color:#000;border-radius:50%;min-width:20px;height:20px;font-size:11px;font-weight:800;align-items:center;justify-content:center;border:2px solid white;">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="product-page">
+  <div class="breadcrumb">
+    <a href="index.html">হোম</a> › <a href="listing.html">সব পণ্য</a> › <span id="bc-name">লোড হচ্ছে...</span>
+  </div>
+
+  <div class="product-layout" id="product-layout">
+    <!-- Loaded by JS -->
+    <div style="grid-column:1/-1;text-align:center;padding:80px;color:var(--gray-400);">
+      <div style="font-size:40px;margin-bottom:12px;">⏳</div>
+      <p>পণ্য লোড হচ্ছে...</p>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="product-desc-section" id="desc-section" style="display:none;">
+    <div class="product-desc-title">📋 পণ্যের বিবরণ</div>
+    <div class="product-desc-text" id="product-desc-text"></div>
+  </div>
+
+  <!-- Reviews -->
+  <div class="reviews-section" id="reviews-section" style="display:none;">
+    <div class="product-desc-title">⭐ ক্রেতাদের মতামত</div>
+    <div id="reviews-container"></div>
+  </div>
+
+  <!-- Related -->
+  <div id="related-section" style="display:none;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div class="product-desc-title" style="margin-bottom:0;">🛍️ সম্পর্কিত পণ্য</div>
+      <a href="listing.html" class="section-link">সব দেখুন →</a>
+    </div>
+    <div class="related-grid" id="related-grid"></div>
+  </div>
+</div>
+
+<!-- Mobile sticky CTA -->
+<div class="mobile-sticky-cta">
+  <div class="mobile-sticky-cta-inner">
+    <button class="btn btn-outline btn-md" style="flex:1;" id="mobile-wishlist-btn" onclick="handleWishlist()">🤍 Wishlist</button>
+    <button class="btn btn-accent btn-md" style="flex:2;" id="mobile-cart-btn" onclick="handleAddToCart()">🛒 কার্টে যোগ করুন</button>
+    <a href="checkout.html" class="btn btn-primary btn-md" style="flex:2;" id="mobile-buy-btn">⚡ এখনই কিনুন</a>
+  </div>
+</div>
+
+<!-- Mobile NAV -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <a href="index.html" class="mobile-nav-item"><span class="mobile-nav-icon">🏠</span><span class="mobile-nav-label">হোম</span></a>
+    <a href="listing.html" class="mobile-nav-item"><span class="mobile-nav-icon">🔍</span><span class="mobile-nav-label">খুঁজুন</span></a>
+    <a href="cart.html" class="mobile-nav-cart"><div class="mobile-nav-cart-inner" style="position:relative;">🛒<span class="cart-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:var(--accent);color:#000;border-radius:50%;min-width:18px;height:18px;font-size:10px;font-weight:800;align-items:center;justify-content:center;border:2px solid white;">0</span></div></a>
+    <a href="seller-dashboard.html" class="mobile-nav-item"><span class="mobile-nav-icon">🏪</span><span class="mobile-nav-label">দোকান</span></a>
+    <a href="#" class="mobile-nav-item" onclick="showAuthModal();return false;"><span class="mobile-nav-icon">👤</span><span class="mobile-nav-label">প্রোফাইল</span></a>
+  </div>
+</nav>
+
+<!-- AUTH MODAL -->
+<div class="modal-backdrop hidden" id="auth-modal">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="hideAuthModal()">✕</button>
+    <div class="modal-header"><div class="modal-logo">Bazar<span>e</span></div><div class="modal-title">স্বাগতম! 👋</div><div class="modal-sub" id="auth-hint">লগইন করুন</div></div>
+    <div class="modal-body auth-step" id="auth-step-main">
+      <button class="auth-btn" onclick="loginWithGoogle()"><div class="auth-btn-icon" style="background:white;border:1px solid #e0e0e0;"><svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg></div>Google দিয়ে লগইন</button>
+      <div class="auth-divider">অথবা</div>
+      <button class="auth-btn" onclick="showAuthStep('phone-enter')"><div class="auth-btn-icon" style="background:var(--green);color:white;font-size:16px;">📱</div>ফোন নম্বর দিয়ে লগইন</button>
+    </div>
+    <div class="modal-body auth-step hidden" id="auth-step-phone-enter">
+      <button class="btn btn-ghost btn-sm" onclick="showAuthStep('main')" style="align-self:flex-start;">← ফিরে যান</button>
+      <div class="input-group"><label class="input-label">ফোন নম্বর</label><input class="input-field" type="tel" id="phone-input" placeholder="01XXXXXXXXX" maxlength="11"></div>
+      <button class="btn btn-primary btn-lg" id="send-otp-btn" onclick="sendOTP()" style="width:100%">OTP পাঠান</button>
+      <div id="recaptcha-container"></div>
+    </div>
+    <div class="modal-body auth-step hidden" id="auth-step-phone-otp">
+      <button class="btn btn-ghost btn-sm" onclick="showAuthStep('phone-enter')" style="align-self:flex-start;">← ফিরে যান</button>
+      <p style="font-size:14px;color:var(--gray-500);text-align:center;"><span id="otp-sent-to"></span> তে OTP পাঠানো হয়েছে</p>
+      <div class="otp-row"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"></div>
+      <button class="btn btn-primary btn-lg" id="verify-otp-btn" onclick="verifyOTP()" style="width:100%;margin-top:8px;">নিশ্চিত করুন</button>
+    </div>
+    <div class="modal-footer"><p>লগইন করে আমাদের <a href="#" style="color:var(--green);">Terms</a>-তে সম্মত হচ্ছেন।</p></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth.js"></script>
+<script src="cart.js"></script>
+
+<script>
+let currentProduct = null;
+let currentQty = 1;
+const emojiBg = {'👗':'#fce7f3','🌿':'#d1fae5','🧴':'#fef3c7','🌸':'#ede9fe','🥚':'#fef3c7','🦜':'#dbeafe','🍯':'#ffedd5','🧶':'#fce7f3','🪴':'#d1fae5','🎁':'#fee2e2'};
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const id = new URLSearchParams(window.location.search).get('id');
+  if (!id) { window.location.href = 'listing.html'; return; }
+
+  try {
+    const snap = await db.collection(COL.PRODUCTS).doc(id).get();
+    if (!snap.exists) { window.location.href = 'listing.html'; return; }
+    currentProduct = { id: snap.id, ...snap.data() };
+    renderProduct(currentProduct);
+    loadReviews(id);
+    loadRelated(currentProduct.category, id);
+
+    // Update view count
+    db.collection(COL.PRODUCTS).doc(id).update({ views: firebase.firestore.FieldValue.increment(1) }).catch(()=>{});
+  } catch(e) {
+    document.getElementById('product-layout').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:80px;color:var(--gray-400);">পণ্য লোড করতে সমস্যা হয়েছে</div>`;
+  }
+});
+
+function renderProduct(p) {
+  document.title = p.name + ' — Bazare';
+  document.getElementById('bc-name').textContent = p.name;
+
+  const bg = emojiBg[p.emoji] || '#e8f5ed';
+  const discount = p.originalPrice ? Math.round((1 - p.price/p.originalPrice)*100) : 0;
+  const stars = '★'.repeat(Math.round(p.rating||5)) + '☆'.repeat(5-Math.round(p.rating||5));
+
+  const images = p.imageUrls?.length ? p.imageUrls : (p.imageUrl ? [p.imageUrl] : []);
+
+  document.getElementById('product-layout').innerHTML = `
+    <!-- Images -->
+    <div class="product-images">
+      <div class="main-image" id="main-img" style="${!images.length ? `background:${bg};` : ''}">
+        ${images.length ? `<img src="${images[0]}" id="main-img-el" alt="${p.name}">` : `<span style="font-size:120px;">${p.emoji||'📦'}</span>`}
+      </div>
+      ${images.length > 1 ? `<div class="thumb-row">${images.map((url,i) => `<div class="thumb ${i===0?'active':''}" onclick="switchImg('${url}',${i})" id="thumb-${i}"><img src="${url}" alt=""></div>`).join('')}</div>` : ''}
+    </div>
+
+    <!-- Info -->
+    <div class="product-info">
+      <div class="product-badges">
+        ${p.badge ? `<span class="product-badge badge-${p.badge.type}" style="position:static;">${p.badge.label}</span>` : ''}
+        ${p.stock <= 5 && p.stock > 0 ? '<span class="product-badge" style="position:static;background:#fff5f5;color:var(--red);border:1px solid #fed7d7;">⚠️ মাত্র '+p.stock+'টি বাকি</span>' : ''}
+        ${p.stock === 0 ? '<span class="product-badge" style="position:static;background:var(--red-light);color:var(--red);">❌ Stock নেই</span>' : ''}
+      </div>
+
+      <h1 class="product-title">${p.name}</h1>
+
+      <div class="product-meta">
+        <div class="product-rating-row">
+          <span class="product-rating-stars">${stars}</span>
+          <span class="product-rating-num">${(p.rating||5).toFixed(1)}</span>
+          <span class="product-rating-count">(${p.reviewCount||0} রিভিউ)</span>
+        </div>
+        <span class="product-sold">🛒 ${p.sold||0}টি বিক্রিত</span>
+      </div>
+
+      <div class="product-price-box">
+        <div style="display:flex;align-items:baseline;gap:10px;">
+          <div class="product-price-new">৳${p.price.toLocaleString('bn')}</div>
+          ${discount > 0 ? `<span class="product-discount">-${discount}%</span>` : ''}
+        </div>
+        ${p.originalPrice ? `<div class="product-price-old">৳${p.originalPrice.toLocaleString('bn')}</div>` : ''}
+      </div>
+
+      <div class="delivery-box">
+        <div class="delivery-row"><span class="delivery-icon">🚚</span><span class="delivery-label">ডেলিভারি চার্জ</span><span class="delivery-value">${p.deliveryCharge === 0 ? 'Free' : '৳'+p.deliveryCharge}</span></div>
+        <div class="delivery-row"><span class="delivery-icon">📍</span><span class="delivery-label">ডেলিভারি সময়</span><span class="delivery-value">২-৫ কার্যদিবস</span></div>
+        <div class="delivery-row"><span class="delivery-icon">↩️</span><span class="delivery-label">Return Policy</span><span class="delivery-value">৭ দিনের মধ্যে</span></div>
+      </div>
+
+      <div class="qty-row">
+        <span class="qty-label">পরিমাণ:</span>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <input class="qty-num" type="number" value="1" min="1" max="${p.stock||99}" id="qty-input" onchange="currentQty=parseInt(this.value)||1">
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+        <span style="font-size:13px;color:var(--gray-400);">স্টক: ${p.stock}</span>
+      </div>
+
+      <div class="product-cta">
+        <button class="btn btn-outline" onclick="handleWishlist()" id="wishlist-btn">🤍 Wishlist</button>
+        <button class="btn btn-accent" onclick="handleAddToCart()" id="cart-btn" ${p.stock===0?'disabled style="opacity:0.5;cursor:not-allowed;"':''}>🛒 কার্টে যোগ করুন</button>
+        <a href="checkout.html?buy=${p.id}&qty=${currentQty}" class="btn btn-primary" id="buy-btn" ${p.stock===0?'style="pointer-events:none;opacity:0.5;"':''}>⚡ এখনই কিনুন</a>
+      </div>
+
+      <!-- Seller -->
+      <div class="seller-card" onclick="window.location='listing.html?seller=${p.sellerId}'">
+        <div class="seller-avi-lg">
+          ${p.sellerLogo ? `<img src="${p.sellerLogo}" alt="seller">` : '🏪'}
+        </div>
+        <div>
+          <div class="seller-card-name">${p.sellerName||'Bazare Seller'}</div>
+          <div class="seller-card-meta"><span style="color:var(--green);">✓ Verified Seller</span> · দোকান দেখুন →</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Show description
+  if (p.description) {
+    document.getElementById('desc-section').style.display = 'block';
+    document.getElementById('product-desc-text').textContent = p.description;
+  }
+}
+
+function switchImg(url, idx) {
+  document.getElementById('main-img-el').src = url;
+  document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+  document.getElementById('thumb-'+idx)?.classList.add('active');
+}
+
+function changeQty(delta) {
+  const input = document.getElementById('qty-input');
+  if (!input) return;
+  let v = parseInt(input.value) + delta;
+  v = Math.max(1, Math.min(v, currentProduct?.stock || 99));
+  input.value = v;
+  currentQty = v;
+}
+
+function handleAddToCart() {
+  if (!currentProduct) return;
+  addToCart({ id: currentProduct.id, name: currentProduct.name, price: currentProduct.price, imageUrl: currentProduct.imageUrl || '', emoji: currentProduct.emoji || '📦', qty: currentQty }, document.getElementById('cart-btn') || document.getElementById('mobile-cart-btn'));
+}
+
+function handleWishlist() {
+  requireAuth(() => {
+    const btn = document.getElementById('wishlist-btn') || document.getElementById('mobile-wishlist-btn');
+    if (!btn) return;
+    const liked = btn.textContent.includes('❤️');
+    btn.textContent = liked ? '🤍 Wishlist' : '❤️ Saved';
+    showToast(liked ? 'Wishlist থেকে সরানো হয়েছে' : '❤️ Wishlist এ যোগ হয়েছে', 'success');
+  });
+}
+
+async function loadReviews(productId) {
+  const snap = await db.collection(COL.REVIEWS || 'reviews').where('productId','==',productId).orderBy('createdAt','desc').limit(5).get();
+  if (snap.empty) return;
+  document.getElementById('reviews-section').style.display = 'block';
+  let html = '';
+  snap.forEach(doc => {
+    const r = doc.data();
+    const stars = '★'.repeat(r.rating||5) + '☆'.repeat(5-(r.rating||5));
+    html += `<div class="review-card">
+      <div class="review-header">
+        <div class="reviewer-avi">${(r.userName||'?')[0]}</div>
+        <span class="reviewer-name">${r.userName||'ক্রেতা'}</span>
+        <span class="review-date">${r.createdAt?.toDate().toLocaleDateString('bn-BD')||''}</span>
+      </div>
+      <div class="review-stars">${stars}</div>
+      <div class="review-text">${r.comment||''}</div>
+    </div>`;
+  });
+  document.getElementById('reviews-container').innerHTML = html;
+}
+
+async function loadRelated(category, currentId) {
+  const snap = await db.collection(COL.PRODUCTS).where('status','==','active').where('category','==',category).limit(5).get();
+  const products = snap.docs.filter(d => d.id !== currentId).slice(0,4);
+  if (!products.length) return;
+  document.getElementById('related-section').style.display = 'block';
+  const emojiBg2 = {'👗':'#fce7f3','🌿':'#d1fae5','🧴':'#fef3c7','🌸':'#ede9fe','🥚':'#fef3c7','🦜':'#dbeafe','🍯':'#ffedd5','🧶':'#fce7f3','🪴':'#d1fae5','🎁':'#fee2e2'};
+  document.getElementById('related-grid').innerHTML = products.map(doc => {
+    const p = { id: doc.id, ...doc.data() };
+    const bg = p.imageUrl ? '' : (emojiBg2[p.emoji]||'#e8f5ed');
+    return `<div class="product-card" onclick="window.location='product.html?id=${p.id}'">
+      <div class="product-img-wrap" style="background:${bg};">${p.imageUrl ? `<img src="${p.imageUrl}" loading="lazy">` : `<span style="font-size:56px;">${p.emoji||'📦'}</span>`}</div>
+      <div class="product-body">
+        <div class="product-seller"><span class="seller-tick">✓</span> ${p.sellerName||''}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-footer"><div class="product-prices"><span class="price-new">৳${p.price.toLocaleString('bn')}</span></div>
+        <button class="add-cart-btn" onclick="event.stopPropagation();addToCart({id:'${p.id}',name:'${p.name.replace(/'/g,"\\'")}',price:${p.price}},this)">+ কার্ট</button></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function doSearch() {
+  const q = document.getElementById('main-search').value.trim();
+  if (q) window.location.href = `listing.html?q=${encodeURIComponent(q)}`;
+}
+</script>
+</body>
+</html>
