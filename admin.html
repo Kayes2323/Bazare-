@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Bazare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: #f0f4f1; }
+
+    .admin-layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+    /* Sidebar */
+    .admin-sidebar {
+      background: #0a1a0f;
+      padding: 0;
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    }
+    .admin-logo {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 8px;
+    }
+    .admin-logo a {
+      font-family: var(--font-heading); font-size: 22px; font-weight: 900;
+      color: white; letter-spacing: -1px; text-decoration: none;
+    }
+    .admin-logo a span { color: var(--accent); }
+    .admin-logo-tag { font-size: 10px; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+    .sidebar-section { padding: 8px 12px; margin-bottom: 4px; }
+    .sidebar-section-title { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 1px; padding: 0 8px; margin-bottom: 4px; }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 10px;
+      font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.55);
+      cursor: pointer; transition: all 0.15s; border: none; background: none;
+      width: 100%; font-family: var(--font-body);
+      position: relative; text-decoration: none;
+    }
+    .sidebar-item:hover { background: rgba(255,255,255,0.06); color: white; }
+    .sidebar-item.active { background: rgba(26,122,60,0.2); color: white; font-weight: 600; }
+    .sidebar-item .s-icon { font-size: 16px; width: 20px; text-align: center; }
+    .sidebar-badge {
+      margin-left: auto; background: var(--red); color: white;
+      border-radius: 99px; min-width: 20px; height: 20px;
+      font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 4px;
+    }
+    .sidebar-badge.yellow { background: var(--accent); color: #000; }
+
+    /* Main */
+    .admin-main { padding: 24px; overflow-y: auto; }
+
+    .admin-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .admin-page-title { font-family: var(--font-heading); font-size: 22px; font-weight: 800; color: var(--black); }
+    .admin-page-sub { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+
+    /* Stat cards */
+    .admin-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+    .admin-stat {
+      background: white; border-radius: 16px; padding: 18px 20px;
+      border: 1px solid var(--gray-100); box-shadow: var(--shadow-xs);
+      transition: all 0.2s;
+    }
+    .admin-stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .admin-stat-icon { font-size: 24px; margin-bottom: 8px; }
+    .admin-stat-label { font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .admin-stat-value { font-family: var(--font-heading); font-size: 26px; font-weight: 900; color: var(--black); line-height: 1; }
+    .admin-stat-sub { font-size: 12px; color: var(--green); margin-top: 4px; font-weight: 600; }
+
+    /* Card */
+    .admin-card { background: white; border-radius: 16px; border: 1px solid var(--gray-100); box-shadow: var(--shadow-xs); margin-bottom: 20px; overflow: hidden; }
+    .admin-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; border-bottom: 1px solid var(--gray-100);
+    }
+    .admin-card-title { font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: var(--black); }
+
+    /* Table */
+    .admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table th {
+      text-align: left; padding: 10px 16px;
+      font-size: 11px; font-weight: 700; color: var(--gray-400);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      background: var(--gray-50); border-bottom: 1px solid var(--gray-100);
+    }
+    .admin-table td {
+      padding: 14px 16px; font-size: 14px; color: var(--gray-700);
+      border-bottom: 1px solid var(--gray-100); vertical-align: middle;
+    }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: var(--gray-50); }
+
+    /* Status badges */
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 99px;
+      font-size: 11px; font-weight: 700;
+    }
+    .status-pending  { background: #fffff0; color: var(--yellow); border: 1px solid #f6e05e; }
+    .status-approved { background: var(--green-pale); color: var(--green); border: 1px solid var(--green-pale2); }
+    .status-rejected { background: var(--red-light); color: var(--red); border: 1px solid #fed7d7; }
+
+    /* Action buttons */
+    .action-row { display: flex; gap: 6px; }
+    .approve-btn {
+      padding: 6px 14px; border-radius: 8px; border: none;
+      background: var(--green); color: white; font-size: 12px; font-weight: 700;
+      cursor: pointer; transition: all 0.15s; font-family: var(--font-body);
+    }
+    .approve-btn:hover { background: var(--green-dark); transform: scale(1.04); }
+    .reject-btn {
+      padding: 6px 14px; border-radius: 8px; border: none;
+      background: var(--red-light); color: var(--red); font-size: 12px; font-weight: 700;
+      cursor: pointer; transition: all 0.15s; font-family: var(--font-body);
+    }
+    .reject-btn:hover { background: var(--red); color: white; }
+    .view-btn {
+      padding: 6px 12px; border-radius: 8px;
+      border: 1.5px solid var(--gray-200); background: white; color: var(--gray-600);
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      transition: all 0.15s; font-family: var(--font-body);
+    }
+    .view-btn:hover { border-color: var(--green); color: var(--green); }
+
+    /* Seller detail modal */
+    .detail-modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(4px); z-index: 2000;
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .detail-modal.hidden { display: none; }
+    .detail-box {
+      background: white; border-radius: 20px; width: 100%; max-width: 520px;
+      max-height: 90vh; overflow-y: auto; box-shadow: 0 32px 80px rgba(0,0,0,0.2);
+      animation: scaleIn 0.3s ease;
+    }
+    .detail-header {
+      padding: 20px 24px; border-bottom: 1px solid var(--gray-100);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .detail-body { padding: 24px; }
+    .detail-row { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
+    .detail-label { font-size: 12px; font-weight: 700; color: var(--gray-400); min-width: 100px; padding-top: 2px; }
+    .detail-value { font-size: 14px; color: var(--gray-800); flex: 1; }
+    .detail-logo { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gray-200); }
+
+    /* Loading state */
+    .loading-row td { text-align: center; padding: 40px; color: var(--gray-400); }
+
+    /* Tabs */
+    .tab-bar { display: flex; gap: 4px; background: var(--gray-100); padding: 4px; border-radius: 12px; margin-bottom: 20px; }
+    .tab-btn {
+      flex: 1; padding: 8px 16px; border-radius: 8px; border: none;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      background: transparent; color: var(--gray-500); font-family: var(--font-body);
+      transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .tab-btn.active { background: white; color: var(--green); box-shadow: var(--shadow-xs); }
+
+    @media (max-width: 1024px) { .admin-stats { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 768px) {
+      .admin-layout { grid-template-columns: 1fr; }
+      .admin-sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <div class="admin-logo">
+      <a href="index.html">Bazar<span>e</span></a>
+      <div class="admin-logo-tag">⚙️ Admin Panel</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Overview</div>
+      <button class="sidebar-item active" onclick="showSection('dashboard')">
+        <span class="s-icon">📊</span> Dashboard
+      </button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Sellers</div>
+      <button class="sidebar-item" onclick="showSection('pending-sellers')">
+        <span class="s-icon">⏳</span> Pending Sellers
+        <span class="sidebar-badge yellow" id="pending-count">0</span>
+      </button>
+      <button class="sidebar-item" onclick="showSection('all-sellers')">
+        <span class="s-icon">🏪</span> সব Sellers
+      </button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Marketplace</div>
+      <button class="sidebar-item" onclick="showSection('products')">
+        <span class="s-icon">📦</span> সব পণ্য
+      </button>
+      <button class="sidebar-item" onclick="showSection('orders')">
+        <span class="s-icon">🛒</span> সব Orders
+      </button>
+      <button class="sidebar-item" onclick="showSection('users')">
+        <span class="s-icon">👥</span> সব Users
+      </button>
+    </div>
+
+    <div class="sidebar-section" style="margin-top:auto;">
+      <a href="index.html" class="sidebar-item">
+        <span class="s-icon">🏠</span> Marketplace দেখুন
+      </a>
+      <button class="sidebar-item" onclick="logout()" style="color:var(--red);">
+        <span class="s-icon">🚪</span> লগআউট
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="admin-main">
+
+    <!-- DASHBOARD SECTION -->
+    <div id="section-dashboard">
+      <div class="admin-topbar">
+        <div>
+          <div class="admin-page-title">Dashboard</div>
+          <div class="admin-page-sub">Bazare এর সার্বিক অবস্থা</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="loadAllData()">🔄 Refresh</button>
+      </div>
+
+      <div class="admin-stats">
+        <div class="admin-stat">
+          <div class="admin-stat-icon">⏳</div>
+          <div class="admin-stat-label">Pending Sellers</div>
+          <div class="admin-stat-value" id="ds-pending">—</div>
+          <div class="admin-stat-sub">Approve দরকার</div>
+        </div>
+        <div class="admin-stat">
+          <div class="admin-stat-icon">🏪</div>
+          <div class="admin-stat-label">Approved Sellers</div>
+          <div class="admin-stat-value" id="ds-sellers">—</div>
+          <div class="admin-stat-sub">Active দোকান</div>
+        </div>
+        <div class="admin-stat">
+          <div class="admin-stat-icon">📦</div>
+          <div class="admin-stat-label">মোট পণ্য</div>
+          <div class="admin-stat-value" id="ds-products">—</div>
+          <div class="admin-stat-sub">Marketplace এ</div>
+        </div>
+        <div class="admin-stat">
+          <div class="admin-stat-icon">👥</div>
+          <div class="admin-stat-label">মোট Users</div>
+          <div class="admin-stat-value" id="ds-users">—</div>
+          <div class="admin-stat-sub">Registered</div>
+        </div>
+      </div>
+
+      <!-- Quick: Pending sellers -->
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div class="admin-card-title">⏳ Pending Seller Requests</div>
+          <button class="btn btn-ghost btn-sm" onclick="showSection('pending-sellers')">সব দেখুন →</button>
+        </div>
+        <table class="admin-table">
+          <thead>
+            <tr><th>নাম</th><th>দোকান</th><th>ফোন</th><th>জেলা</th><th>তারিখ</th><th>Action</th></tr>
+          </thead>
+          <tbody id="dashboard-pending-tbody">
+            <tr class="loading-row"><td colspan="6">লোড হচ্ছে...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PENDING SELLERS SECTION -->
+    <div id="section-pending-sellers" style="display:none;">
+      <div class="admin-topbar">
+        <div><div class="admin-page-title">⏳ Pending Sellers</div><div class="admin-page-sub">Approve বা Reject করুন</div></div>
+      </div>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="filterSellers('pending',this)">⏳ Pending</button>
+        <button class="tab-btn" onclick="filterSellers('approved',this)">✅ Approved</button>
+        <button class="tab-btn" onclick="filterSellers('rejected',this)">❌ Rejected</button>
+      </div>
+      <div class="admin-card">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Seller</th><th>দোকান</th><th>ক্যাটাগরি</th><th>ফোন</th><th>জেলা</th><th>Status</th><th>Action</th></tr>
+          </thead>
+          <tbody id="sellers-tbody">
+            <tr class="loading-row"><td colspan="7">লোড হচ্ছে...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ALL SELLERS -->
+    <div id="section-all-sellers" style="display:none;">
+      <div class="admin-topbar">
+        <div><div class="admin-page-title">🏪 সব Sellers</div></div>
+      </div>
+      <div class="admin-card">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Seller</th><th>দোকান</th><th>Status</th><th>তারিখ</th><th>Action</th></tr>
+          </thead>
+          <tbody id="all-sellers-tbody">
+            <tr class="loading-row"><td colspan="5">লোড হচ্ছে...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div id="section-products" style="display:none;">
+      <div class="admin-topbar">
+        <div><div class="admin-page-title">📦 সব পণ্য</div></div>
+      </div>
+      <div class="admin-card">
+        <table class="admin-table">
+          <thead>
+            <tr><th>পণ্য</th><th>Seller</th><th>দাম</th><th>Status</th><th>Action</th></tr>
+          </thead>
+          <tbody id="products-tbody">
+            <tr class="loading-row"><td colspan="5">লোড হচ্ছে...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div id="section-users" style="display:none;">
+      <div class="admin-topbar">
+        <div><div class="admin-page-title">👥 সব Users</div></div>
+      </div>
+      <div class="admin-card">
+        <table class="admin-table">
+          <thead>
+            <tr><th>নাম</th><th>Email/Phone</th><th>Role</th><th>Join তারিখ</th></tr>
+          </thead>
+          <tbody id="users-tbody">
+            <tr class="loading-row"><td colspan="4">লোড হচ্ছে...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Seller Detail Modal -->
+<div class="detail-modal hidden" id="seller-modal">
+  <div class="detail-box">
+    <div class="detail-header">
+      <div style="font-family:var(--font-heading);font-size:17px;font-weight:700;">Seller বিবরণ</div>
+      <button onclick="closeModal()" style="background:var(--gray-100);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:16px;">✕</button>
+    </div>
+    <div class="detail-body" id="modal-body"></div>
+    <div style="padding:16px 24px;border-top:1px solid var(--gray-100);display:flex;gap:10px;justify-content:flex-end;" id="modal-actions"></div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth.js"></script>
+
+<script>
+// Admin UIDs — add your UID here after first login
+const ADMIN_UIDS = ['REPLACE_WITH_YOUR_UID'];
+
+let currentFilter = 'pending';
+
+// Auth guard — only admins
+auth.onAuthStateChanged(async (user) => {
+  if (!user) { window.location.href = 'index.html'; return; }
+
+  // Temporary: allow any logged-in user during dev
+  // In production: check ADMIN_UIDS or role === 'admin'
+  const snap = await db.collection(COL.USERS).doc(user.uid).get();
+  const profile = snap.data();
+
+  // Set as admin if in ADMIN_UIDS list
+  if (ADMIN_UIDS.includes(user.uid) && profile?.role !== 'admin') {
+    await db.collection(COL.USERS).doc(user.uid).update({ role: 'admin' });
+  }
+
+  loadAllData();
+});
+
+function showSection(name) {
+  document.querySelectorAll('[id^="section-"]').forEach(s => s.style.display = 'none');
+  document.getElementById('section-' + name).style.display = 'block';
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  event.currentTarget?.classList.add('active');
+
+  if (name === 'pending-sellers' || name === 'all-sellers') loadSellers(currentFilter);
+  if (name === 'products') loadProducts();
+  if (name === 'users') loadUsers();
+}
+
+async function loadAllData() {
+  // Dashboard stats
+  const [pendingSnap, approvedSnap, productsSnap, usersSnap] = await Promise.all([
+    db.collection(COL.SELLERS).where('status','==','pending').get(),
+    db.collection(COL.SELLERS).where('status','==','approved').get(),
+    db.collection(COL.PRODUCTS).get(),
+    db.collection(COL.USERS).get(),
+  ]);
+
+  document.getElementById('ds-pending').textContent   = pendingSnap.size;
+  document.getElementById('ds-sellers').textContent   = approvedSnap.size;
+  document.getElementById('ds-products').textContent  = productsSnap.size;
+  document.getElementById('ds-users').textContent     = usersSnap.size;
+  document.getElementById('pending-count').textContent = pendingSnap.size;
+
+  // Dashboard pending table
+  const tbody = document.getElementById('dashboard-pending-tbody');
+  if (pendingSnap.empty) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--gray-400);">কোনো pending request নেই ✅</td></tr>';
+    return;
+  }
+  tbody.innerHTML = '';
+  pendingSnap.forEach(doc => {
+    const s = doc.data();
+    tbody.innerHTML += `<tr>
+      <td><strong>${s.name}</strong></td>
+      <td>${s.shopName}</td>
+      <td>${s.phone}</td>
+      <td>${s.district}</td>
+      <td>${formatDate(s.createdAt)}</td>
+      <td><div class="action-row">
+        <button class="approve-btn" onclick="approveSeller('${doc.id}','${s.name}','${s.shopName}')">✅ Approve</button>
+        <button class="reject-btn"  onclick="rejectSeller('${doc.id}')">❌ Reject</button>
+        <button class="view-btn"    onclick="viewSeller('${doc.id}')">👁 Details</button>
+      </div></td>
+    </tr>`;
+  });
+}
+
+async function loadSellers(status = 'pending') {
+  currentFilter = status;
+  const tbody = document.getElementById('sellers-tbody') || document.getElementById('all-sellers-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr class="loading-row"><td colspan="7">লোড হচ্ছে...</td></tr>';
+
+  const snap = await db.collection(COL.SELLERS).where('status','==',status).orderBy('createdAt','desc').get();
+  if (snap.empty) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--gray-400);">কোনো ${status} seller নেই</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = '';
+  snap.forEach(doc => {
+    const s = doc.data();
+    const badge = `<span class="status-badge status-${s.status}">${s.status === 'pending' ? '⏳ Pending' : s.status === 'approved' ? '✅ Approved' : '❌ Rejected'}</span>`;
+    tbody.innerHTML += `<tr>
+      <td><div style="display:flex;align-items:center;gap:8px;">
+        ${s.logoUrl ? `<img src="${s.logoUrl}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">` : '<div style="width:32px;height:32px;border-radius:50%;background:var(--green-pale);display:flex;align-items:center;justify-content:center;font-size:14px;">🏪</div>'}
+        <strong>${s.name}</strong></div></td>
+      <td>${s.shopName}</td>
+      <td>${s.category}</td>
+      <td>${s.phone}</td>
+      <td>${s.district}</td>
+      <td>${badge}</td>
+      <td><div class="action-row">
+        ${s.status === 'pending' ? `<button class="approve-btn" onclick="approveSeller('${doc.id}','${s.name}','${s.shopName}')">✅ Approve</button><button class="reject-btn" onclick="rejectSeller('${doc.id}')">❌ Reject</button>` : ''}
+        <button class="view-btn" onclick="viewSeller('${doc.id}')">👁</button>
+      </div></td>
+    </tr>`;
+  });
+}
+
+async function loadProducts() {
+  const tbody = document.getElementById('products-tbody');
+  tbody.innerHTML = '<tr class="loading-row"><td colspan="5">লোড হচ্ছে...</td></tr>';
+  const snap = await db.collection(COL.PRODUCTS).orderBy('createdAt','desc').get();
+  if (snap.empty) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--gray-400);">কোনো পণ্য নেই</td></tr>'; return; }
+  tbody.innerHTML = '';
+  snap.forEach(doc => {
+    const p = doc.data();
+    tbody.innerHTML += `<tr>
+      <td><div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:40px;height:40px;border-radius:8px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:20px;">${p.emoji || '📦'}</div>
+        <div><div style="font-weight:600;font-size:14px;">${p.name}</div><div style="font-size:12px;color:var(--gray-400);">${p.category}</div></div>
+      </div></td>
+      <td>${p.sellerName}</td>
+      <td style="font-weight:700;color:var(--green);">৳${p.price?.toLocaleString('bn')}</td>
+      <td><span class="status-badge ${p.status === 'active' ? 'status-approved' : 'status-rejected'}">${p.status === 'active' ? '✅ Active' : '❌ Inactive'}</span></td>
+      <td><div class="action-row">
+        <button class="reject-btn" onclick="deleteProduct('${doc.id}')">🗑 Delete</button>
+      </div></td>
+    </tr>`;
+  });
+}
+
+async function loadUsers() {
+  const tbody = document.getElementById('users-tbody');
+  tbody.innerHTML = '<tr class="loading-row"><td colspan="4">লোড হচ্ছে...</td></tr>';
+  const snap = await db.collection(COL.USERS).orderBy('createdAt','desc').limit(50).get();
+  tbody.innerHTML = '';
+  snap.forEach(doc => {
+    const u = doc.data();
+    const roleColor = u.role === 'admin' ? 'var(--red)' : u.role === 'seller' ? 'var(--green)' : 'var(--gray-500)';
+    tbody.innerHTML += `<tr>
+      <td><strong>${u.name || '(নাম নেই)'}</strong></td>
+      <td style="font-size:13px;color:var(--gray-500);">${u.email || u.phone || '—'}</td>
+      <td><span style="font-weight:700;color:${roleColor};">${u.role}</span></td>
+      <td style="font-size:13px;">${formatDate(u.createdAt)}</td>
+    </tr>`;
+  });
+}
+
+async function approveSeller(uid, name, shopName) {
+  if (!confirm(`"${shopName}" কে Approve করবেন?`)) return;
+  try {
+    await db.collection(COL.SELLERS).doc(uid).update({ status: 'approved', approvedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    await db.collection(COL.USERS).doc(uid).update({ role: 'seller', sellerStatus: 'approved', shopName });
+    showToast(`✅ ${name} Approve হয়েছে!`, 'success');
+    loadAllData();
+  } catch(e) { showToast('❌ সমস্যা: ' + e.message, 'error'); }
+}
+
+async function rejectSeller(uid) {
+  if (!confirm('এই seller কে Reject করবেন?')) return;
+  try {
+    await db.collection(COL.SELLERS).doc(uid).update({ status: 'rejected' });
+    await db.collection(COL.USERS).doc(uid).update({ sellerStatus: 'rejected' });
+    showToast('Seller Rejected', 'info');
+    loadAllData();
+  } catch(e) { showToast('❌ সমস্যা: ' + e.message, 'error'); }
+}
+
+async function viewSeller(uid) {
+  const snap = await db.collection(COL.SELLERS).doc(uid).get();
+  const s = snap.data();
+  const modal = document.getElementById('seller-modal');
+  document.getElementById('modal-body').innerHTML = `
+    <div style="text-align:center;margin-bottom:20px;">
+      ${s.logoUrl ? `<img src="${s.logoUrl}" class="detail-logo">` : '<div style="width:70px;height:70px;border-radius:50%;background:var(--green-pale);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto;">🏪</div>'}
+      <div style="font-family:var(--font-heading);font-size:18px;font-weight:800;margin-top:10px;">${s.shopName}</div>
+      <span class="status-badge status-${s.status}" style="margin-top:6px;display:inline-flex;">${s.status}</span>
+    </div>
+    <div class="detail-row"><span class="detail-label">নাম</span><span class="detail-value">${s.name}</span></div>
+    <div class="detail-row"><span class="detail-label">ফোন</span><span class="detail-value">${s.phone}</span></div>
+    <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${s.email||'—'}</span></div>
+    <div class="detail-row"><span class="detail-label">জেলা</span><span class="detail-value">${s.district}</span></div>
+    <div class="detail-row"><span class="detail-label">ক্যাটাগরি</span><span class="detail-value">${s.category}</span></div>
+    <div class="detail-row"><span class="detail-label">bKash</span><span class="detail-value">${s.bkash}</span></div>
+    <div class="detail-row"><span class="detail-label">NID</span><span class="detail-value">${s.nid}</span></div>
+    <div class="detail-row"><span class="detail-label">বিবরণ</span><span class="detail-value">${s.shopDesc||'—'}</span></div>
+    <div class="detail-row"><span class="detail-label">Facebook</span><span class="detail-value">${s.fbPage ? `<a href="${s.fbPage}" target="_blank" style="color:var(--green);">দেখুন</a>` : '—'}</span></div>
+  `;
+  document.getElementById('modal-actions').innerHTML = s.status === 'pending' ? `
+    <button class="reject-btn" onclick="rejectSeller('${uid}');closeModal()">❌ Reject</button>
+    <button class="approve-btn" onclick="approveSeller('${uid}','${s.name}','${s.shopName}');closeModal()">✅ Approve</button>
+  ` : '';
+  modal.classList.remove('hidden');
+}
+
+function closeModal() { document.getElementById('seller-modal').classList.add('hidden'); }
+
+function filterSellers(status, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadSellers(status);
+}
+
+async function deleteProduct(id) {
+  if (!confirm('এই পণ্য delete করবেন?')) return;
+  await db.collection(COL.PRODUCTS).doc(id).delete();
+  showToast('পণ্য delete হয়েছে', 'info');
+  loadProducts();
+}
+
+function formatDate(ts) {
+  if (!ts) return '—';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleDateString('bn-BD');
+}
+
+document.getElementById('seller-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('seller-modal')) closeModal();
+});
+</script>
+</body>
+</html>
