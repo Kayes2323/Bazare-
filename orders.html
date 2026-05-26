@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>আমার অর্ডার — Bazare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .orders-page { max-width: 900px; margin: 0 auto; padding: 28px 24px; padding-bottom: 100px; }
+    .page-title { font-family: var(--font-heading); font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+    .page-sub { font-size: 14px; color: var(--gray-500); margin-bottom: 24px; }
+
+    /* Tabs */
+    .order-tabs { display: flex; gap: 4px; background: var(--gray-100); padding: 4px; border-radius: 12px; margin-bottom: 24px; overflow-x: auto; }
+    .order-tab { flex-shrink: 0; padding: 9px 18px; border-radius: 8px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; background: transparent; color: var(--gray-500); font-family: var(--font-body); transition: all 0.2s; }
+    .order-tab.active { background: white; color: var(--green); box-shadow: var(--shadow-xs); }
+
+    /* Order card */
+    .order-card { background: white; border-radius: 16px; border: 1px solid var(--gray-100); margin-bottom: 14px; overflow: hidden; transition: all 0.2s; box-shadow: var(--shadow-xs); }
+    .order-card:hover { box-shadow: var(--shadow-md); border-color: var(--green-pale2); }
+
+    .order-card-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--gray-100); flex-wrap: wrap; gap: 8px; }
+    .order-id { font-family: var(--font-heading); font-size: 14px; font-weight: 800; color: var(--black); }
+    .order-date { font-size: 12px; color: var(--gray-400); }
+    .order-status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 99px; font-size: 12px; font-weight: 700; }
+    .st-pending   { background: #fffff0; color: #d69e2e; border: 1px solid #f6e05e; }
+    .st-confirmed { background: var(--green-pale); color: var(--green); border: 1px solid var(--green-pale2); }
+    .st-shipped   { background: #ebf8ff; color: #3182ce; border: 1px solid #bee3f8; }
+    .st-delivered { background: #faf5ff; color: #6b46c1; border: 1px solid #d6bcfa; }
+    .st-cancelled { background: var(--red-light); color: var(--red); border: 1px solid #fed7d7; }
+
+    .order-card-body { padding: 16px 18px; }
+    .order-items-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .order-item-img { width: 60px; height: 60px; border-radius: 10px; background: var(--gray-50); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; overflow: hidden; border: 1px solid var(--gray-100); }
+    .order-item-img img { width: 100%; height: 100%; object-fit: cover; }
+    .order-item-info { flex: 1; }
+    .order-item-name { font-family: var(--font-heading); font-size: 14px; font-weight: 700; color: var(--black); margin-bottom: 3px; }
+    .order-item-meta { font-size: 12px; color: var(--gray-400); }
+    .order-item-price { font-size: 16px; font-weight: 800; color: var(--green); font-family: var(--font-heading); }
+
+    .order-card-footer { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: var(--gray-50); border-top: 1px solid var(--gray-100); flex-wrap: wrap; gap: 8px; }
+    .order-total { font-size: 15px; font-weight: 700; color: var(--black); }
+    .order-total span { color: var(--green); font-family: var(--font-heading); font-size: 18px; }
+    .order-actions { display: flex; gap: 8px; }
+    .order-action-btn { padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: var(--font-body); border: 1.5px solid var(--gray-200); background: white; color: var(--gray-700); }
+    .order-action-btn:hover { border-color: var(--green); color: var(--green); }
+    .order-action-btn.primary { background: var(--green); color: white; border-color: var(--green); }
+    .order-action-btn.primary:hover { background: var(--green-dark); }
+    .order-action-btn.danger { border-color: var(--red); color: var(--red); }
+    .order-action-btn.danger:hover { background: var(--red); color: white; }
+
+    /* Tracking timeline */
+    .tracking-timeline { padding: 0 18px 16px; display: none; }
+    .tracking-timeline.show { display: block; animation: fadeUp 0.3s ease; }
+    .timeline { display: flex; flex-direction: column; gap: 0; position: relative; padding-left: 28px; }
+    .timeline::before { content: ''; position: absolute; left: 9px; top: 6px; bottom: 6px; width: 2px; background: var(--gray-200); }
+    .timeline-item { display: flex; align-items: flex-start; gap: 14px; padding: 8px 0; position: relative; }
+    .timeline-dot { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; position: absolute; left: -28px; }
+    .timeline-dot.done { background: var(--green); color: white; }
+    .timeline-dot.current { background: var(--accent); color: #000; box-shadow: 0 0 0 4px rgba(240,180,41,0.2); }
+    .timeline-dot.pending { background: var(--gray-200); color: var(--gray-400); }
+    .timeline-content { flex: 1; }
+    .timeline-label { font-size: 14px; font-weight: 700; color: var(--black); }
+    .timeline-label.pending { color: var(--gray-400); }
+    .timeline-time { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+    /* Empty state */
+    .orders-empty { text-align: center; padding: 80px 20px; }
+    .orders-empty-icon { font-size: 64px; margin-bottom: 16px; }
+    .orders-empty h2 { font-family: var(--font-heading); font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+    .orders-empty p { font-size: 15px; color: var(--gray-500); margin-bottom: 24px; }
+
+    /* Review modal */
+    .review-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .review-modal-backdrop.hidden { display: none; }
+    .review-modal { background: white; border-radius: 20px; width: 100%; max-width: 440px; padding: 28px; box-shadow: var(--shadow-xl); animation: scaleIn 0.3s ease; }
+    .star-select { display: flex; gap: 8px; justify-content: center; margin: 16px 0; }
+    .star-btn { font-size: 32px; cursor: pointer; transition: transform 0.1s; background: none; border: none; filter: grayscale(1); }
+    .star-btn.active { filter: none; transform: scale(1.1); }
+
+    @media (max-width: 768px) {
+      .orders-page { padding: 16px; }
+      .order-card-footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Bazar<span class="logo-e">e</span></a>
+    <div class="nav-search">
+      <input type="text" id="main-search" placeholder="পণ্য খুঁজুন..." onkeydown="if(event.key==='Enter')window.location.href='listing.html?q='+encodeURIComponent(this.value)">
+      <button class="nav-search-btn" onclick="window.location.href='listing.html?q='+encodeURIComponent(document.getElementById('main-search').value)">🔍 খুঁজুন</button>
+    </div>
+    <div class="nav-actions">
+      <a href="listing.html" class="btn btn-ghost btn-sm">🛍️ কেনাকাটা</a>
+      <a href="seller-dashboard.html" class="btn btn-outline btn-sm" id="nav-seller-link" style="display:none">🏪 দোকান</a>
+      <a href="admin.html" class="btn btn-sm" id="nav-admin-link" style="display:none;background:var(--red);color:white;">Admin</a>
+      <button class="btn btn-primary btn-sm" id="nav-login-btn" onclick="showAuthModal()">লগইন</button>
+      <div id="nav-user-menu" style="display:none;align-items:center;gap:8px;position:relative;">
+        <button class="user-btn" onclick="toggleUserDropdown()">
+          <div class="user-avatar" id="nav-user-avatar">?</div>
+          <span class="user-btn-label" id="nav-user-name">আপনি</span>
+        </button>
+        <div id="user-dropdown" style="display:none;position:absolute;top:44px;right:0;background:white;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.12);border:1px solid var(--gray-100);min-width:180px;z-index:600;overflow:hidden;">
+          <a href="orders.html" style="display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:14px;color:var(--green);font-weight:600;" onmouseover="this.style.background='#f4f7f5'" onmouseout="this.style.background='white'">📦 আমার অর্ডার</a>
+          <div style="border-top:1px solid var(--gray-100);"></div>
+          <button onclick="logout()" style="display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:14px;color:var(--red);background:none;border:none;cursor:pointer;width:100%;font-family:var(--font-body);">🚪 লগআউট</button>
+        </div>
+      </div>
+      <a href="cart.html" style="position:relative;display:flex;align-items:center;justify-content:center;width:46px;height:46px;background:var(--green-pale);border-radius:50%;font-size:20px;text-decoration:none;">
+        🛒
+        <span class="cart-badge" style="display:none;position:absolute;top:-5px;right:-5px;background:var(--accent);color:#000;border-radius:50%;min-width:20px;height:20px;font-size:11px;font-weight:800;align-items:center;justify-content:center;border:2px solid white;">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="orders-page">
+  <div class="page-title">📦 আমার অর্ডার</div>
+  <div class="page-sub" id="orders-count">লোড হচ্ছে...</div>
+
+  <!-- Tabs -->
+  <div class="order-tabs">
+    <button class="order-tab active" onclick="filterOrders('all', this)">সব</button>
+    <button class="order-tab" onclick="filterOrders('pending', this)">⏳ Pending</button>
+    <button class="order-tab" onclick="filterOrders('confirmed', this)">✅ Confirmed</button>
+    <button class="order-tab" onclick="filterOrders('shipped', this)">🚚 Shipped</button>
+    <button class="order-tab" onclick="filterOrders('delivered', this)">🎉 Delivered</button>
+    <button class="order-tab" onclick="filterOrders('cancelled', this)">❌ Cancelled</button>
+  </div>
+
+  <div id="orders-container">
+    <!-- Loading skeletons -->
+    <div style="background:white;border-radius:16px;border:1px solid var(--gray-100);padding:20px;margin-bottom:14px;">
+      <div style="height:14px;background:linear-gradient(90deg,#edf2ef 25%,#dce8e0 50%,#edf2ef 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;width:40%;margin-bottom:12px;"></div>
+      <div style="height:60px;background:linear-gradient(90deg,#edf2ef 25%,#dce8e0 50%,#edf2ef 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:10px;"></div>
+    </div>
+    <div style="background:white;border-radius:16px;border:1px solid var(--gray-100);padding:20px;margin-bottom:14px;">
+      <div style="height:14px;background:linear-gradient(90deg,#edf2ef 25%,#dce8e0 50%,#edf2ef 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;width:30%;margin-bottom:12px;"></div>
+      <div style="height:60px;background:linear-gradient(90deg,#edf2ef 25%,#dce8e0 50%,#edf2ef 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:10px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile NAV -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <a href="index.html" class="mobile-nav-item"><span class="mobile-nav-icon">🏠</span><span class="mobile-nav-label">হোম</span></a>
+    <a href="listing.html" class="mobile-nav-item"><span class="mobile-nav-icon">🔍</span><span class="mobile-nav-label">খুঁজুন</span></a>
+    <a href="cart.html" class="mobile-nav-cart"><div class="mobile-nav-cart-inner" style="position:relative;">🛒<span class="cart-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:var(--accent);color:#000;border-radius:50%;min-width:18px;height:18px;font-size:10px;font-weight:800;align-items:center;justify-content:center;border:2px solid white;">0</span></div></a>
+    <a href="seller-dashboard.html" class="mobile-nav-item"><span class="mobile-nav-icon">🏪</span><span class="mobile-nav-label">দোকান</span></a>
+    <a href="orders.html" class="mobile-nav-item active"><span class="mobile-nav-icon">📦</span><span class="mobile-nav-label">অর্ডার</span></a>
+  </div>
+</nav>
+
+<!-- Review Modal -->
+<div class="review-modal-backdrop hidden" id="review-modal">
+  <div class="review-modal" onclick="event.stopPropagation()">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div style="font-family:var(--font-heading);font-size:17px;font-weight:800;">রিভিউ দিন</div>
+      <button onclick="closeReviewModal()" style="background:var(--gray-100);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:16px;">✕</button>
+    </div>
+    <div id="review-product-name" style="font-size:14px;color:var(--gray-500);margin-bottom:4px;"></div>
+    <div class="star-select" id="star-select">
+      <button class="star-btn" onclick="selectStar(1)">⭐</button>
+      <button class="star-btn" onclick="selectStar(2)">⭐</button>
+      <button class="star-btn" onclick="selectStar(3)">⭐</button>
+      <button class="star-btn" onclick="selectStar(4)">⭐</button>
+      <button class="star-btn" onclick="selectStar(5)">⭐</button>
+    </div>
+    <div style="text-align:center;font-size:13px;color:var(--gray-400);margin-bottom:16px;" id="star-label">রেটিং দিন</div>
+    <textarea class="form-control form-textarea" id="review-text" rows="3" placeholder="আপনার অভিজ্ঞতা লিখুন..." style="margin-bottom:16px;"></textarea>
+    <button class="btn btn-primary btn-lg" style="width:100%;" onclick="submitReview()">✅ রিভিউ জমা দিন</button>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-backdrop hidden" id="auth-modal">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="hideAuthModal()">✕</button>
+    <div class="modal-header"><div class="modal-logo">Bazar<span>e</span></div><div class="modal-title">লগইন করুন</div><div class="modal-sub" id="auth-hint">অর্ডার দেখতে লগইন করুন</div></div>
+    <div class="modal-body auth-step" id="auth-step-main">
+      <button class="auth-btn" onclick="loginWithGoogle()"><div class="auth-btn-icon" style="background:white;border:1px solid #e0e0e0;"><svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg></div>Google দিয়ে লগইন</button>
+      <div class="auth-divider">অথবা</div>
+      <button class="auth-btn" onclick="showAuthStep('phone-enter')"><div class="auth-btn-icon" style="background:var(--green);color:white;font-size:16px;">📱</div>ফোন নম্বর দিয়ে লগইন</button>
+    </div>
+    <div class="modal-body auth-step hidden" id="auth-step-phone-enter">
+      <button class="btn btn-ghost btn-sm" onclick="showAuthStep('main')" style="align-self:flex-start;">← ফিরে যান</button>
+      <div class="input-group"><label class="input-label">ফোন নম্বর</label><input class="input-field" type="tel" id="phone-input" placeholder="01XXXXXXXXX" maxlength="11"></div>
+      <button class="btn btn-primary btn-lg" id="send-otp-btn" onclick="sendOTP()" style="width:100%">OTP পাঠান</button>
+      <div id="recaptcha-container"></div>
+    </div>
+    <div class="modal-body auth-step hidden" id="auth-step-phone-otp">
+      <button class="btn btn-ghost btn-sm" onclick="showAuthStep('phone-enter')" style="align-self:flex-start;">← ফিরে যান</button>
+      <p style="font-size:14px;color:var(--gray-500);text-align:center;"><span id="otp-sent-to"></span> তে OTP</p>
+      <div class="otp-row"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"><input class="otp-input" type="text" maxlength="1" inputmode="numeric"></div>
+      <button class="btn btn-primary btn-lg" id="verify-otp-btn" onclick="verifyOTP()" style="width:100%;margin-top:8px;">নিশ্চিত করুন</button>
+    </div>
+    <div class="modal-footer"><p>লগইন করে আমাদের <a href="#" style="color:var(--green);">Terms</a>-তে সম্মত হচ্ছেন।</p></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth.js"></script>
+<script src="cart.js"></script>
+
+<script>
+let allOrders = [];
+let currentFilter = 'all';
+let reviewOrderId = '';
+let selectedStars = 0;
+const emojiBg = {'👗':'#fce7f3','🌿':'#d1fae5','🧴':'#fef3c7','🌸':'#ede9fe','🥚':'#fef3c7','🦜':'#dbeafe','🍯':'#ffedd5','🧶':'#fce7f3','🪴':'#d1fae5','🎁':'#fee2e2'};
+
+auth.onAuthStateChanged(async (user) => {
+  if (!user) {
+    showAuthModal('অর্ডার দেখতে লগইন করুন');
+    return;
+  }
+  loadOrders(user.uid);
+});
+
+async function loadOrders(uid) {
+  try {
+    const snap = await db.collection(COL.ORDERS)
+      .where('buyerId', '==', uid)
+      .orderBy('createdAt', 'desc')
+      .get();
+
+    allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    document.getElementById('orders-count').textContent = `মোট ${allOrders.length}টি অর্ডার`;
+    renderOrders(allOrders);
+  } catch(e) {
+    document.getElementById('orders-container').innerHTML = `<div style="text-align:center;padding:60px;color:var(--gray-400);">অর্ডার লোড করতে সমস্যা হয়েছে।</div>`;
+  }
+}
+
+function filterOrders(status, btn) {
+  currentFilter = status;
+  document.querySelectorAll('.order-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = status === 'all' ? allOrders : allOrders.filter(o => o.status === status);
+  renderOrders(filtered);
+}
+
+function renderOrders(orders) {
+  const container = document.getElementById('orders-container');
+
+  if (!orders.length) {
+    container.innerHTML = `<div class="orders-empty">
+      <div class="orders-empty-icon">📦</div>
+      <h2>কোনো অর্ডার নেই</h2>
+      <p>${currentFilter === 'all' ? 'এখনও কোনো অর্ডার করেননি।' : `কোনো ${currentFilter} অর্ডার নেই।`}</p>
+      <a href="listing.html" class="btn btn-primary btn-lg">🛍️ কেনাকাটা শুরু করুন</a>
+    </div>`;
+    return;
+  }
+
+  container.innerHTML = orders.map(order => buildOrderCard(order)).join('');
+}
+
+function buildOrderCard(o) {
+  const sid = o.id.slice(-6).toUpperCase();
+  const statusMap = {
+    pending:   { label: '⏳ Pending',   cls: 'st-pending' },
+    confirmed: { label: '✅ Confirmed', cls: 'st-confirmed' },
+    shipped:   { label: '🚚 Shipped',   cls: 'st-shipped' },
+    delivered: { label: '🎉 Delivered', cls: 'st-delivered' },
+    cancelled: { label: '❌ Cancelled', cls: 'st-cancelled' },
+  };
+  const st = statusMap[o.status] || statusMap.pending;
+  const date = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleDateString('bn-BD', { day:'numeric', month:'long', year:'numeric' }) : '';
+
+  const items = o.items || [{ name: o.productName, emoji: '📦', price: o.total }];
+
+  const itemsHtml = items.map(item => `
+    <div class="order-items-row">
+      <div class="order-item-img" style="background:${item.imageUrl ? '' : (emojiBg[item.emoji]||'#e8f5ed')}">
+        ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.name}">` : (item.emoji||'📦')}
+      </div>
+      <div class="order-item-info">
+        <div class="order-item-name">${item.name}</div>
+        <div class="order-item-meta">পরিমাণ: ${item.qty||1} · ${o.paymentMethod === 'cod' ? 'Cash on Delivery' : o.paymentMethod}</div>
+      </div>
+      <div class="order-item-price">৳${(item.price*(item.qty||1)).toLocaleString('bn')}</div>
+    </div>`).join('');
+
+  const trackingSteps = getTrackingSteps(o.status);
+
+  return `
+  <div class="order-card" id="order-${o.id}">
+    <div class="order-card-header">
+      <div>
+        <div class="order-id">#BZ-${sid}</div>
+        <div class="order-date">${date}</div>
+      </div>
+      <span class="order-status-badge ${st.cls}">${st.label}</span>
+    </div>
+    <div class="order-card-body">
+      ${itemsHtml}
+    </div>
+    <!-- Tracking timeline -->
+    <div class="tracking-timeline" id="tracking-${o.id}">
+      <div style="font-size:13px;font-weight:700;color:var(--gray-600);margin-bottom:12px;">📍 অর্ডার ট্র্যাকিং</div>
+      <div class="timeline">
+        ${trackingSteps.map(step => `
+          <div class="timeline-item">
+            <div class="timeline-dot ${step.state}">${step.state === 'done' ? '✓' : step.state === 'current' ? '●' : '○'}</div>
+            <div class="timeline-content">
+              <div class="timeline-label ${step.state === 'pending' ? 'pending' : ''}">${step.label}</div>
+              ${step.time ? `<div class="timeline-time">${step.time}</div>` : ''}
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="order-card-footer">
+      <div class="order-total">মোট: <span>৳${(o.total||0).toLocaleString('bn')}</span></div>
+      <div class="order-actions">
+        <button class="order-action-btn" onclick="toggleTracking('${o.id}')">📍 ট্র্যাক করুন</button>
+        ${o.status === 'delivered' ? `<button class="order-action-btn primary" onclick="openReviewModal('${o.id}', '${items[0]?.name||'পণ্য'}')">⭐ রিভিউ দিন</button>` : ''}
+        ${o.status === 'delivered' ? `<button class="order-action-btn" onclick="reorder('${o.id}')">🔄 আবার অর্ডার</button>` : ''}
+        ${o.status === 'pending' ? `<button class="order-action-btn danger" onclick="cancelOrder('${o.id}')">❌ বাতিল করুন</button>` : ''}
+        <a href="product.html?id=${items[0]?.id||''}" class="order-action-btn">🛍️ পণ্য দেখুন</a>
+      </div>
+    </div>
+  </div>`;
+}
+
+function getTrackingSteps(status) {
+  const steps = [
+    { key: 'pending',   label: '✅ অর্ডার দেওয়া হয়েছে' },
+    { key: 'confirmed', label: '📋 Seller confirm করেছেন' },
+    { key: 'shipped',   label: '🚚 পণ্য পাঠানো হয়েছে' },
+    { key: 'delivered', label: '🎉 পণ্য পৌঁছে গেছে' },
+  ];
+  const order = ['pending', 'confirmed', 'shipped', 'delivered'];
+  const currentIdx = order.indexOf(status);
+
+  return steps.map((step, i) => ({
+    ...step,
+    state: i < currentIdx ? 'done' : i === currentIdx ? 'current' : 'pending',
+    time: i <= currentIdx ? '' : '',
+  }));
+}
+
+function toggleTracking(orderId) {
+  const el = document.getElementById('tracking-' + orderId);
+  el.classList.toggle('show');
+}
+
+async function cancelOrder(orderId) {
+  if (!confirm('এই অর্ডার বাতিল করবেন?')) return;
+  try {
+    await db.collection(COL.ORDERS).doc(orderId).update({ status: 'cancelled', cancelledAt: firebase.firestore.FieldValue.serverTimestamp() });
+    showToast('অর্ডার বাতিল হয়েছে', 'info');
+    loadOrders(currentUser.uid);
+  } catch(e) {
+    showToast('❌ সমস্যা হয়েছে', 'error');
+  }
+}
+
+async function reorder(orderId) {
+  const order = allOrders.find(o => o.id === orderId);
+  if (!order?.items) return;
+  order.items.forEach(item => {
+    addToCart({ id: item.id||orderId, name: item.name, price: item.price, emoji: item.emoji||'📦', imageUrl: item.imageUrl||'' }, null);
+  });
+  showToast('✅ পণ্য কার্টে যোগ হয়েছে', 'success');
+  setTimeout(() => window.location.href = 'cart.html', 1200);
+}
+
+// ── Review ──
+function openReviewModal(orderId, productName) {
+  reviewOrderId = orderId;
+  selectedStars = 0;
+  document.getElementById('review-product-name').textContent = productName;
+  document.getElementById('review-text').value = '';
+  document.getElementById('star-label').textContent = 'রেটিং দিন';
+  document.querySelectorAll('.star-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('review-modal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeReviewModal() {
+  document.getElementById('review-modal').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+function selectStar(n) {
+  selectedStars = n;
+  const labels = ['', 'খুবই খারাপ', 'খারাপ', 'ঠিকঠাক', 'ভালো', 'চমৎকার!'];
+  document.getElementById('star-label').textContent = labels[n];
+  document.querySelectorAll('.star-btn').forEach((b, i) => {
+    b.classList.toggle('active', i < n);
+  });
+}
+
+async function submitReview() {
+  if (!selectedStars) { showToast('রেটিং দিন', 'error'); return; }
+  const comment = document.getElementById('review-text').value.trim();
+  const order   = allOrders.find(o => o.id === reviewOrderId);
+
+  try {
+    await db.collection('reviews').add({
+      orderId:   reviewOrderId,
+      productId: order?.items?.[0]?.id || '',
+      buyerId:   currentUser.uid,
+      userName:  currentProfile?.name || currentUser.displayName || 'ক্রেতা',
+      rating:    selectedStars,
+      comment,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    // Update product rating
+    if (order?.items?.[0]?.id) {
+      const pSnap = await db.collection(COL.PRODUCTS).doc(order.items[0].id).get();
+      if (pSnap.exists) {
+        const p = pSnap.data();
+        const newCount  = (p.reviewCount || 0) + 1;
+        const newRating = ((p.rating || 0) * (p.reviewCount || 0) + selectedStars) / newCount;
+        await db.collection(COL.PRODUCTS).doc(order.items[0].id).update({ rating: newRating, reviewCount: newCount });
+      }
+    }
+
+    closeReviewModal();
+    showToast('✅ রিভিউ জমা হয়েছে! ধন্যবাদ।', 'success');
+  } catch(e) {
+    showToast('❌ রিভিউ জমা দিতে সমস্যা হয়েছে', 'error');
+  }
+}
+
+document.getElementById('review-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('review-modal')) closeReviewModal();
+});
+</script>
+</body>
+</html>
