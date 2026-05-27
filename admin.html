@@ -389,22 +389,19 @@ auth.onAuthStateChanged(async (user) => {
   // প্রথম user অথবা role===admin হলে access দাও
   // অথবা Firestore এ manually role:'admin' set করা থাকলে
   const isAdmin = profile?.role === 'admin';
-  const isFirstUser = !profile; // নতুন user
 
-  if (isFirstUser || isAdmin) {
-    // Admin access দাও
-    if (!isAdmin) {
-      await db.collection(COL.USERS).doc(user.uid).update({ role: 'admin' });
-    }
+  if (isAdmin) {
+    // Already admin
     loadAllData();
   } else {
-    // Admin না হলে — secret key দিয়ে access
-    const key = prompt('Admin access key দিন:');
+    // Secret key দিয়ে admin হওয়া
+    const key = prompt('🔐 Admin Access Key:');
     if (key === 'bazare_admin_2024') {
       await db.collection(COL.USERS).doc(user.uid).update({ role: 'admin' });
+      showToast('✅ Admin access পেয়েছেন!', 'success');
       loadAllData();
     } else {
-      alert('Access denied!');
+      alert('❌ Wrong key! Access denied.');
       window.location.href = 'index.html';
     }
   }
