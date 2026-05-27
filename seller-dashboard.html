@@ -308,8 +308,8 @@
 // ── Cloudinary Config ──
 // cloudinary.com এ free account খুলুন
 // Settings → Upload → Upload presets → Add unsigned preset
-var CLOUD_NAME   = localStorage.getItem('bazare_cloud_name') || '';
-var UPLOAD_PRESET = localStorage.getItem('bazare_upload_preset') || '';
+var CLOUD_NAME    = 'dgzv2je0y';
+var UPLOAD_PRESET = 'bazare_uploads';
 
 var sellerProfile = null;
 var imageFiles    = [];
@@ -326,7 +326,7 @@ auth.onAuthStateChanged(async (user) => {
   if (sellerProfile.logoUrl) aviEl.innerHTML = '<img src="'+sellerProfile.logoUrl+'" alt="logo">';
   document.getElementById('s-name').textContent = sellerProfile.shopName || profile.name;
 
-  if (!CLOUD_NAME) document.getElementById('cloudinary-notice').style.display = 'flex';
+  // Cloudinary configured
   loadOverview();
 });
 
