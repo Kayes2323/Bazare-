@@ -11,28 +11,17 @@
     body { background: #f0f4f1; }
     .dash-layout { display: grid; grid-template-columns: 250px 1fr; min-height: 100vh; }
 
-    /* Sidebar */
     .dash-sidebar {
       background: var(--green-deeper);
       position: sticky; top: 0; height: 100vh; overflow-y: auto;
       display: flex; flex-direction: column;
     }
-    .dash-sidebar-logo {
-      padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.07);
-    }
+    .dash-sidebar-logo { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.07); }
     .dash-sidebar-logo a { font-family: var(--font-heading); font-size: 22px; font-weight: 900; color: white; letter-spacing: -1px; text-decoration: none; }
     .dash-sidebar-logo a span { color: var(--accent); }
 
-    .seller-info-box {
-      padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.07);
-      display: flex; align-items: center; gap: 12px;
-    }
-    .seller-avi {
-      width: 48px; height: 48px; border-radius: 50%;
-      background: var(--green-light); border: 2px solid rgba(255,255,255,0.2);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; overflow: hidden; flex-shrink: 0;
-    }
+    .seller-info-box { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; gap: 12px; }
+    .seller-avi { width: 48px; height: 48px; border-radius: 50%; background: var(--green-light); border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 22px; overflow: hidden; flex-shrink: 0; }
     .seller-avi img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
     .seller-info-name { font-family: var(--font-heading); font-size: 14px; font-weight: 700; color: white; }
     .seller-info-tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(34,160,82,0.25); border: 1px solid rgba(34,160,82,0.4); border-radius: 99px; padding: 2px 8px; font-size: 10px; font-weight: 700; color: #7cebb0; margin-top: 3px; }
@@ -40,48 +29,31 @@
     .dash-nav { padding: 12px; flex: 1; }
     .dash-nav-section { margin-bottom: 6px; }
     .dash-nav-title { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 1px; padding: 8px 10px 4px; }
-    .dash-nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px; border-radius: 10px;
-      font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.55);
-      cursor: pointer; transition: all 0.15s; border: none; background: none;
-      width: 100%; font-family: var(--font-body); text-align: left;
-      position: relative; text-decoration: none;
-    }
+    .dash-nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.55); cursor: pointer; transition: all 0.15s; border: none; background: none; width: 100%; font-family: var(--font-body); text-align: left; text-decoration: none; position: relative; }
     .dash-nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
     .dash-nav-item.active { background: rgba(34,160,82,0.18); color: white; font-weight: 600; border-left: 3px solid var(--green-light); }
     .dash-nav-item .nav-badge { margin-left: auto; background: var(--red); color: white; border-radius: 99px; min-width: 18px; height: 18px; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
-
     .dash-sidebar-footer { padding: 12px; border-top: 1px solid rgba(255,255,255,0.07); }
 
-    /* Main */
-    .dash-main { padding: 24px; overflow-y: auto; }
+    .dash-main { padding: 24px; }
     .dash-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
     .dash-page-title { font-family: var(--font-heading); font-size: 22px; font-weight: 800; color: var(--black); }
     .dash-page-sub { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
 
-    /* Stat cards */
     .stat-cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
-    .stat-card {
-      background: white; border-radius: 16px; padding: 18px 20px;
-      border: 1px solid var(--gray-100); box-shadow: var(--shadow-xs);
-      transition: all 0.2s;
-    }
+    .stat-card { background: white; border-radius: 16px; padding: 18px 20px; border: 1px solid var(--gray-100); box-shadow: var(--shadow-xs); transition: all 0.2s; }
     .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
     .stat-card-icon { font-size: 26px; margin-bottom: 8px; }
     .stat-card-label { font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
     .stat-card-value { font-family: var(--font-heading); font-size: 28px; font-weight: 900; color: var(--black); line-height: 1; }
-    .stat-card-change { font-size: 12px; font-weight: 600; margin-top: 4px; }
-    .stat-card-change.up { color: var(--green); }
+    .stat-card-change { font-size: 12px; font-weight: 600; margin-top: 4px; color: var(--green); }
     .stat-card-change.down { color: var(--red); }
 
-    /* Card */
     .dash-card { background: white; border-radius: 16px; border: 1px solid var(--gray-100); box-shadow: var(--shadow-xs); margin-bottom: 20px; overflow: hidden; }
     .dash-card-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--gray-100); }
     .dash-card-title { font-family: var(--font-heading); font-size: 15px; font-weight: 700; }
     .dash-card-body { padding: 20px; }
 
-    /* Table */
     .dash-table { width: 100%; border-collapse: collapse; }
     .dash-table th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; background: var(--gray-50); border-bottom: 1px solid var(--gray-100); }
     .dash-table td { padding: 13px 14px; font-size: 14px; color: var(--gray-700); border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
@@ -100,62 +72,53 @@
     .action-btn.danger { border-color: var(--red); color: var(--red); }
     .action-btn.danger:hover { background: var(--red); color: white; }
 
-    /* Product form */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .form-full { grid-column: 1 / -1; }
 
     /* Image upload */
-    .img-upload-zone {
-      border: 2px dashed var(--gray-300); border-radius: 14px;
-      padding: 32px 20px; text-align: center; cursor: pointer;
-      transition: all 0.25s; background: var(--gray-50); position: relative;
-    }
+    .img-upload-zone { border: 2px dashed var(--gray-300); border-radius: 14px; padding: 28px 20px; text-align: center; cursor: pointer; transition: all 0.25s; background: var(--gray-50); position: relative; }
     .img-upload-zone:hover { border-color: var(--green); background: var(--green-pale); }
     .img-upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
     .img-previews { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
     .img-preview-item { position: relative; width: 80px; height: 80px; }
     .img-preview-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; border: 2px solid var(--gray-200); }
-    .img-preview-item button { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: var(--red); color: white; border: none; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .img-preview-item .remove-btn { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: var(--red); color: white; border: none; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-    /* Products grid */
+    /* Upload progress */
+    .upload-progress { background: var(--green-pale); border-radius: 10px; padding: 12px 16px; margin-top: 10px; display: none; }
+    .upload-progress.show { display: block; }
+    .progress-bar-wrap { background: var(--gray-200); border-radius: 99px; height: 6px; margin-top: 6px; overflow: hidden; }
+    .progress-bar { background: var(--green); height: 100%; border-radius: 99px; transition: width 0.3s; }
+
     .my-products-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
     .my-product-card { background: white; border: 1px solid var(--gray-100); border-radius: 14px; overflow: hidden; transition: all 0.2s; }
     .my-product-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-    .my-product-img { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 60px; background: var(--gray-50); position: relative; overflow: hidden; }
+    .my-product-img { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 56px; background: var(--gray-50); position: relative; overflow: hidden; }
     .my-product-img img { width: 100%; height: 100%; object-fit: cover; }
     .my-product-status { position: absolute; top: 8px; right: 8px; padding: 3px 8px; border-radius: 99px; font-size: 10px; font-weight: 700; }
     .my-product-body { padding: 12px 14px; }
-    .my-product-name { font-family: var(--font-heading); font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .my-product-name { font-family: var(--font-heading); font-size: 13px; font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .my-product-price { font-size: 16px; font-weight: 800; color: var(--green); }
     .my-product-stock { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
     .my-product-actions { display: flex; gap: 6px; margin-top: 10px; }
 
-    /* Section pages */
     .dash-section { display: none; }
     .dash-section.active { display: block; animation: fadeUp 0.4s ease; }
 
-    /* Empty state */
     .empty { text-align: center; padding: 60px 20px; color: var(--gray-400); }
     .empty-icon { font-size: 56px; margin-bottom: 16px; }
     .empty h3 { font-family: var(--font-heading); font-size: 18px; color: var(--gray-600); margin-bottom: 8px; }
 
-    @media (max-width: 1024px) {
-      .stat-cards { grid-template-columns: repeat(2,1fr); }
-      .my-products-grid { grid-template-columns: repeat(2,1fr); }
-    }
-    @media (max-width: 768px) {
-      .dash-layout { grid-template-columns: 1fr; }
-      .dash-sidebar { display: none; }
-      .form-grid { grid-template-columns: 1fr; }
-      .form-full { grid-column: 1; }
-      .my-products-grid { grid-template-columns: repeat(2,1fr); }
-    }
+    /* Cloudinary setup notice */
+    .setup-notice { background: var(--accent-light); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; font-size: 14px; color: #92611a; display: flex; align-items: flex-start; gap: 10px; }
+
+    @media (max-width: 1024px) { .stat-cards { grid-template-columns: repeat(2,1fr); } .my-products-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 768px) { .dash-layout { grid-template-columns: 1fr; } .dash-sidebar { display: none; } .form-grid { grid-template-columns: 1fr; } .form-full { grid-column: 1; } }
   </style>
 </head>
 <body>
 
 <div class="dash-layout">
-
   <!-- SIDEBAR -->
   <aside class="dash-sidebar">
     <div class="dash-sidebar-logo">
@@ -180,7 +143,7 @@
       <div class="dash-nav-section">
         <div class="dash-nav-title">পণ্য</div>
         <button class="dash-nav-item" onclick="showPage('my-products',this)">📦 আমার পণ্য</button>
-        <button class="dash-nav-item" onclick="showPage('add-product',this)">➕ নতুন পণ্য যোগ</button>
+        <button class="dash-nav-item" onclick="showPage('add-product',this)">➕ নতুন পণ্য</button>
       </div>
       <div class="dash-nav-section">
         <div class="dash-nav-title">আর্থিক</div>
@@ -188,7 +151,7 @@
       </div>
     </div>
     <div class="dash-sidebar-footer">
-      <a href="index.html" class="dash-nav-item" style="color:rgba(255,255,255,0.5);">🏠 Marketplace দেখুন</a>
+      <a href="index.html" class="dash-nav-item">🏠 Marketplace দেখুন</a>
       <button class="dash-nav-item" onclick="logout()" style="color:var(--red);">🚪 লগআউট</button>
     </div>
   </aside>
@@ -196,25 +159,20 @@
   <!-- MAIN -->
   <main class="dash-main">
 
-    <!-- ── OVERVIEW ── -->
+    <!-- OVERVIEW -->
     <div class="dash-section active" id="page-overview">
       <div class="dash-topbar">
         <div><div class="dash-page-title">Dashboard</div><div class="dash-page-sub">আপনার দোকানের সার্বিক অবস্থা</div></div>
         <button class="btn btn-primary btn-sm" onclick="loadOverview()">🔄 Refresh</button>
       </div>
-      <div class="stat-cards" id="stat-cards">
-        <div class="stat-card"><div class="stat-card-icon">💰</div><div class="stat-card-label">এই মাসের আয়</div><div class="stat-card-value" id="stat-income">—</div><div class="stat-card-change up" id="stat-income-sub">লোড হচ্ছে...</div></div>
-        <div class="stat-card"><div class="stat-card-icon">📦</div><div class="stat-card-label">মোট অর্ডার</div><div class="stat-card-value" id="stat-orders">—</div><div class="stat-card-change up">সব সময়</div></div>
-        <div class="stat-card"><div class="stat-card-icon">⏳</div><div class="stat-card-label">Pending অর্ডার</div><div class="stat-card-value" id="stat-pending" style="color:var(--red);">—</div><div class="stat-card-change down">Confirm করুন</div></div>
-        <div class="stat-card"><div class="stat-card-icon">🏷️</div><div class="stat-card-label">মোট পণ্য</div><div class="stat-card-value" id="stat-products">—</div><div class="stat-card-change up">Active পণ্য</div></div>
+      <div class="stat-cards">
+        <div class="stat-card"><div class="stat-card-icon">💰</div><div class="stat-card-label">এই মাসের আয়</div><div class="stat-card-value" id="stat-income">৳০</div><div class="stat-card-change">মোট আয়</div></div>
+        <div class="stat-card"><div class="stat-card-icon">📦</div><div class="stat-card-label">মোট অর্ডার</div><div class="stat-card-value" id="stat-orders">০</div><div class="stat-card-change">সব সময়</div></div>
+        <div class="stat-card"><div class="stat-card-icon">⏳</div><div class="stat-card-label">Pending অর্ডার</div><div class="stat-card-value down" id="stat-pending" style="color:var(--red);">০</div><div class="stat-card-change down">Confirm করুন</div></div>
+        <div class="stat-card"><div class="stat-card-icon">🏷️</div><div class="stat-card-label">মোট পণ্য</div><div class="stat-card-value" id="stat-products">০</div><div class="stat-card-change">Active পণ্য</div></div>
       </div>
-
-      <!-- Recent orders -->
       <div class="dash-card">
-        <div class="dash-card-header">
-          <div class="dash-card-title">🔔 সাম্প্রতিক অর্ডার</div>
-          <button class="btn btn-ghost btn-sm" onclick="showPage('orders',document.querySelector('.dash-nav-item:nth-child(2))'))">সব দেখুন →</button>
-        </div>
+        <div class="dash-card-header"><div class="dash-card-title">🔔 সাম্প্রতিক অর্ডার</div></div>
         <table class="dash-table">
           <thead><tr><th>Order ID</th><th>পণ্য</th><th>কাস্টমার</th><th>পরিমাণ</th><th>Status</th><th>Action</th></tr></thead>
           <tbody id="recent-orders-tbody"><tr><td colspan="6" style="text-align:center;padding:30px;color:var(--gray-400);">লোড হচ্ছে...</td></tr></tbody>
@@ -222,24 +180,20 @@
       </div>
     </div>
 
-    <!-- ── NEW ORDERS ── -->
+    <!-- NEW ORDERS -->
     <div class="dash-section" id="page-orders">
-      <div class="dash-topbar">
-        <div><div class="dash-page-title">🛒 নতুন অর্ডার</div><div class="dash-page-sub">Pending অর্ডারগুলো confirm করুন</div></div>
-      </div>
+      <div class="dash-topbar"><div><div class="dash-page-title">🛒 নতুন অর্ডার</div></div></div>
       <div class="dash-card">
         <table class="dash-table">
-          <thead><tr><th>Order ID</th><th>পণ্য</th><th>কাস্টমার</th><th>ঠিকানা</th><th>পরিমাণ</th><th>Status</th><th>Action</th></tr></thead>
-          <tbody id="pending-orders-tbody"><tr><td colspan="7" style="text-align:center;padding:30px;color:var(--gray-400);">লোড হচ্ছে...</td></tr></tbody>
+          <thead><tr><th>Order ID</th><th>পণ্য</th><th>কাস্টমার</th><th>ফোন</th><th>জেলা</th><th>পরিমাণ</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="pending-orders-tbody"><tr><td colspan="8" style="text-align:center;padding:30px;color:var(--gray-400);">লোড হচ্ছে...</td></tr></tbody>
         </table>
       </div>
     </div>
 
-    <!-- ── ALL ORDERS ── -->
+    <!-- ALL ORDERS -->
     <div class="dash-section" id="page-all-orders">
-      <div class="dash-topbar">
-        <div><div class="dash-page-title">📋 সব অর্ডার</div></div>
-      </div>
+      <div class="dash-topbar"><div><div class="dash-page-title">📋 সব অর্ডার</div></div></div>
       <div class="dash-card">
         <table class="dash-table">
           <thead><tr><th>Order ID</th><th>পণ্য</th><th>কাস্টমার</th><th>পরিমাণ</th><th>Payment</th><th>Status</th><th>Action</th></tr></thead>
@@ -248,91 +202,70 @@
       </div>
     </div>
 
-    <!-- ── MY PRODUCTS ── -->
+    <!-- MY PRODUCTS -->
     <div class="dash-section" id="page-my-products">
       <div class="dash-topbar">
         <div><div class="dash-page-title">📦 আমার পণ্য</div></div>
-        <button class="btn btn-primary btn-sm" onclick="showPage('add-product', null)">➕ নতুন পণ্য</button>
+        <button class="btn btn-primary btn-sm" onclick="showPage('add-product',null)">➕ নতুন পণ্য</button>
       </div>
-      <div id="my-products-container">
-        <div class="empty"><div class="empty-icon">📦</div><h3>কোনো পণ্য নেই</h3><p>নতুন পণ্য যোগ করুন</p></div>
-      </div>
+      <div id="my-products-container"><div class="empty"><div class="empty-icon">📦</div><h3>লোড হচ্ছে...</h3></div></div>
     </div>
 
-    <!-- ── ADD PRODUCT ── -->
+    <!-- ADD PRODUCT -->
     <div class="dash-section" id="page-add-product">
       <div class="dash-topbar">
         <div><div class="dash-page-title" id="add-product-title">➕ নতুন পণ্য যোগ করুন</div></div>
-        <button class="btn btn-ghost btn-sm" onclick="resetProductForm()">✕ বাতিল</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetProductForm();showPage('my-products',null)">✕ বাতিল</button>
       </div>
+
+      <!-- Cloudinary setup notice (hidden after setup) -->
+      <div class="setup-notice" id="cloudinary-notice" style="display:none;">
+        ⚠️ ছবি upload করতে Cloudinary setup দরকার। <a href="#" onclick="showCloudinarySetup()" style="color:#92611a;font-weight:700;">এখানে করুন →</a>
+      </div>
+
       <div class="dash-card">
         <div class="dash-card-body">
           <input type="hidden" id="editing-product-id">
           <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">পণ্যের নাম *</label>
-              <input type="text" class="form-control" id="p-name" placeholder="যেমন: বাচ্চাদের কটন ফ্রক">
-            </div>
-            <div class="form-group">
-              <label class="form-label">ক্যাটাগরি *</label>
+            <div class="form-group"><label class="form-label">পণ্যের নাম *</label><input type="text" class="form-control" id="p-name" placeholder="যেমন: বাচ্চাদের কটন ফ্রক"></div>
+            <div class="form-group"><label class="form-label">ক্যাটাগরি *</label>
               <select class="form-control form-select" id="p-category">
                 <option value="">বেছে নিন</option>
-                <option>বাচ্চাদের পোশাক</option>
-                <option>Organic মেহেদি</option>
-                <option>Organic তেল ও ঘি</option>
-                <option>ফুলের বীজ ও গাছ</option>
-                <option>দেশি ডিম ও মুরগি</option>
-                <option>পাখি</option>
-                <option>Organic খাবার</option>
-                <option>হাতের কাজ ও কারুশিল্প</option>
-                <option>গাছপালা</option>
-                <option>গিফট আইটেম</option>
+                <option>বাচ্চাদের পোশাক</option><option>Organic মেহেদি</option>
+                <option>Organic তেল ও ঘি</option><option>ফুলের বীজ ও গাছ</option>
+                <option>দেশি ডিম ও মুরগি</option><option>পাখি</option>
+                <option>Organic খাবার</option><option>হাতের কাজ ও কারুশিল্প</option>
+                <option>গাছপালা</option><option>গিফট আইটেম</option>
               </select>
             </div>
-            <div class="form-group">
-              <label class="form-label">মূল দাম (৳) *</label>
-              <input type="number" class="form-control" id="p-price" placeholder="৳ ০">
-            </div>
-            <div class="form-group">
-              <label class="form-label">আগের দাম (৳) — Optional</label>
-              <input type="number" class="form-control" id="p-original-price" placeholder="৳ ০ (ছাড়ের আগে)">
-            </div>
-            <div class="form-group">
-              <label class="form-label">স্টক *</label>
-              <input type="number" class="form-control" id="p-stock" placeholder="কতটি আছে" min="0">
-            </div>
-            <div class="form-group">
-              <label class="form-label">ডেলিভারি চার্জ (৳)</label>
-              <input type="number" class="form-control" id="p-delivery" placeholder="৳ ৬০" value="60">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Badge</label>
+            <div class="form-group"><label class="form-label">মূল দাম (৳) *</label><input type="number" class="form-control" id="p-price" placeholder="০" min="0"></div>
+            <div class="form-group"><label class="form-label">আগের দাম (৳) — Optional</label><input type="number" class="form-control" id="p-original-price" placeholder="ছাড়ের আগে কত ছিল"></div>
+            <div class="form-group"><label class="form-label">স্টক পরিমাণ *</label><input type="number" class="form-control" id="p-stock" placeholder="কতটি আছে" min="0"></div>
+            <div class="form-group"><label class="form-label">ডেলিভারি চার্জ (৳)</label><input type="number" class="form-control" id="p-delivery" value="60" min="0"></div>
+            <div class="form-group"><label class="form-label">Badge</label>
               <select class="form-control form-select" id="p-badge">
                 <option value="">কোনো badge নেই</option>
                 <option value="new|নতুন">নতুন</option>
                 <option value="organic|Organic">Organic</option>
                 <option value="best|বেস্টসেলার">বেস্টসেলার</option>
                 <option value="fresh|Fresh">Fresh</option>
-                <option value="rare|Rare">Rare</option>
               </select>
             </div>
-            <div class="form-group">
-              <label class="form-label">Emoji (ছবি না থাকলে)</label>
-              <input type="text" class="form-control" id="p-emoji" placeholder="যেমন: 👗 🌿 🥚" maxlength="4">
-            </div>
-            <div class="form-group form-full">
-              <label class="form-label">পণ্যের বিবরণ *</label>
-              <textarea class="form-control form-textarea" id="p-desc" rows="4" placeholder="পণ্য সম্পর্কে বিস্তারিত লিখুন — উপাদান, মাপ, রঙ, ব্যবহারবিধি..."></textarea>
-            </div>
+            <div class="form-group"><label class="form-label">Emoji (ছবি না থাকলে দেখাবে)</label><input type="text" class="form-control" id="p-emoji" placeholder="যেমন: 👗 🌿 🥚" maxlength="4"></div>
+            <div class="form-group form-full"><label class="form-label">পণ্যের বিবরণ *</label><textarea class="form-control form-textarea" id="p-desc" rows="4" placeholder="পণ্য সম্পর্কে বিস্তারিত লিখুন..."></textarea></div>
             <div class="form-group form-full">
               <label class="form-label">পণ্যের ছবি (সর্বোচ্চ ৫টি)</label>
-              <div class="img-upload-zone" id="upload-zone">
-                <input type="file" id="p-images" accept="image/*" multiple onchange="previewImages(this)">
+              <div class="img-upload-zone" onclick="document.getElementById('p-images').click()">
+                <input type="file" id="p-images" accept="image/*" multiple onchange="previewImages(this)" style="display:none;">
                 <div style="font-size:36px;margin-bottom:8px;">📷</div>
-                <div style="font-size:15px;font-weight:600;color:var(--gray-700);margin-bottom:4px;">ছবি বেছে নিন বা এখানে drop করুন</div>
+                <div style="font-size:15px;font-weight:600;color:var(--gray-700);margin-bottom:4px;">ছবি বেছে নিন</div>
                 <div style="font-size:12px;color:var(--gray-400);">PNG, JPG — সর্বোচ্চ ৫MB প্রতিটি</div>
               </div>
               <div class="img-previews" id="img-previews"></div>
+              <div class="upload-progress" id="upload-progress">
+                <div style="font-size:13px;font-weight:600;color:var(--green);" id="upload-progress-text">ছবি upload হচ্ছে...</div>
+                <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+              </div>
             </div>
           </div>
           <div style="display:flex;gap:12px;justify-content:flex-end;padding-top:16px;border-top:1px solid var(--gray-100);margin-top:8px;">
@@ -343,23 +276,21 @@
       </div>
     </div>
 
-    <!-- ── EARNINGS ── -->
+    <!-- EARNINGS -->
     <div class="dash-section" id="page-earnings">
-      <div class="dash-topbar">
-        <div><div class="dash-page-title">💰 আয় ও পেমেন্ট</div></div>
-      </div>
+      <div class="dash-topbar"><div><div class="dash-page-title">💰 আয় ও পেমেন্ট</div></div></div>
       <div class="stat-cards">
-        <div class="stat-card"><div class="stat-card-icon">💰</div><div class="stat-card-label">এই মাসের আয়</div><div class="stat-card-value" id="e-month">—</div></div>
-        <div class="stat-card"><div class="stat-card-icon">📊</div><div class="stat-card-label">মোট আয়</div><div class="stat-card-value" id="e-total">—</div></div>
-        <div class="stat-card"><div class="stat-card-icon">⏳</div><div class="stat-card-label">Pending পেমেন্ট</div><div class="stat-card-value" id="e-pending">—</div></div>
-        <div class="stat-card"><div class="stat-card-icon">✅</div><div class="stat-card-label">উত্তোলিত</div><div class="stat-card-value" id="e-withdrawn">৳০</div></div>
+        <div class="stat-card"><div class="stat-card-icon">💰</div><div class="stat-card-label">এই মাসের আয়</div><div class="stat-card-value" id="e-month">৳০</div></div>
+        <div class="stat-card"><div class="stat-card-icon">📊</div><div class="stat-card-label">মোট আয়</div><div class="stat-card-value" id="e-total">৳০</div></div>
+        <div class="stat-card"><div class="stat-card-icon">⏳</div><div class="stat-card-label">Pending পেমেন্ট</div><div class="stat-card-value" id="e-pending">৳০</div></div>
+        <div class="stat-card"><div class="stat-card-icon">✅</div><div class="stat-card-label">Delivered অর্ডার</div><div class="stat-card-value" id="e-delivered">০</div></div>
       </div>
       <div class="dash-card">
-        <div class="dash-card-header"><div class="dash-card-title">💳 পেমেন্ট ইতিহাস</div></div>
-        <div id="payment-history" style="padding:20px;text-align:center;color:var(--gray-400);">
-          <div style="font-size:40px;margin-bottom:12px;">💳</div>
-          <p>এখনও কোনো পেমেন্ট হয়নি</p>
-        </div>
+        <div class="dash-card-header"><div class="dash-card-title">📋 অর্ডার ইতিহাস</div></div>
+        <table class="dash-table">
+          <thead><tr><th>Order ID</th><th>পণ্য</th><th>পরিমাণ</th><th>Status</th><th>তারিখ</th></tr></thead>
+          <tbody id="earnings-tbody"><tr><td colspan="5" style="text-align:center;padding:30px;color:var(--gray-400);">লোড হচ্ছে...</td></tr></tbody>
+        </table>
       </div>
     </div>
 
@@ -370,168 +301,139 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="auth.js"></script>
 
 <script>
-let sellerProfile = null;
-let imageFiles    = [];
+// ── Cloudinary Config ──
+// cloudinary.com এ free account খুলুন
+// Settings → Upload → Upload presets → Add unsigned preset
+var CLOUD_NAME   = localStorage.getItem('bazare_cloud_name') || '';
+var UPLOAD_PRESET = localStorage.getItem('bazare_upload_preset') || '';
+
+var sellerProfile = null;
+var imageFiles    = [];
 
 // Auth guard
 auth.onAuthStateChanged(async (user) => {
   if (!user) { window.location.href = 'index.html'; return; }
-
-  const snap = await db.collection(COL.USERS).doc(user.uid).get();
-  const profile = snap.data();
-
-  if (profile?.role !== 'seller') {
-    // Not approved yet
-    if (profile?.sellerStatus === 'pending') {
-      window.location.href = 'seller-register.html';
-    } else {
-      window.location.href = 'seller-register.html';
-    }
-    return;
-  }
-
-  // Load seller data
-  const sellerSnap = await db.collection(COL.SELLERS).doc(user.uid).get();
+  var snap = await db.collection(COL.USERS).doc(user.uid).get();
+  var profile = snap.data();
+  if (profile?.role !== 'seller') { window.location.href = 'seller-register.html'; return; }
+  var sellerSnap = await db.collection(COL.SELLERS).doc(user.uid).get();
   sellerProfile = { ...profile, ...sellerSnap.data() };
-
-  // Update sidebar
-  const aviEl = document.getElementById('s-avi');
-  if (sellerProfile.logoUrl) aviEl.innerHTML = `<img src="${sellerProfile.logoUrl}" alt="logo">`;
+  var aviEl = document.getElementById('s-avi');
+  if (sellerProfile.logoUrl) aviEl.innerHTML = '<img src="'+sellerProfile.logoUrl+'" alt="logo">';
   document.getElementById('s-name').textContent = sellerProfile.shopName || profile.name;
 
+  if (!CLOUD_NAME) document.getElementById('cloudinary-notice').style.display = 'flex';
   loadOverview();
 });
 
-// ── Page Navigation ──
 function showPage(name, btn) {
   document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.dash-nav-item').forEach(i => i.classList.remove('active'));
   if (btn) btn.classList.add('active');
-
-  if (name === 'orders') loadOrders('pending');
-  if (name === 'all-orders') loadOrders('all');
-  if (name === 'my-products') loadMyProducts();
-  if (name === 'earnings') loadEarnings();
-  if (name === 'add-product') { resetProductForm(); }
+  if (name==='orders') loadOrders('pending');
+  if (name==='all-orders') loadOrders('all');
+  if (name==='my-products') loadMyProducts();
+  if (name==='earnings') loadEarnings();
 }
 
-// ── Overview ──
 async function loadOverview() {
   if (!currentUser) return;
-  const uid = currentUser.uid;
-
-  const [ordersSnap, productsSnap] = await Promise.all([
+  var uid = currentUser.uid;
+  var [ordersSnap, productsSnap] = await Promise.all([
     db.collection(COL.ORDERS).where('sellerId','==',uid).get(),
     db.collection(COL.PRODUCTS).where('sellerId','==',uid).get(),
   ]);
+  var orders  = ordersSnap.docs.map(d => d.data());
+  var pending = orders.filter(o => o.status === 'pending');
+  var income  = orders.filter(o => o.status !== 'cancelled').reduce((s,o) => s+(o.total||0), 0);
 
-  const orders    = ordersSnap.docs.map(d => d.data());
-  const pending   = orders.filter(o => o.status === 'pending');
-  const thisMonth = new Date(); thisMonth.setDate(1); thisMonth.setHours(0,0,0,0);
-  const monthIncome = orders
-    .filter(o => o.status !== 'cancelled' && o.createdAt?.toDate() >= thisMonth)
-    .reduce((s, o) => s + (o.total || 0), 0);
-
-  document.getElementById('stat-income').textContent  = '৳' + monthIncome.toLocaleString('bn');
-  document.getElementById('stat-orders').textContent  = orders.length;
-  document.getElementById('stat-pending').textContent = pending.length;
+  document.getElementById('stat-income').textContent   = '৳'+income.toLocaleString('bn');
+  document.getElementById('stat-orders').textContent   = orders.length;
+  document.getElementById('stat-pending').textContent  = pending.length;
   document.getElementById('stat-products').textContent = productsSnap.size;
 
   if (pending.length > 0) {
-    const badge = document.getElementById('pending-orders-badge');
-    badge.style.display = 'flex';
-    badge.textContent = pending.length;
+    var badge = document.getElementById('pending-orders-badge');
+    badge.style.display = 'flex'; badge.textContent = pending.length;
   }
-
-  // Recent orders table
-  renderOrdersTable('recent-orders-tbody', ordersSnap.docs.slice(0,5));
+  renderOrdersTable('recent-orders-tbody', ordersSnap.docs.slice(0,5), false);
 }
 
-// ── Orders ──
 async function loadOrders(type) {
-  const uid  = currentUser.uid;
-  let query  = db.collection(COL.ORDERS).where('sellerId','==',uid).orderBy('createdAt','desc');
-  if (type === 'pending') query = query.where('status','==','pending');
-
-  const snap = await query.get();
-  const tbodyId = type === 'pending' ? 'pending-orders-tbody' : 'all-orders-tbody';
-  renderOrdersTable(tbodyId, snap.docs);
+  var uid = currentUser.uid;
+  var snap;
+  if (type === 'pending') {
+    snap = await db.collection(COL.ORDERS).where('sellerId','==',uid).where('status','==','pending').get();
+    renderOrdersTable('pending-orders-tbody', snap.docs, true);
+  } else {
+    snap = await db.collection(COL.ORDERS).where('sellerId','==',uid).orderBy('createdAt','desc').get();
+    renderOrdersTable('all-orders-tbody', snap.docs, true);
+  }
 }
 
-function renderOrdersTable(tbodyId, docs) {
-  const tbody = document.getElementById(tbodyId);
+function renderOrdersTable(tbodyId, docs, showAddress) {
+  var tbody = document.getElementById(tbodyId);
   if (!tbody) return;
-  if (!docs.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--gray-400);">কোনো অর্ডার নেই</td></tr>';
-    return;
-  }
+  if (!docs.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--gray-400);">কোনো অর্ডার নেই</td></tr>'; return; }
   tbody.innerHTML = '';
   docs.forEach(doc => {
-    const o   = doc.data();
-    const sid = doc.id.slice(-6).toUpperCase();
-    const statusClass = { pending:'s-pending', confirmed:'s-confirmed', shipped:'s-shipped', delivered:'s-delivered', cancelled:'s-cancelled' }[o.status] || 's-pending';
-    const statusLabel = { pending:'⏳ Pending', confirmed:'✅ Confirmed', shipped:'🚚 Shipped', delivered:'🎉 Delivered', cancelled:'❌ Cancelled' }[o.status] || o.status;
-    tbody.innerHTML += `<tr>
-      <td><strong>#BZ-${sid}</strong></td>
-      <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${o.productName || '—'}</td>
-      <td>${o.buyerName || '—'}</td>
-      ${tbodyId !== 'recent-orders-tbody' ? `<td style="font-size:12px;color:var(--gray-500);">${o.address?.district || '—'}</td>` : ''}
-      <td style="font-weight:700;color:var(--green);">৳${(o.total||0).toLocaleString('bn')}</td>
-      ${tbodyId === 'all-orders-tbody' ? `<td style="font-size:12px;">${o.paymentMethod||'—'}</td>` : ''}
-      <td><span class="order-status ${statusClass}">${statusLabel}</span></td>
-      <td>
-        ${o.status === 'pending' ? `<button class="action-btn" onclick="updateOrderStatus('${doc.id}','confirmed')">Confirm</button>` : ''}
-        ${o.status === 'confirmed' ? `<button class="action-btn" onclick="updateOrderStatus('${doc.id}','shipped')">Ship করুন</button>` : ''}
-        ${o.status === 'shipped' ? `<button class="action-btn" onclick="updateOrderStatus('${doc.id}','delivered')">Delivered</button>` : ''}
-        <button class="action-btn" onclick="viewOrder('${doc.id}')" style="margin-left:4px;">👁</button>
-      </td>
-    </tr>`;
+    var o   = doc.data();
+    var sid = doc.id.slice(-6).toUpperCase();
+    var scls = {pending:'s-pending',confirmed:'s-confirmed',shipped:'s-shipped',delivered:'s-delivered',cancelled:'s-cancelled'}[o.status]||'s-pending';
+    var slbl = {pending:'⏳ Pending',confirmed:'✅ Confirmed',shipped:'🚚 Shipped',delivered:'🎉 Delivered',cancelled:'❌ Cancelled'}[o.status]||o.status;
+    tbody.innerHTML += '<tr>'
+      +'<td><strong>#BZ-'+sid+'</strong></td>'
+      +'<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(o.productName||o.items?.[0]?.name||'—')+'</td>'
+      +'<td>'+(o.buyerName||'—')+'</td>'
+      +(showAddress ? '<td style="font-size:12px;color:var(--gray-500);">'+(o.buyerPhone||'—')+'</td><td style="font-size:12px;">'+(o.address?.district||'—')+'</td>' : '')
+      +'<td style="font-weight:700;color:var(--green);">৳'+(o.total||0).toLocaleString('bn')+'</td>'
+      +'<td><span class="order-status '+scls+'">'+slbl+'</span></td>'
+      +'<td style="display:flex;gap:6px;">'
+      +(o.status==='pending' ? '<button class="action-btn" onclick="updateOrder(\''+doc.id+'\',\'confirmed\')">Confirm</button>' : '')
+      +(o.status==='confirmed' ? '<button class="action-btn" onclick="updateOrder(\''+doc.id+'\',\'shipped\')">Ship করুন</button>' : '')
+      +(o.status==='shipped' ? '<button class="action-btn" onclick="updateOrder(\''+doc.id+'\',\'delivered\')">Delivered</button>' : '')
+      +'</td>'
+      +'</tr>';
   });
 }
 
-async function updateOrderStatus(orderId, status) {
-  await db.collection(COL.ORDERS).doc(orderId).update({ status, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
-  showToast('✅ অর্ডার status আপডেট হয়েছে', 'success');
+async function updateOrder(id, status) {
+  await db.collection(COL.ORDERS).doc(id).update({status, updatedAt: firebase.firestore.FieldValue.serverTimestamp()});
+  showToast('✅ অর্ডার আপডেট হয়েছে', 'success');
   loadOverview();
 }
 
-// ── My Products ──
 async function loadMyProducts() {
-  const snap = await db.collection(COL.PRODUCTS).where('sellerId','==',currentUser.uid).orderBy('createdAt','desc').get();
-  const container = document.getElementById('my-products-container');
-
+  var snap = await db.collection(COL.PRODUCTS).where('sellerId','==',currentUser.uid).orderBy('createdAt','desc').get();
+  var container = document.getElementById('my-products-container');
   if (snap.empty) {
-    container.innerHTML = `<div class="empty"><div class="empty-icon">📦</div><h3>কোনো পণ্য নেই</h3><p>নতুন পণ্য যোগ করুন</p><button class="btn btn-primary btn-md" style="margin-top:16px;" onclick="showPage('add-product',null)">➕ পণ্য যোগ করুন</button></div>`;
+    container.innerHTML = '<div class="empty"><div class="empty-icon">📦</div><h3>কোনো পণ্য নেই</h3><p>নতুন পণ্য যোগ করুন</p><button class="btn btn-primary btn-md" style="margin-top:16px;" onclick="showPage(\'add-product\',null)">➕ পণ্য যোগ করুন</button></div>';
     return;
   }
-
-  let html = '<div class="my-products-grid">';
+  var html = '<div class="my-products-grid">';
   snap.forEach(doc => {
-    const p = doc.data();
-    const statusColor = p.status === 'active' ? 'var(--green)' : p.status === 'draft' ? 'var(--yellow)' : 'var(--red)';
-    const statusLabel = p.status === 'active' ? '✅ Active' : p.status === 'draft' ? '📝 Draft' : '❌ Inactive';
-    html += `<div class="my-product-card">
-      <div class="my-product-img">
-        ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : `<span style="font-size:56px;">${p.emoji||'📦'}</span>`}
-        <span class="my-product-status" style="background:white;color:${statusColor};border:1px solid ${statusColor};">${statusLabel}</span>
-      </div>
-      <div class="my-product-body">
-        <div class="my-product-name">${p.name}</div>
-        <div class="my-product-price">৳${p.price?.toLocaleString('bn')}</div>
-        <div class="my-product-stock">স্টক: ${p.stock} | বিক্রি: ${p.sold||0}</div>
-        <div class="my-product-actions">
-          <button class="action-btn" onclick="editProduct('${doc.id}')">✏️ Edit</button>
-          <button class="action-btn danger" onclick="deleteProduct('${doc.id}')">🗑</button>
-          ${p.status === 'draft' ? `<button class="action-btn" onclick="publishProduct('${doc.id}')">📢 Publish</button>` : ''}
-        </div>
-      </div>
-    </div>`;
+    var p = doc.data();
+    var sc = p.status==='active' ? 'var(--green)' : p.status==='draft' ? 'var(--yellow)' : 'var(--red)';
+    var sl = p.status==='active' ? '✅ Active' : p.status==='draft' ? '📝 Draft' : '❌ Inactive';
+    html += '<div class="my-product-card">'
+      +'<div class="my-product-img">'
+      +(p.imageUrl ? '<img src="'+p.imageUrl+'" alt="'+p.name+'">' : '<span style="font-size:56px;">'+(p.emoji||'📦')+'</span>')
+      +'<span class="my-product-status" style="background:white;color:'+sc+';border:1px solid '+sc+';">'+sl+'</span>'
+      +'</div>'
+      +'<div class="my-product-body">'
+      +'<div class="my-product-name">'+p.name+'</div>'
+      +'<div class="my-product-price">৳'+p.price?.toLocaleString('bn')+'</div>'
+      +'<div class="my-product-stock">স্টক: '+p.stock+' · বিক্রি: '+(p.sold||0)+'</div>'
+      +'<div class="my-product-actions">'
+      +'<button class="action-btn" onclick="editProduct(\''+doc.id+'\')">✏️ Edit</button>'
+      +'<button class="action-btn danger" onclick="deleteProduct(\''+doc.id+'\')">🗑</button>'
+      +(p.status==='draft' ? '<button class="action-btn" onclick="publishProduct(\''+doc.id+'\')">📢 Publish</button>' : '')
+      +'</div></div></div>';
   });
   html += '</div>';
   container.innerHTML = html;
@@ -539,18 +441,17 @@ async function loadMyProducts() {
 
 // ── Image Preview ──
 function previewImages(input) {
-  const previews  = document.getElementById('img-previews');
-  const newFiles  = Array.from(input.files).slice(0, 5 - imageFiles.length);
-  imageFiles = [...imageFiles, ...newFiles].slice(0, 5);
-
+  var files = Array.from(input.files).slice(0, 5);
+  imageFiles = files;
+  var previews = document.getElementById('img-previews');
   previews.innerHTML = '';
-  imageFiles.forEach((file, idx) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      previews.innerHTML += `<div class="img-preview-item" id="img-${idx}">
-        <img src="${e.target.result}" alt="preview">
-        <button onclick="removeImage(${idx})">✕</button>
-      </div>`;
+  files.forEach((file, i) => {
+    var reader = new FileReader();
+    reader.onload = e => {
+      previews.innerHTML += '<div class="img-preview-item" id="prev-'+i+'">'
+        +'<img src="'+e.target.result+'" alt="preview">'
+        +'<button class="remove-btn" onclick="removeImage('+i+')">✕</button>'
+        +'</div>';
     };
     reader.readAsDataURL(file);
   });
@@ -558,95 +459,105 @@ function previewImages(input) {
 
 function removeImage(idx) {
   imageFiles.splice(idx, 1);
-  const previews = document.getElementById('img-previews');
-  previews.innerHTML = '';
-  imageFiles.forEach((file, i) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      previews.innerHTML += `<div class="img-preview-item" id="img-${i}">
-        <img src="${e.target.result}" alt="preview">
-        <button onclick="removeImage(${i})">✕</button>
-      </div>`;
-    };
-    reader.readAsDataURL(file);
-  });
+  previewImages({ files: imageFiles });
+}
+
+// ── Cloudinary Upload ──
+async function uploadToCloudinary(file, idx, total) {
+  var progressEl = document.getElementById('upload-progress');
+  var progressBar = document.getElementById('progress-bar');
+  var progressText = document.getElementById('upload-progress-text');
+  progressEl.classList.add('show');
+  progressText.textContent = 'ছবি '+idx+'/'+total+' upload হচ্ছে...';
+  progressBar.style.width = Math.round((idx/total)*100)+'%';
+
+  var formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', UPLOAD_PRESET);
+  formData.append('folder', 'bazare/products');
+
+  var res  = await fetch('https://api.cloudinary.com/v1_1/'+CLOUD_NAME+'/image/upload', { method:'POST', body:formData });
+  var data = await res.json();
+  if (data.secure_url) return data.secure_url;
+  throw new Error(data.error?.message || 'Upload failed');
 }
 
 // ── Save Product ──
 async function saveProduct(status) {
-  const name = document.getElementById('p-name').value.trim();
-  const cat  = document.getElementById('p-category').value;
-  const price = parseFloat(document.getElementById('p-price').value);
-  const desc  = document.getElementById('p-desc').value.trim();
-  const stock = parseInt(document.getElementById('p-stock').value);
+  var name  = document.getElementById('p-name').value.trim();
+  var cat   = document.getElementById('p-category').value;
+  var price = parseFloat(document.getElementById('p-price').value);
+  var desc  = document.getElementById('p-desc').value.trim();
+  var stock = parseInt(document.getElementById('p-stock').value);
 
   if (!name || !cat || !price || !desc || isNaN(stock)) {
     showToast('সব * চিহ্নিত তথ্য পূরণ করুন', 'error'); return;
   }
 
-  const btn = document.getElementById('publish-btn');
+  var btn = document.getElementById('publish-btn');
   btn.disabled = true; btn.textContent = 'সেভ হচ্ছে...';
 
   try {
-    // Upload images
-    let imageUrl = ''; let imageUrls = [];
-    for (let i = 0; i < imageFiles.length; i++) {
-      const ref = storage.ref(`products/${currentUser.uid}/${Date.now()}_${i}`);
-      await ref.put(imageFiles[i]);
-      const url = await ref.getDownloadURL();
-      imageUrls.push(url);
-      if (i === 0) imageUrl = url;
+    // Upload images to Cloudinary
+    var imageUrl  = '';
+    var imageUrls = [];
+
+    if (imageFiles.length > 0) {
+      if (!CLOUD_NAME || !UPLOAD_PRESET) {
+        showToast('⚠️ Cloudinary setup করুন। ছবি ছাড়াই publish হচ্ছে।', 'info');
+      } else {
+        for (var i=0; i<imageFiles.length; i++) {
+          var url = await uploadToCloudinary(imageFiles[i], i+1, imageFiles.length);
+          imageUrls.push(url);
+          if (i===0) imageUrl = url;
+        }
+      }
     }
 
-    const badgeVal = document.getElementById('p-badge').value;
-    const badge    = badgeVal ? { type: badgeVal.split('|')[0], label: badgeVal.split('|')[1] } : null;
+    document.getElementById('upload-progress').classList.remove('show');
 
-    const productData = {
+    var badgeVal = document.getElementById('p-badge').value;
+    var badge    = badgeVal ? { type: badgeVal.split('|')[0], label: badgeVal.split('|')[1] } : null;
+
+    var productData = {
       sellerId:      currentUser.uid,
       sellerName:    sellerProfile.shopName || sellerProfile.name,
-      name,
-      category:      cat,
-      price,
+      name, category: cat, price,
       originalPrice: parseFloat(document.getElementById('p-original-price').value) || null,
-      stock,
-      deliveryCharge: parseInt(document.getElementById('p-delivery').value) || 60,
-      description:   desc,
-      emoji:         document.getElementById('p-emoji').value || '📦',
-      badge,
-      imageUrl,
-      imageUrls,
-      status,
-      sold:          0,
-      reviewCount:   0,
-      rating:        0,
-      createdAt:     firebase.firestore.FieldValue.serverTimestamp(),
+      stock, deliveryCharge: parseInt(document.getElementById('p-delivery').value) || 60,
+      description: desc,
+      emoji: document.getElementById('p-emoji').value || '📦',
+      badge, imageUrl, imageUrls, status,
+      sold: 0, reviewCount: 0, rating: 5,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     };
 
-    const editingId = document.getElementById('editing-product-id').value;
+    var editingId = document.getElementById('editing-product-id').value;
     if (editingId) {
-      await db.collection(COL.PRODUCTS).doc(editingId).update({ ...productData, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+      await db.collection(COL.PRODUCTS).doc(editingId).update({...productData, updatedAt: firebase.firestore.FieldValue.serverTimestamp()});
       showToast('✅ পণ্য আপডেট হয়েছে!', 'success');
     } else {
       await db.collection(COL.PRODUCTS).add(productData);
-      showToast(status === 'active' ? '✅ পণ্য Publish হয়েছে! Marketplace এ দেখা যাবে।' : '📝 Draft সেভ হয়েছে', 'success');
+      showToast(status==='active' ? '✅ পণ্য Marketplace এ দেখা যাচ্ছে!' : '📝 Draft সেভ হয়েছে', 'success');
     }
 
     resetProductForm();
     showPage('my-products', null);
-    loadMyProducts();
 
-  } catch (err) {
-    showToast('❌ সমস্যা: ' + err.message, 'error');
+  } catch(err) {
+    showToast('❌ সমস্যা: '+err.message, 'error');
+    document.getElementById('upload-progress').classList.remove('show');
   } finally {
-    btn.disabled = false; btn.textContent = '✅ Publish করুন';
+    btn.disabled=false; btn.textContent='✅ Publish করুন';
   }
 }
 
 function resetProductForm() {
-  ['p-name','p-category','p-price','p-original-price','p-stock','p-delivery','p-badge','p-emoji','p-desc'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = id === 'p-delivery' ? '60' : '';
+  ['p-name','p-category','p-price','p-original-price','p-stock','p-badge','p-emoji','p-desc'].forEach(id => {
+    var el = document.getElementById(id);
+    if (el) el.value = '';
   });
+  document.getElementById('p-delivery').value = '60';
   document.getElementById('editing-product-id').value = '';
   document.getElementById('img-previews').innerHTML = '';
   document.getElementById('add-product-title').textContent = '➕ নতুন পণ্য যোগ করুন';
@@ -654,17 +565,17 @@ function resetProductForm() {
 }
 
 async function editProduct(id) {
-  const snap = await db.collection(COL.PRODUCTS).doc(id).get();
-  const p = snap.data();
+  var snap = await db.collection(COL.PRODUCTS).doc(id).get();
+  var p = snap.data();
   document.getElementById('editing-product-id').value = id;
   document.getElementById('p-name').value = p.name;
   document.getElementById('p-category').value = p.category;
   document.getElementById('p-price').value = p.price;
-  document.getElementById('p-original-price').value = p.originalPrice || '';
+  document.getElementById('p-original-price').value = p.originalPrice||'';
   document.getElementById('p-stock').value = p.stock;
-  document.getElementById('p-delivery').value = p.deliveryCharge || 60;
+  document.getElementById('p-delivery').value = p.deliveryCharge||60;
   document.getElementById('p-desc').value = p.description;
-  document.getElementById('p-emoji').value = p.emoji || '';
+  document.getElementById('p-emoji').value = p.emoji||'';
   document.getElementById('add-product-title').textContent = '✏️ পণ্য Edit করুন';
   showPage('add-product', null);
 }
@@ -677,20 +588,48 @@ async function deleteProduct(id) {
 }
 
 async function publishProduct(id) {
-  await db.collection(COL.PRODUCTS).doc(id).update({ status: 'active' });
+  await db.collection(COL.PRODUCTS).doc(id).update({status:'active'});
   showToast('✅ পণ্য Publish হয়েছে!', 'success');
   loadMyProducts();
 }
 
-// ── Earnings ──
 async function loadEarnings() {
-  const snap = await db.collection(COL.ORDERS).where('sellerId','==',currentUser.uid).where('status','in',['delivered','confirmed']).get();
-  const total = snap.docs.reduce((s,d) => s + (d.data().total||0), 0);
-  const thisMonth = new Date(); thisMonth.setDate(1); thisMonth.setHours(0,0,0,0);
-  const month = snap.docs.filter(d => d.data().createdAt?.toDate() >= thisMonth).reduce((s,d) => s + (d.data().total||0), 0);
-  document.getElementById('e-total').textContent  = '৳' + total.toLocaleString('bn');
-  document.getElementById('e-month').textContent  = '৳' + month.toLocaleString('bn');
-  document.getElementById('e-pending').textContent = '৳' + Math.round(total * 0.9).toLocaleString('bn');
+  var snap = await db.collection(COL.ORDERS).where('sellerId','==',currentUser.uid).get();
+  var orders = snap.docs.map(d => ({id:d.id,...d.data()}));
+  var delivered = orders.filter(o => o.status==='delivered');
+  var total = delivered.reduce((s,o)=>s+(o.total||0),0);
+  var thisMonth = new Date(); thisMonth.setDate(1); thisMonth.setHours(0,0,0,0);
+  var month = delivered.filter(o=>o.createdAt?.toDate()>=thisMonth).reduce((s,o)=>s+(o.total||0),0);
+
+  document.getElementById('e-total').textContent    = '৳'+total.toLocaleString('bn');
+  document.getElementById('e-month').textContent    = '৳'+month.toLocaleString('bn');
+  document.getElementById('e-pending').textContent  = '৳'+Math.round(total*0.9).toLocaleString('bn');
+  document.getElementById('e-delivered').textContent = delivered.length;
+
+  var tbody = document.getElementById('earnings-tbody');
+  if (!orders.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--gray-400);">কোনো অর্ডার নেই</td></tr>'; return; }
+  tbody.innerHTML = '';
+  orders.slice(0,20).forEach(o => {
+    var sid = o.id.slice(-6).toUpperCase();
+    var scls = {pending:'s-pending',confirmed:'s-confirmed',shipped:'s-shipped',delivered:'s-delivered',cancelled:'s-cancelled'}[o.status]||'s-pending';
+    var slbl = {pending:'⏳ Pending',confirmed:'✅ Confirmed',shipped:'🚚 Shipped',delivered:'🎉 Delivered',cancelled:'❌ Cancelled'}[o.status]||o.status;
+    var date = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleDateString('bn-BD') : '—';
+    tbody.innerHTML += '<tr><td><strong>#BZ-'+sid+'</strong></td><td>'+(o.productName||'—')+'</td><td style="font-weight:700;color:var(--green);">৳'+(o.total||0).toLocaleString('bn')+'</td><td><span class="order-status '+scls+'">'+slbl+'</span></td><td style="font-size:12px;">'+date+'</td></tr>';
+  });
+}
+
+// ── Cloudinary setup modal ──
+function showCloudinarySetup() {
+  var cloud = prompt('Cloudinary Cloud Name দিন (cloudinary.com Dashboard থেকে):');
+  if (!cloud) return;
+  var preset = prompt('Upload Preset নাম দিন (Settings → Upload → Unsigned preset):');
+  if (!preset) return;
+  CLOUD_NAME    = cloud.trim();
+  UPLOAD_PRESET = preset.trim();
+  localStorage.setItem('bazare_cloud_name', CLOUD_NAME);
+  localStorage.setItem('bazare_upload_preset', UPLOAD_PRESET);
+  document.getElementById('cloudinary-notice').style.display = 'none';
+  showToast('✅ Cloudinary setup সম্পন্ন! এখন ছবি upload করতে পারবেন।', 'success');
 }
 </script>
 </body>
