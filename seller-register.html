@@ -4,419 +4,189 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Seller হিসেবে যোগ দিন — Bazare</title>
-  <meta name="theme-color" content="#1a7a3c">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
     body { background: var(--off-white); }
+    .reg-page { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
 
-    .reg-page {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
-
-    /* Left panel */
     .reg-left {
       background: linear-gradient(160deg, var(--green-deeper) 0%, var(--green-dark) 50%, var(--green) 100%);
-      padding: 60px 48px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow: hidden;
+      padding: 60px 48px; display: flex; flex-direction: column;
+      justify-content: center; position: sticky; top: 0; height: 100vh; overflow: hidden;
     }
-    .reg-left::before {
-      content: '';
-      position: absolute;
-      right: -60px; bottom: -60px;
-      width: 300px; height: 300px;
-      background: radial-gradient(circle, rgba(240,180,41,0.15) 0%, transparent 70%);
-      border-radius: 50%;
-    }
-    .reg-left-logo {
-      font-family: var(--font-heading);
-      font-size: 36px; font-weight: 900;
-      color: white; letter-spacing: -2px;
-      margin-bottom: 48px;
-      text-decoration: none;
-      display: inline-block;
-    }
-    .reg-left-logo span { color: var(--accent); }
-    .reg-left h1 {
-      font-size: 36px; font-weight: 900;
-      color: white; line-height: 1.2;
-      margin-bottom: 20px;
-      position: relative; z-index: 1;
-    }
+    .reg-left::before { content:''; position:absolute; right:-60px; bottom:-60px; width:300px; height:300px; background:radial-gradient(circle,rgba(240,180,41,0.15) 0%,transparent 70%); border-radius:50%; }
+    .reg-left h1 { font-size: clamp(24px,3vw,36px); font-weight: 900; color: white; line-height: 1.2; margin-bottom: 20px; position: relative; z-index: 1; }
     .reg-left h1 span { color: var(--accent); }
-    .reg-left-sub {
-      font-size: 16px; color: rgba(255,255,255,0.72);
-      line-height: 1.7; margin-bottom: 40px;
-      position: relative; z-index: 1;
-    }
-    .reg-benefits { position: relative; z-index: 1; }
-    .reg-benefit {
-      display: flex; align-items: flex-start; gap: 14px;
-      margin-bottom: 20px;
-    }
-    .benefit-icon {
-      width: 40px; height: 40px; border-radius: 10px;
-      background: rgba(255,255,255,0.12);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; flex-shrink: 0;
-    }
+    .reg-left-sub { font-size: 16px; color: rgba(255,255,255,0.72); line-height: 1.7; margin-bottom: 40px; position: relative; z-index: 1; }
+    .reg-benefit { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; position: relative; z-index: 1; }
+    .benefit-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
     .benefit-text h4 { font-size: 15px; font-weight: 700; color: white; margin-bottom: 3px; }
-    .benefit-text p  { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.5; }
+    .benefit-text p { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.5; }
 
-    /* Right panel */
-    .reg-right {
-      padding: 48px;
-      overflow-y: auto;
-      max-height: 100vh;
-      background: var(--white);
-    }
+    .reg-right { padding: 48px; overflow-y: auto; max-height: 100vh; background: var(--white); }
     .reg-right-inner { max-width: 480px; margin: 0 auto; }
-
-    .reg-title {
-      font-family: var(--font-heading);
-      font-size: 28px; font-weight: 800;
-      color: var(--black); margin-bottom: 6px;
-    }
+    .reg-title { font-family: var(--font-heading); font-size: 28px; font-weight: 800; color: var(--black); margin-bottom: 6px; }
     .reg-sub { font-size: 15px; color: var(--gray-500); margin-bottom: 32px; }
 
     /* Steps */
-    .steps-bar {
-      display: flex; align-items: center; gap: 0;
-      margin-bottom: 36px;
-    }
-    .step-item {
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
-      flex: 1;
-    }
-    .step-circle {
-      width: 36px; height: 36px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 700;
-      background: var(--gray-100); color: var(--gray-400);
-      transition: all 0.3s ease;
-      position: relative; z-index: 1;
-    }
+    .steps-bar { display: flex; align-items: center; margin-bottom: 36px; }
+    .step-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+    .step-circle { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; background: var(--gray-100); color: var(--gray-400); transition: all 0.3s; position: relative; z-index: 1; }
     .step-circle.active { background: var(--green); color: white; box-shadow: 0 4px 12px rgba(26,122,60,0.3); }
-    .step-circle.done   { background: var(--green-light); color: white; }
+    .step-circle.done { background: var(--green-light); color: white; }
     .step-label { font-size: 11px; font-weight: 600; color: var(--gray-400); text-align: center; }
     .step-label.active { color: var(--green); }
     .step-line { flex: 1; height: 2px; background: var(--gray-200); margin-top: -20px; transition: background 0.3s; }
     .step-line.done { background: var(--green-light); }
 
-    /* Form sections */
     .form-section { display: none; }
     .form-section.active { display: block; animation: fadeUp 0.4s ease; }
-
     .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-full { grid-column: 1/-1; }
 
-    .input-with-icon { position: relative; }
-    .input-with-icon .form-control { padding-left: 44px; }
-    .input-icon {
-      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-      font-size: 18px; pointer-events: none;
-    }
+    /* Logo upload */
+    .logo-upload-area { border: 2px dashed var(--gray-300); border-radius: var(--r-lg); padding: 24px; text-align: center; cursor: pointer; transition: all 0.25s; background: var(--gray-50); position: relative; }
+    .logo-upload-area:hover { border-color: var(--green); background: var(--green-pale); }
+    .logo-upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .logo-preview-img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; margin: 0 auto 10px; display: none; border: 3px solid var(--green-pale2); }
 
-    /* Image upload */
-    .upload-area {
-      border: 2px dashed var(--gray-300);
-      border-radius: var(--r-lg);
-      padding: 32px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.25s;
-      background: var(--gray-50);
-      position: relative;
-    }
-    .upload-area:hover { border-color: var(--green); background: var(--green-pale); }
-    .upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-    .upload-area-icon { font-size: 36px; margin-bottom: 10px; }
-    .upload-area-title { font-size: 15px; font-weight: 600; color: var(--gray-700); margin-bottom: 4px; }
-    .upload-area-sub   { font-size: 12px; color: var(--gray-400); }
-    .upload-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 10px; display: none; border: 3px solid var(--green-pale2); }
+    .form-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--gray-100); }
 
-    /* Nav buttons */
-    .form-nav {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-top: 28px; padding-top: 24px;
-      border-top: 1px solid var(--gray-100);
-    }
-
-    /* Success screen */
-    .success-screen {
-      display: none;
-      text-align: center;
-      padding: 40px 20px;
-      animation: scaleIn 0.4s ease;
-    }
+    .success-screen { display: none; text-align: center; padding: 40px 20px; animation: scaleIn 0.4s ease; }
     .success-screen.active { display: block; }
-    .success-icon {
-      width: 80px; height: 80px;
-      background: var(--green-pale);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 36px; margin: 0 auto 20px;
-    }
+    .success-icon { width: 80px; height: 80px; background: var(--green-pale); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 20px; }
 
-    /* Already seller banner */
-    .already-seller {
-      background: var(--green-pale);
-      border: 1px solid var(--green-pale2);
-      border-radius: var(--r);
-      padding: 14px 18px;
-      display: none;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-      font-size: 14px;
-      color: var(--green-dark);
-    }
+    .notice-box { border-radius: var(--r); padding: 14px 18px; margin-bottom: 20px; font-size: 14px; line-height: 1.6; display: none; align-items: center; gap: 10px; }
+    .notice-seller { background: var(--green-pale); border: 1px solid var(--green-pale2); color: var(--green-dark); }
+    .notice-pending { background: var(--accent-light); border: 1px solid var(--accent); color: #92611a; }
 
     @media (max-width: 768px) {
       .reg-page { grid-template-columns: 1fr; }
-      .reg-left  { display: none; }
+      .reg-left { display: none; }
       .reg-right { padding: 24px 20px; max-height: none; }
       .form-grid-2 { grid-template-columns: 1fr; }
+      .form-full { grid-column: 1; }
     }
   </style>
 </head>
 <body>
 
-<!-- Simple top bar -->
 <div style="background:var(--green-deeper);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;">
   <a href="index.html" style="font-family:var(--font-heading);font-size:22px;font-weight:900;color:white;letter-spacing:-1px;text-decoration:none;">Bazar<span style="color:var(--accent);">e</span></a>
   <a href="index.html" class="btn btn-outline-white btn-sm">← হোমে ফিরুন</a>
 </div>
 
 <div class="reg-page">
-
-  <!-- LEFT PANEL -->
+  <!-- LEFT -->
   <div class="reg-left">
-    <div>
-      <h1>আপনার <span>ব্যবসাকে</span><br>নিয়ে যান<br>পরের স্তরে</h1>
-      <p class="reg-left-sub">Facebook page ছেড়ে এখন একটা professional platform এ আসুন। লক্ষ ক্রেতার কাছে পৌঁছান।</p>
-      <div class="reg-benefits">
-        <div class="reg-benefit">
-          <div class="benefit-icon">🆓</div>
-          <div class="benefit-text">
-            <h4>সম্পূর্ণ বিনামূল্যে</h4>
-            <p>Join করতে কোনো টাকা লাগবে না। শুধু বিক্রি হলে ছোট কমিশন।</p>
-          </div>
-        </div>
-        <div class="reg-benefit">
-          <div class="benefit-icon">📦</div>
-          <div class="benefit-text">
-            <h4>সহজ Product Management</h4>
-            <p>ছবি সহ পণ্য add করুন, stock manage করুন, order track করুন।</p>
-          </div>
-        </div>
-        <div class="reg-benefit">
-          <div class="benefit-icon">💰</div>
-          <div class="benefit-text">
-            <h4>সরাসরি bKash/Nagad এ পেমেন্ট</h4>
-            <p>প্রতিটি বিক্রির টাকা সরাসরি আপনার account এ।</p>
-          </div>
-        </div>
-        <div class="reg-benefit">
-          <div class="benefit-icon">🚚</div>
-          <div class="benefit-text">
-            <h4>Pathao ও RedX Integration</h4>
-            <p>সারা বাংলাদেশে ডেলিভারির ব্যবস্থা আমরা করি।</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <h1>আপনার <span>ব্যবসাকে</span><br>নিয়ে যান<br>পরের স্তরে</h1>
+    <p class="reg-left-sub">Facebook page ছেড়ে এখন একটা professional platform এ আসুন। লক্ষ ক্রেতার কাছে পৌঁছান।</p>
+    <div class="reg-benefit"><div class="benefit-icon">🆓</div><div class="benefit-text"><h4>সম্পূর্ণ বিনামূল্যে</h4><p>Join করতে কোনো টাকা লাগবে না।</p></div></div>
+    <div class="reg-benefit"><div class="benefit-icon">📦</div><div class="benefit-text"><h4>সহজ Product Management</h4><p>ছবি সহ পণ্য add করুন, order track করুন।</p></div></div>
+    <div class="reg-benefit"><div class="benefit-icon">💰</div><div class="benefit-text"><h4>bKash/Nagad এ পেমেন্ট</h4><p>প্রতিটি বিক্রির টাকা সরাসরি আপনার account এ।</p></div></div>
+    <div class="reg-benefit"><div class="benefit-icon">🚚</div><div class="benefit-text"><h4>সারা বাংলাদেশে ডেলিভারি</h4><p>Pathao ও RedX এর মাধ্যমে।</p></div></div>
   </div>
 
-  <!-- RIGHT PANEL -->
+  <!-- RIGHT -->
   <div class="reg-right">
     <div class="reg-right-inner">
 
-      <!-- Already seller notice -->
-      <div class="already-seller" id="already-seller-notice">
+      <div class="notice-box notice-seller" id="notice-seller">
         ✅ আপনি ইতিমধ্যে Seller! <a href="seller-dashboard.html" style="color:var(--green);font-weight:700;margin-left:8px;">Dashboard এ যান →</a>
       </div>
-
-      <!-- Pending notice -->
-      <div id="pending-notice" style="display:none;background:var(--accent-light);border:1px solid var(--accent);border-radius:var(--r);padding:14px 18px;margin-bottom:20px;font-size:14px;color:#92611a;">
-        ⏳ আপনার আবেদন review এ আছে। Admin approve করলে আপনাকে জানানো হবে।
+      <div class="notice-box notice-pending" id="notice-pending">
+        ⏳ আপনার আবেদন review এ আছে। Admin approve করলে জানানো হবে।
       </div>
 
       <div class="reg-title">Seller হিসেবে যোগ দিন</div>
       <p class="reg-sub">কয়েক মিনিটে আপনার দোকান খুলুন</p>
 
-      <!-- Steps Bar -->
-      <div class="steps-bar">
-        <div class="step-item">
-          <div class="step-circle active" id="circle-1">১</div>
-          <div class="step-label active" id="label-1">ব্যক্তিগত</div>
-        </div>
-        <div class="step-line" id="line-1"></div>
-        <div class="step-item">
-          <div class="step-circle" id="circle-2">২</div>
-          <div class="step-label" id="label-2">দোকান</div>
-        </div>
-        <div class="step-line" id="line-2"></div>
-        <div class="step-item">
-          <div class="step-circle" id="circle-3">৩</div>
-          <div class="step-label" id="label-3">পেমেন্ট</div>
-        </div>
+      <!-- Steps -->
+      <div class="steps-bar" id="steps-bar">
+        <div class="step-item"><div class="step-circle active" id="c1">১</div><div class="step-label active" id="l1">ব্যক্তিগত</div></div>
+        <div class="step-line" id="line1"></div>
+        <div class="step-item"><div class="step-circle" id="c2">২</div><div class="step-label" id="l2">দোকান</div></div>
+        <div class="step-line" id="line2"></div>
+        <div class="step-item"><div class="step-circle" id="c3">৩</div><div class="step-label" id="l3">পেমেন্ট</div></div>
       </div>
 
-      <!-- STEP 1: Personal Info -->
+      <!-- STEP 1 -->
       <div class="form-section active" id="step-1">
-        <div class="form-group">
-          <label class="form-label">আপনার পুরো নাম *</label>
-          <div class="input-with-icon">
-            <span class="input-icon">👤</span>
-            <input type="text" class="form-control" id="f-name" placeholder="যেমন: রিতু আক্তার">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">ফোন নম্বর *</label>
-          <div class="input-with-icon">
-            <span class="input-icon">📱</span>
-            <input type="tel" class="form-control" id="f-phone" placeholder="01XXXXXXXXX" maxlength="11">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">ইমেইল (Optional)</label>
-          <div class="input-with-icon">
-            <span class="input-icon">📧</span>
-            <input type="email" class="form-control" id="f-email" placeholder="your@email.com">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">জেলা *</label>
+        <div class="form-group"><label class="form-label">আপনার পুরো নাম *</label><input type="text" class="form-control" id="f-name" placeholder="যেমন: রিতু আক্তার"></div>
+        <div class="form-group"><label class="form-label">ফোন নম্বর *</label><input type="tel" class="form-control" id="f-phone" placeholder="01XXXXXXXXX" maxlength="11"></div>
+        <div class="form-group"><label class="form-label">ইমেইল (Optional)</label><input type="email" class="form-control" id="f-email" placeholder="your@email.com"></div>
+        <div class="form-group"><label class="form-label">জেলা *</label>
           <select class="form-control form-select" id="f-district">
             <option value="">জেলা বেছে নিন</option>
             <option>ঢাকা</option><option>চট্টগ্রাম</option><option>সিলেট</option>
             <option>রাজশাহী</option><option>খুলনা</option><option>বরিশাল</option>
             <option>ময়মনসিংহ</option><option>রংপুর</option><option>কুমিল্লা</option>
             <option>নারায়ণগঞ্জ</option><option>গাজীপুর</option><option>ফেনী</option>
-            <option>নোয়াখালী</option><option>লক্ষ্মীপুর</option><option>অন্যান্য</option>
+            <option>নোয়াখালী</option><option>অন্যান্য</option>
           </select>
         </div>
-        <div class="form-nav">
-          <div></div>
-          <button class="btn btn-primary btn-md" onclick="nextStep(1)">পরবর্তী →</button>
-        </div>
+        <div class="form-nav"><div></div><button class="btn btn-primary btn-md" onclick="nextStep(1)">পরবর্তী →</button></div>
       </div>
 
-      <!-- STEP 2: Shop Info -->
+      <!-- STEP 2 -->
       <div class="form-section" id="step-2">
-        <div class="form-group">
-          <label class="form-label">দোকানের নাম *</label>
-          <div class="input-with-icon">
-            <span class="input-icon">🏪</span>
-            <input type="text" class="form-control" id="f-shop-name" placeholder="যেমন: Ritu's Collection">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">ক্যাটাগরি * (কী ধরনের পণ্য বিক্রি করবেন)</label>
+        <div class="form-group"><label class="form-label">দোকানের নাম *</label><input type="text" class="form-control" id="f-shop-name" placeholder="যেমন: Ritu's Collection"></div>
+        <div class="form-group"><label class="form-label">ক্যাটাগরি *</label>
           <select class="form-control form-select" id="f-category">
-            <option value="">ক্যাটাগরি বেছে নিন</option>
-            <option>বাচ্চাদের পোশাক</option>
-            <option>Organic মেহেদি</option>
-            <option>Organic তেল ও ঘি</option>
-            <option>ফুলের বীজ ও গাছ</option>
-            <option>দেশি ডিম ও মুরগি</option>
-            <option>পাখি</option>
-            <option>Organic খাবার</option>
-            <option>হাতের কাজ ও কারুশিল্প</option>
-            <option>গাছপালা</option>
-            <option>গিফট আইটেম</option>
-            <option>মিশ্র</option>
+            <option value="">বেছে নিন</option>
+            <option>বাচ্চাদের পোশাক</option><option>Organic মেহেদি</option>
+            <option>Organic তেল ও ঘি</option><option>ফুলের বীজ ও গাছ</option>
+            <option>দেশি ডিম ও মুরগি</option><option>পাখি</option>
+            <option>Organic খাবার</option><option>হাতের কাজ</option>
+            <option>গাছপালা</option><option>গিফট আইটেম</option><option>মিশ্র</option>
           </select>
         </div>
+        <div class="form-group"><label class="form-label">দোকানের বিবরণ</label><textarea class="form-control form-textarea" id="f-shop-desc" rows="3" placeholder="আপনার দোকান ও পণ্য সম্পর্কে সংক্ষেপে লিখুন..."></textarea></div>
         <div class="form-group">
-          <label class="form-label">দোকানের বিবরণ</label>
-          <textarea class="form-control form-textarea" id="f-shop-desc" rows="3" placeholder="আপনার দোকান ও পণ্য সম্পর্কে সংক্ষেপে লিখুন..."></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">দোকানের লোগো / প্রোফাইল ছবি</label>
-          <div class="upload-area" onclick="document.getElementById('logo-upload').click()">
-            <input type="file" id="logo-upload" accept="image/*" onchange="previewLogo(this)">
-            <img id="logo-preview" class="upload-preview" alt="Logo Preview">
-            <div class="upload-area-icon" id="upload-icon">🖼️</div>
-            <div class="upload-area-title">ছবি বেছে নিন</div>
-            <div class="upload-area-sub">PNG, JPG — সর্বোচ্চ ২MB</div>
+          <label class="form-label">দোকানের লোগো</label>
+          <div class="logo-upload-area" onclick="document.getElementById('logo-file').click()">
+            <input type="file" id="logo-file" accept="image/*" onchange="previewLogo(this)" style="display:none;">
+            <img id="logo-preview" class="logo-preview-img" alt="Logo">
+            <div id="logo-upload-icon" style="font-size:32px;margin-bottom:8px;">🖼️</div>
+            <div style="font-size:14px;font-weight:600;color:var(--gray-700);">ছবি বেছে নিন</div>
+            <div style="font-size:12px;color:var(--gray-400);">PNG, JPG — সর্বোচ্চ ২MB</div>
           </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Facebook Page লিংক (Optional)</label>
-          <input type="url" class="form-control" id="f-fb" placeholder="https://facebook.com/yourpage">
-        </div>
+        <div class="form-group"><label class="form-label">Facebook Page (Optional)</label><input type="url" class="form-control" id="f-fb" placeholder="https://facebook.com/yourpage"></div>
         <div class="form-nav">
-          <button class="btn btn-outline btn-md" onclick="prevStep(2)">← পূর্ববর্তী</button>
+          <button class="btn btn-outline btn-md" onclick="goToStep(1)">← পূর্ববর্তী</button>
           <button class="btn btn-primary btn-md" onclick="nextStep(2)">পরবর্তী →</button>
         </div>
       </div>
 
-      <!-- STEP 3: Payment -->
+      <!-- STEP 3 -->
       <div class="form-section" id="step-3">
-        <div style="background:var(--green-pale);border-radius:var(--r);padding:16px;margin-bottom:24px;font-size:14px;color:var(--green-dark);line-height:1.6;">
-          💡 বিক্রির টাকা সরাসরি এই নম্বরে পাঠানো হবে। নিশ্চিত করে দিন।
+        <div style="background:var(--green-pale);border-radius:var(--r);padding:14px 16px;margin-bottom:20px;font-size:14px;color:var(--green-dark);line-height:1.6;">
+          💡 বিক্রির টাকা সরাসরি এই নম্বরে পাঠানো হবে।
         </div>
-        <div class="form-group">
-          <label class="form-label">bKash নম্বর *</label>
-          <div class="input-with-icon">
-            <span class="input-icon">💳</span>
-            <input type="tel" class="form-control" id="f-bkash" placeholder="01XXXXXXXXX" maxlength="11">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Nagad নম্বর (Optional)</label>
-          <div class="input-with-icon">
-            <span class="input-icon">💳</span>
-            <input type="tel" class="form-control" id="f-nagad" placeholder="01XXXXXXXXX" maxlength="11">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">NID নম্বর * (যাচাইয়ের জন্য)</label>
-          <div class="input-with-icon">
-            <span class="input-icon">🪪</span>
-            <input type="text" class="form-control" id="f-nid" placeholder="১০ বা ১৭ সংখ্যার NID">
-          </div>
-        </div>
-
-        <!-- Terms -->
-        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;padding:16px;background:var(--gray-50);border-radius:var(--r-sm);">
+        <div class="form-group"><label class="form-label">bKash নম্বর *</label><input type="tel" class="form-control" id="f-bkash" placeholder="01XXXXXXXXX" maxlength="11"></div>
+        <div class="form-group"><label class="form-label">Nagad নম্বর (Optional)</label><input type="tel" class="form-control" id="f-nagad" placeholder="01XXXXXXXXX" maxlength="11"></div>
+        <div class="form-group"><label class="form-label">NID নম্বর *</label><input type="text" class="form-control" id="f-nid" placeholder="১০ বা ১৭ সংখ্যার NID"></div>
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;padding:14px;background:var(--gray-50);border-radius:var(--r-sm);">
           <input type="checkbox" id="f-terms" style="margin-top:3px;width:16px;height:16px;accent-color:var(--green);flex-shrink:0;">
-          <label for="f-terms" style="font-size:13px;color:var(--gray-600);line-height:1.6;cursor:pointer;">
-            আমি Bazare-এর <a href="#" style="color:var(--green);">Terms & Conditions</a> ও <a href="#" style="color:var(--green);">Seller Policy</a> পড়েছি এবং সম্মত আছি।
-          </label>
+          <label for="f-terms" style="font-size:13px;color:var(--gray-600);line-height:1.6;cursor:pointer;">আমি Bazare এর <a href="#" style="color:var(--green);">Terms & Conditions</a> ও <a href="#" style="color:var(--green);">Seller Policy</a> পড়েছি ও সম্মত আছি।</label>
         </div>
-
         <div class="form-nav">
-          <button class="btn btn-outline btn-md" onclick="prevStep(3)">← পূর্ববর্তী</button>
-          <button class="btn btn-primary btn-lg" id="submit-btn" onclick="submitRegistration()">
-            ✅ আবেদন জমা দিন
-          </button>
+          <button class="btn btn-outline btn-md" onclick="goToStep(2)">← পূর্ববর্তী</button>
+          <button class="btn btn-primary btn-lg" id="submit-btn" onclick="submitRegistration()">✅ আবেদন জমা দিন</button>
         </div>
       </div>
 
       <!-- SUCCESS -->
       <div class="success-screen" id="success-screen">
         <div class="success-icon">🎉</div>
-        <h2 style="font-family:var(--font-heading);font-size:26px;font-weight:800;margin-bottom:12px;">আবেদন সফলভাবে জমা হয়েছে!</h2>
-        <p style="font-size:15px;color:var(--gray-500);line-height:1.7;max-width:360px;margin:0 auto 28px;">আপনার আবেদন আমাদের Admin team review করবে। সাধারণত ২৪ ঘণ্টার মধ্যে Approve করা হয়। Approve হলে আপনার ফোনে SMS যাবে।</p>
+        <h2 style="font-family:var(--font-heading);font-size:26px;font-weight:800;margin-bottom:12px;">আবেদন সফলভাবে জমা!</h2>
+        <p style="font-size:15px;color:var(--gray-500);line-height:1.7;max-width:360px;margin:0 auto 28px;">Admin review করবে। সাধারণত ২৪ ঘণ্টার মধ্যে Approve হয়।</p>
         <div style="background:var(--green-pale);border-radius:var(--r-lg);padding:20px;margin-bottom:28px;text-align:left;">
           <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:12px;">পরবর্তী ধাপ:</div>
-          <div style="font-size:14px;color:var(--gray-700);line-height:2;">
-            ✅ আবেদন জমা হয়েছে<br>
-            ⏳ Admin review (২৪ ঘণ্টা)<br>
-            📱 Approve হলে SMS পাবেন<br>
-            🏪 Dashboard access পাবেন
-          </div>
+          <div style="font-size:14px;color:var(--gray-700);line-height:2;">✅ আবেদন জমা হয়েছে<br>⏳ Admin review (২৪ ঘণ্টা)<br>📱 Approve হলে SMS পাবেন<br>🏪 Dashboard access পাবেন</div>
         </div>
         <a href="index.html" class="btn btn-primary btn-lg">🏠 হোমে ফিরুন</a>
       </div>
@@ -425,47 +195,45 @@
   </div>
 </div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="auth.js"></script>
 
 <script>
-let currentStep = 1;
-let logoFile = null;
+var logoFile = null;
+var CLOUD_NAME    = localStorage.getItem('bazare_cloud_name') || '';
+var UPLOAD_PRESET = localStorage.getItem('bazare_upload_preset') || '';
 
-// Check if already seller on load
 auth.onAuthStateChanged(async (user) => {
-  if (user) {
-    const snap = await db.collection(COL.USERS).doc(user.uid).get();
-    const profile = snap.data();
-    if (profile?.role === 'seller') {
-      document.getElementById('already-seller-notice').style.display = 'flex';
-    }
-    // Check pending
-    const sellerSnap = await db.collection(COL.SELLERS).doc(user.uid).get();
-    if (sellerSnap.exists && sellerSnap.data().status === 'pending') {
-      document.getElementById('pending-notice').style.display = 'block';
-    }
-    // Pre-fill from profile
-    if (profile?.name) document.getElementById('f-name').value = profile.name;
-    if (profile?.email) document.getElementById('f-email').value = profile.email;
-    if (profile?.phone) document.getElementById('f-phone').value = profile.phone;
+  if (!user) return;
+  var snap = await db.collection(COL.USERS).doc(user.uid).get();
+  var profile = snap.data();
+
+  if (profile?.role === 'seller') {
+    document.getElementById('notice-seller').style.display = 'flex';
   }
+  var sellerSnap = await db.collection(COL.SELLERS).doc(user.uid).get();
+  if (sellerSnap.exists && sellerSnap.data().status === 'pending') {
+    document.getElementById('notice-pending').style.display = 'flex';
+  }
+
+  // Pre-fill
+  if (profile?.name)  document.getElementById('f-name').value  = profile.name;
+  if (profile?.email) document.getElementById('f-email').value = profile.email;
+  if (profile?.phone) document.getElementById('f-phone').value = profile.phone;
 });
 
 function previewLogo(input) {
   if (!input.files?.[0]) return;
   logoFile = input.files[0];
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const preview = document.getElementById('logo-preview');
-    preview.src = e.target.result;
-    preview.style.display = 'block';
-    document.getElementById('upload-icon').style.display = 'none';
+  var reader = new FileReader();
+  reader.onload = e => {
+    var img = document.getElementById('logo-preview');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    document.getElementById('logo-upload-icon').style.display = 'none';
   };
   reader.readAsDataURL(logoFile);
 }
@@ -474,42 +242,39 @@ function nextStep(from) {
   if (!validateStep(from)) return;
   goToStep(from + 1);
 }
-function prevStep(from) { goToStep(from - 1); }
 
 function goToStep(step) {
-  // Update form sections
   document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-  document.getElementById('step-' + step)?.classList.add('active');
+  var el = document.getElementById('step-' + step);
+  if (el) el.classList.add('active');
 
-  // Update step circles
-  for (let i = 1; i <= 3; i++) {
-    const circle = document.getElementById('circle-' + i);
-    const label  = document.getElementById('label-' + i);
-    circle.classList.remove('active', 'done');
-    label.classList.remove('active');
-    if (i < step)      { circle.classList.add('done'); circle.textContent = '✓'; }
-    else if (i === step){ circle.classList.add('active'); circle.textContent = i; label.classList.add('active'); }
-    else                { circle.textContent = i; }
+  for (var i = 1; i <= 3; i++) {
+    var c = document.getElementById('c' + i);
+    var l = document.getElementById('l' + i);
+    c.classList.remove('active','done');
+    l.classList.remove('active');
+    if (i < step)       { c.classList.add('done'); c.textContent = '✓'; }
+    else if (i === step){ c.classList.add('active'); c.textContent = i; l.classList.add('active'); }
+    else                { c.textContent = i; }
   }
-  for (let i = 1; i <= 2; i++) {
-    document.getElementById('line-' + i)?.classList.toggle('done', i < step);
+  for (var j = 1; j <= 2; j++) {
+    var line = document.getElementById('line' + j);
+    if (line) line.classList.toggle('done', j < step);
   }
-  currentStep = step;
   window.scrollTo(0, 0);
 }
 
 function validateStep(step) {
-  const required = {
-    1: ['f-name', 'f-phone', 'f-district'],
-    2: ['f-shop-name', 'f-category'],
-    3: ['f-bkash', 'f-nid'],
+  var required = {
+    1: ['f-name','f-phone','f-district'],
+    2: ['f-shop-name','f-category'],
+    3: ['f-bkash','f-nid'],
   };
-  for (const id of (required[step] || [])) {
-    const el = document.getElementById(id);
+  for (var id of (required[step] || [])) {
+    var el = document.getElementById(id);
     if (!el?.value?.trim()) {
       el?.focus();
-      el?.style && (el.style.borderColor = 'var(--red)');
-      setTimeout(() => el && (el.style.borderColor = ''), 2000);
+      if (el) { el.style.borderColor = 'var(--red)'; setTimeout(() => el.style.borderColor = '', 2000); }
       showToast('সব * চিহ্নিত তথ্য পূরণ করুন', 'error');
       return false;
     }
@@ -523,66 +288,58 @@ function validateStep(step) {
 
 async function submitRegistration() {
   if (!validateStep(3)) return;
+  if (!currentUser) { showToast('আগে লগইন করুন', 'error'); showAuthModal(); return; }
 
-  // Must be logged in
-  if (!currentUser) {
-    showToast('আগে লগইন করুন', 'error');
-    showAuthModal('Seller হতে লগইন প্রয়োজন');
-    return;
-  }
-
-  const btn = document.getElementById('submit-btn');
-  btn.disabled = true;
-  btn.textContent = 'জমা হচ্ছে...';
+  var btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.textContent = 'জমা হচ্ছে...';
 
   try {
-    // Upload logo if provided
-    let logoUrl = '';
-    if (logoFile) {
-      const ref  = storage.ref('seller-logos/' + currentUser.uid);
-      await ref.put(logoFile);
-      logoUrl = await ref.getDownloadURL();
+    // Upload logo to Cloudinary if available
+    var logoUrl = '';
+    if (logoFile && CLOUD_NAME && UPLOAD_PRESET) {
+      var formData = new FormData();
+      formData.append('file', logoFile);
+      formData.append('upload_preset', UPLOAD_PRESET);
+      formData.append('folder', 'bazare/seller-logos');
+      var res  = await fetch('https://api.cloudinary.com/v1_1/'+CLOUD_NAME+'/image/upload', {method:'POST',body:formData});
+      var data = await res.json();
+      logoUrl  = data.secure_url || '';
     }
 
-    const sellerData = {
-      uid:          currentUser.uid,
-      name:         document.getElementById('f-name').value.trim(),
-      phone:        document.getElementById('f-phone').value.trim(),
-      email:        document.getElementById('f-email').value.trim(),
-      district:     document.getElementById('f-district').value,
-      shopName:     document.getElementById('f-shop-name').value.trim(),
-      category:     document.getElementById('f-category').value,
-      shopDesc:     document.getElementById('f-shop-desc').value.trim(),
-      fbPage:       document.getElementById('f-fb').value.trim(),
-      bkash:        document.getElementById('f-bkash').value.trim(),
-      nagad:        document.getElementById('f-nagad').value.trim(),
-      nid:          document.getElementById('f-nid').value.trim(),
-      logoUrl:      logoUrl,
-      status:       'pending',
-      createdAt:    firebase.firestore.FieldValue.serverTimestamp(),
+    var sellerData = {
+      uid:       currentUser.uid,
+      name:      document.getElementById('f-name').value.trim(),
+      phone:     document.getElementById('f-phone').value.trim(),
+      email:     document.getElementById('f-email').value.trim(),
+      district:  document.getElementById('f-district').value,
+      shopName:  document.getElementById('f-shop-name').value.trim(),
+      category:  document.getElementById('f-category').value,
+      shopDesc:  document.getElementById('f-shop-desc').value.trim(),
+      fbPage:    document.getElementById('f-fb').value.trim(),
+      bkash:     document.getElementById('f-bkash').value.trim(),
+      nagad:     document.getElementById('f-nagad').value.trim(),
+      nid:       document.getElementById('f-nid').value.trim(),
+      logoUrl,
+      status:    'pending',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     };
 
-    // Save to sellers collection
     await db.collection(COL.SELLERS).doc(currentUser.uid).set(sellerData);
-
-    // Update user profile status
     await db.collection(COL.USERS).doc(currentUser.uid).update({
       sellerStatus: 'pending',
       shopName: sellerData.shopName,
     });
 
-    // Show success
+    // Hide form, show success
     document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.steps-bar').forEach(s => s.style.display = 'none');
+    document.getElementById('steps-bar').style.display = 'none';
     document.querySelector('.reg-title').style.display = 'none';
-    document.querySelector('.reg-sub').style.display = 'none';
+    document.querySelector('.reg-sub').style.display   = 'none';
     document.getElementById('success-screen').classList.add('active');
 
-  } catch (err) {
-    console.error(err);
-    showToast('❌ সমস্যা হয়েছে: ' + err.message, 'error');
-    btn.disabled = false;
-    btn.textContent = '✅ আবেদন জমা দিন';
+  } catch(err) {
+    showToast('❌ সমস্যা: ' + err.message, 'error');
+    btn.disabled = false; btn.textContent = '✅ আবেদন জমা দিন';
   }
 }
 </script>

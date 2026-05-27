@@ -377,7 +377,8 @@
 
 <script>
 // Admin UIDs — add your UID here after first login
-const ADMIN_UIDS = ['REPLACE_WITH_YOUR_UID'];
+// Admin UIDs — Google login করার পর Firebase Console → Authentication → Users থেকে UID নিন
+const ADMIN_UIDS = localStorage.getItem('bazare_admin_uid') ? [localStorage.getItem('bazare_admin_uid')] : [];
 
 let currentFilter = 'pending';
 
