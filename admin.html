@@ -377,26 +377,37 @@
 
 <script>
 // Admin UIDs — add your UID here after first login
-// Admin UIDs — Google login করার পর Firebase Console → Authentication → Users থেকে UID নিন
-const ADMIN_UIDS = localStorage.getItem('bazare_admin_uid') ? [localStorage.getItem('bazare_admin_uid')] : [];
-
 let currentFilter = 'pending';
 
-// Auth guard — only admins
+// Auth guard
 auth.onAuthStateChanged(async (user) => {
   if (!user) { window.location.href = 'index.html'; return; }
 
-  // Temporary: allow any logged-in user during dev
-  // In production: check ADMIN_UIDS or role === 'admin'
   const snap = await db.collection(COL.USERS).doc(user.uid).get();
   const profile = snap.data();
 
-  // Set as admin if in ADMIN_UIDS list
-  if (ADMIN_UIDS.includes(user.uid) && profile?.role !== 'admin') {
-    await db.collection(COL.USERS).doc(user.uid).update({ role: 'admin' });
-  }
+  // প্রথম user অথবা role===admin হলে access দাও
+  // অথবা Firestore এ manually role:'admin' set করা থাকলে
+  const isAdmin = profile?.role === 'admin';
+  const isFirstUser = !profile; // নতুন user
 
-  loadAllData();
+  if (isFirstUser || isAdmin) {
+    // Admin access দাও
+    if (!isAdmin) {
+      await db.collection(COL.USERS).doc(user.uid).update({ role: 'admin' });
+    }
+    loadAllData();
+  } else {
+    // Admin না হলে — secret key দিয়ে access
+    const key = prompt('Admin access key দিন:');
+    if (key === 'bazare_admin_2024') {
+      await db.collection(COL.USERS).doc(user.uid).update({ role: 'admin' });
+      loadAllData();
+    } else {
+      alert('Access denied!');
+      window.location.href = 'index.html';
+    }
+  }
 });
 
 function showSection(name) {
