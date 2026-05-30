@@ -514,21 +514,99 @@ h1,h2,h3,h4,h5,h6 {
 
 /* ── RESPONSIVE ── */
 @media (max-width:768px) {
-  .mobile-nav { display:block; }
-  .nav-search { display:none; }
-  .footer-top { grid-template-columns:1fr 1fr; gap:28px; }
-  .footer-bottom { flex-direction:column; text-align:center; gap:12px; }
-  .promo-banner { flex-direction:column; text-align:center; padding:28px 20px; }
-  .section-header { flex-direction:column; align-items:flex-start; gap:8px; }
-  .section-title { font-size:22px; }
-  .modal { max-width:100%; border-radius:var(--r-xl) var(--r-xl) 0 0; margin-top:auto; }
-  .modal-backdrop { align-items:flex-end; padding:0; }
-  .modal-body { padding:20px 24px; }
-  .modal-header { padding:24px 24px 16px; }
-  .modal-footer { padding:12px 24px 32px; }
-  .section { padding:40px 16px; }
+
+  /* BODY */
+  body { padding-bottom: 70px; }
+
+  /* NAVBAR — mobile এ শুধু logo + cart + login */
+  .mobile-nav { display: block; }
+  .nav-search { display: none; }
+  .nav-inner { padding: 0 16px; height: 60px; gap: 10px; }
+  .nav-logo { font-size: 22px; }
+
+  /* Nav actions — desktop-only items hide করো */
+  .nav-actions .btn-ghost,
+  .nav-actions .btn-outline,
+  #nav-become-seller,
+  #nav-seller-link,
+  #nav-admin-link { display: none !important; }
+
+  /* শুধু login button + cart + user menu থাকবে */
+  #nav-login-btn { padding: 7px 14px; font-size: 13px; height: 34px; }
+  #nav-user-menu .user-btn-label { display: none; }
+  #nav-user-menu .user-btn { padding: 4px; background: transparent; }
+
+  /* SECTION */
+  .section { padding: 32px 16px; }
+  .section-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .section-title { font-size: 20px; }
+
+  /* PRODUCT CARD — mobile এ compact */
+  .product-name { font-size: 13px; }
+  .price-new { font-size: 16px; }
+  .add-cart-btn { padding: 7px 11px; font-size: 12px; }
+  .product-wishlist { opacity: 1; }
+
+  /* CATEGORY CARD */
+  .category-card { padding: 14px 8px; border-radius: var(--r); }
+  .category-emoji { width: 44px; height: 44px; font-size: 24px; border-radius: 10px; }
+  .category-name { font-size: 11px; }
+
+  /* PROMO BANNER */
+  .promo-banner { flex-direction: column; text-align: center; padding: 24px 20px; gap: 16px; }
+  .promo-title { font-size: 22px; }
+
+  /* TRUST CARDS */
+  .trust-card { padding: 20px 16px; }
+  .trust-icon { font-size: 32px; }
+  .trust-title { font-size: 14px; }
+  .trust-desc { font-size: 13px; }
+
+  /* FOOTER */
+  .footer { margin-top: 40px; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 24px; padding: 32px 16px 24px; }
+  .footer-bottom { flex-direction: column; text-align: center; gap: 12px; padding: 16px; }
+  .footer-logo { font-size: 24px; }
+  .footer-desc { max-width: 100%; font-size: 13px; }
+
+  /* AUTH MODAL — bottom sheet style */
+  .modal { max-width: 100%; border-radius: var(--r-xl) var(--r-xl) 0 0; margin-top: auto; }
+  .modal-backdrop { align-items: flex-end; padding: 0; }
+  .modal-body { padding: 20px 24px; }
+  .modal-header { padding: 24px 24px 16px; }
+  .modal-footer { padding: 12px 24px 32px; }
+  .modal-logo { font-size: 28px; }
+
+  /* OTP inputs — mobile এ ছোট */
+  .otp-input { width: 40px; height: 48px; font-size: 18px; }
+
+  /* BUTTONS */
+  .btn-xl { padding: 12px 24px; font-size: 15px; height: 50px; }
+  .btn-lg { padding: 12px 24px; font-size: 14px; height: 46px; }
+
+  /* FORM */
+  .form-control { font-size: 16px; } /* iOS zoom prevent */
+  .input-field { font-size: 16px; }
+
+  /* USER DROPDOWN */
+  #user-dropdown { right: -8px; min-width: 170px; }
 }
-@media (max-width:480px) {
-  .nav-logo { font-size:22px; }
-  .footer-top { grid-template-columns:1fr; }
+
+@media (max-width: 480px) {
+  .nav-logo { font-size: 20px; }
+  .footer-top { grid-template-columns: 1fr; }
+  .footer-desc { display: none; }
+
+  /* Product card আরও compact */
+  .product-body { padding: 10px 12px 12px; }
+  .product-seller { font-size: 11px; }
+  .product-rating { margin-bottom: 8px; }
+
+  /* OTP */
+  .otp-row { gap: 6px; }
+  .otp-input { width: 36px; height: 44px; font-size: 16px; }
+
+  /* Promo */
+  .promo-title { font-size: 20px; }
+  .promo-sub { font-size: 13px; }
 }
