@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>আমার প্রোফাইল — Bazare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .profile-page { max-width: 700px; margin: 0 auto; padding: 28px 24px 100px; }
+    .profile-header { background: linear-gradient(135deg, var(--green-deeper) 0%, var(--green) 100%); border-radius: 20px; padding: 32px; display: flex; align-items: center; gap: 24px; margin-bottom: 24px; position: relative; overflow: hidden; }
+    .profile-header::before { content:''; position:absolute; right:-40px; top:-40px; width:200px; height:200px; background:rgba(255,255,255,0.08); border-radius:50%; }
+    .profile-avi { width: 80px; height: 80px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 800; color: var(--green); flex-shrink: 0; border: 4px solid rgba(255,255,255,0.3); overflow: hidden; }
+    .profile-avi img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .profile-name { font-family: var(--font-heading); font-size: 22px; font-weight: 800; color: white; margin-bottom: 4px; }
+    .profile-email { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 8px; }
+    .profile-role { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 99px; padding: 4px 12px; font-size: 12px; font-weight: 700; color: white; }
+
+    .profile-card { background: white; border-radius: 16px; border: 1px solid var(--gray-100); margin-bottom: 16px; overflow: hidden; }
+    .profile-card-header { padding: 16px 20px; border-bottom: 1px solid var(--gray-100); font-family: var(--font-heading); font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+    .profile-card-body { padding: 20px; }
+
+    .profile-field { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--gray-100); }
+    .profile-field:last-child { border-bottom: none; }
+    .field-label { font-size: 13px; color: var(--gray-500); font-weight: 600; }
+    .field-value { font-size: 15px; color: var(--black); font-weight: 500; }
+
+    .quick-links { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+    .quick-link { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1.5px solid var(--gray-100); border-radius: 14px; cursor: pointer; transition: all 0.2s; text-decoration: none; color: var(--black); }
+    .quick-link:hover { border-color: var(--green); background: var(--green-pale); transform: translateY(-2px); }
+    .quick-link-icon { font-size: 28px; width: 48px; height: 48px; background: var(--gray-50); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .quick-link-title { font-family: var(--font-heading); font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+    .quick-link-sub { font-size: 12px; color: var(--gray-400); }
+
+    .logout-btn { width: 100%; padding: 14px; background: var(--red-light); color: var(--red); border: 1.5px solid #fed7d7; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: var(--font-body); transition: all 0.2s; margin-top: 8px; }
+    .logout-btn:hover { background: var(--red); color: white; }
+
+    @media (max-width: 768px) {
+      .profile-page { padding: 16px 16px 100px; }
+      .quick-links { grid-template-columns: 1fr; }
+      .profile-header { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Bazar<span class="logo-e">e</span></a>
+    <div style="flex:1;"></div>
+    <div class="nav-actions">
+      <a href="listing.html" class="btn btn-ghost btn-sm">🛍️ কেনাকাটা</a>
+      <a href="cart.html" style="position:relative;display:flex;align-items:center;justify-content:center;width:46px;height:46px;background:var(--green-pale);border-radius:50%;font-size:20px;text-decoration:none;">
+        🛒
+        <span class="cart-badge" style="display:none;position:absolute;top:-5px;right:-5px;background:var(--accent);color:#000;border-radius:50%;min-width:20px;height:20px;font-size:11px;font-weight:800;align-items:center;justify-content:center;border:2px solid white;">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="profile-page">
+
+  <!-- Profile Header -->
+  <div class="profile-header">
+    <div class="profile-avi" id="profile-avi">?</div>
+    <div>
+      <div class="profile-name" id="profile-name">লোড হচ্ছে...</div>
+      <div class="profile-email" id="profile-email"></div>
+      <div class="profile-role" id="profile-role">🛒 Buyer</div>
+    </div>
+  </div>
+
+  <!-- Profile Info -->
+  <div class="profile-card">
+    <div class="profile-card-header">👤 ব্যক্তিগত তথ্য</div>
+    <div class="profile-card-body">
+      <div class="profile-field"><span class="field-label">নাম</span><span class="field-value" id="info-name">—</span></div>
+      <div class="profile-field"><span class="field-label">ইমেইল</span><span class="field-value" id="info-email">—</span></div>
+      <div class="profile-field"><span class="field-label">ফোন</span><span class="field-value" id="info-phone">—</span></div>
+      <div class="profile-field"><span class="field-label">Role</span><span class="field-value" id="info-role">—</span></div>
+      <div class="profile-field" id="shop-row" style="display:none;"><span class="field-label">দোকান</span><span class="field-value" id="info-shop">—</span></div>
+    </div>
+  </div>
+
+  <!-- Quick Links -->
+  <div class="profile-card">
+    <div class="profile-card-header">🔗 Quick Links</div>
+    <div class="profile-card-body">
+      <div class="quick-links">
+        <a href="orders.html" class="quick-link">
+          <div class="quick-link-icon">📦</div>
+          <div><div class="quick-link-title">আমার অর্ডার</div><div class="quick-link-sub">সব অর্ডার দেখুন</div></div>
+        </a>
+        <a href="listing.html" class="quick-link">
+          <div class="quick-link-icon">🛍️</div>
+          <div><div class="quick-link-title">কেনাকাটা</div><div class="quick-link-sub">পণ্য browse করুন</div></div>
+        </a>
+        <a href="seller-register.html" class="quick-link" id="become-seller-link">
+          <div class="quick-link-icon">🏪</div>
+          <div><div class="quick-link-title">Seller হোন</div><div class="quick-link-sub">দোকান খুলুন</div></div>
+        </a>
+        <a href="seller-dashboard.html" class="quick-link" id="seller-dashboard-link" style="display:none;">
+          <div class="quick-link-icon">📊</div>
+          <div><div class="quick-link-title">Seller Dashboard</div><div class="quick-link-sub">আপনার দোকান</div></div>
+        </a>
+        <a href="cart.html" class="quick-link">
+          <div class="quick-link-icon">🛒</div>
+          <div><div class="quick-link-title">আমার কার্ট</div><div class="quick-link-sub">কার্ট দেখুন</div></div>
+        </a>
+        <a href="admin.html" class="quick-link" id="admin-link" style="display:none;">
+          <div class="quick-link-icon">⚙️</div>
+          <div><div class="quick-link-title">Admin Panel</div><div class="quick-link-sub">Bazare manage করুন</div></div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <button class="logout-btn" onclick="logout()">🚪 লগআউট করুন</button>
+
+</div>
+
+<!-- Mobile NAV -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <a href="index.html" class="mobile-nav-item"><span class="mobile-nav-icon">🏠</span><span class="mobile-nav-label">হোম</span></a>
+    <a href="listing.html" class="mobile-nav-item"><span class="mobile-nav-icon">🔍</span><span class="mobile-nav-label">খুঁজুন</span></a>
+    <a href="cart.html" class="mobile-nav-cart"><div class="mobile-nav-cart-inner" style="position:relative;">🛒<span class="cart-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:var(--accent);color:#000;border-radius:50%;min-width:18px;height:18px;font-size:10px;font-weight:800;align-items:center;justify-content:center;border:2px solid white;">0</span></div></a>
+    <a href="seller-dashboard.html" class="mobile-nav-item"><span class="mobile-nav-icon">🏪</span><span class="mobile-nav-label">দোকান</span></a>
+    <a href="profile.html" class="mobile-nav-item active"><span class="mobile-nav-icon">👤</span><span class="mobile-nav-label">প্রোফাইল</span></a>
+  </div>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth.js"></script>
+<script src="cart.js"></script>
+
+<script>
+auth.onAuthStateChanged(async (user) => {
+  if (!user) { window.location.href = 'index.html'; return; }
+
+  var snap = await db.collection(COL.USERS).doc(user.uid).get();
+  var profile = snap.data() || {};
+
+  // Avatar
+  var aviEl = document.getElementById('profile-avi');
+  if (user.photoURL) {
+    aviEl.innerHTML = '<img src="'+user.photoURL+'" alt="avatar">';
+  } else {
+    aviEl.textContent = (profile.name || user.displayName || 'U')[0].toUpperCase();
+  }
+
+  // Info
+  var name  = profile.name  || user.displayName || '—';
+  var email = profile.email || user.email || '—';
+  var phone = profile.phone || user.phoneNumber || '—';
+  var role  = profile.role  || 'buyer';
+
+  document.getElementById('profile-name').textContent  = name;
+  document.getElementById('profile-email').textContent = email;
+  document.getElementById('info-name').textContent     = name;
+  document.getElementById('info-email').textContent    = email;
+  document.getElementById('info-phone').textContent    = phone;
+  document.getElementById('info-role').textContent     = role === 'seller' ? '🏪 Seller' : role === 'admin' ? '⚙️ Admin' : '🛒 Buyer';
+
+  // Role badge
+  var roleEl = document.getElementById('profile-role');
+  roleEl.textContent = role === 'seller' ? '🏪 Verified Seller' : role === 'admin' ? '⚙️ Admin' : '🛒 Buyer';
+
+  // Seller specific
+  if (role === 'seller') {
+    document.getElementById('shop-row').style.display = 'flex';
+    document.getElementById('info-shop').textContent  = profile.shopName || '—';
+    document.getElementById('become-seller-link').style.display  = 'none';
+    document.getElementById('seller-dashboard-link').style.display = 'flex';
+  }
+
+  // Admin
+  if (role === 'admin') {
+    document.getElementById('admin-link').style.display = 'flex';
+  }
+});
+</script>
+</body>
+</html>
