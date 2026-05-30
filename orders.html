@@ -232,8 +232,9 @@ async function loadOrders(uid) {
   try {
     const snap = await db.collection(COL.ORDERS)
       .where('buyerId', '==', uid)
-      .orderBy('createdAt', 'desc')
       .get();
+    // Sort locally
+    allOrders.sort((a,b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
 
     allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     document.getElementById('orders-count').textContent = `মোট ${allOrders.length}টি অর্ডার`;

@@ -375,9 +375,22 @@
 <script src="firebase-config.js"></script>
 <script src="auth.js"></script>
 
+<!-- Admin Key Modal -->
+<div id="admin-key-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:20px;padding:36px;width:100%;max-width:400px;margin:20px;box-shadow:0 32px 80px rgba(0,0,0,0.3);text-align:center;">
+    <div style="font-size:48px;margin-bottom:16px;">🔐</div>
+    <div style="font-family:'Sora',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px;">Admin Access</div>
+    <div style="font-size:14px;color:#5f8a6e;margin-bottom:24px;">Secret key দিন</div>
+    <input type="password" id="admin-key-input" placeholder="Admin key..." style="width:100%;padding:14px 16px;border:2px solid #dce8e0;border-radius:12px;font-size:16px;outline:none;font-family:'Hind Siliguri',sans-serif;margin-bottom:12px;text-align:center;letter-spacing:3px;" onkeydown="if(event.key==='Enter')checkAdminKey()">
+    <div id="admin-key-error" style="color:#e53e3e;font-size:13px;margin-bottom:12px;display:none;">❌ ভুল key!</div>
+    <button onclick="checkAdminKey()" style="width:100%;padding:14px;background:#1a7a3c;color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Hind Siliguri',sans-serif;">প্রবেশ করুন</button>
+    <button onclick="window.location.href='index.html'" style="width:100%;padding:10px;background:none;border:none;color:#8aab93;font-size:13px;cursor:pointer;margin-top:8px;font-family:'Hind Siliguri',sans-serif;">← হোমে ফিরুন</button>
+  </div>
+</div>
+
 <script>
-// Admin UIDs — add your UID here after first login
 let currentFilter = 'pending';
+let pendingAdminUser = null;
 
 // Auth guard
 auth.onAuthStateChanged(async (user) => {
@@ -385,27 +398,34 @@ auth.onAuthStateChanged(async (user) => {
 
   const snap = await db.collection(COL.USERS).doc(user.uid).get();
   const profile = snap.data();
-
-  // প্রথম user অথবা role===admin হলে access দাও
-  // অথবা Firestore এ manually role:'admin' set করা থাকলে
   const isAdmin = profile?.role === 'admin';
 
   if (isAdmin) {
-    // Already admin
     loadAllData();
   } else {
-    // Secret key দিয়ে admin হওয়া
-    const key = prompt('🔐 Admin Access Key:');
-    if (key === 'bazare_admin_2024') {
-      await db.collection(COL.USERS).doc(user.uid).update({ role: 'admin' });
-      showToast('✅ Admin access পেয়েছেন!', 'success');
-      loadAllData();
-    } else {
-      alert('❌ Wrong key! Access denied.');
-      window.location.href = 'index.html';
-    }
+    // Show custom key modal
+    pendingAdminUser = user;
+    const modal = document.getElementById('admin-key-modal');
+    modal.style.display = 'flex';
+    setTimeout(() => document.getElementById('admin-key-input').focus(), 100);
   }
 });
+
+async function checkAdminKey() {
+  const key = document.getElementById('admin-key-input').value;
+  const errEl = document.getElementById('admin-key-error');
+  if (key === 'bazare_admin_2024') {
+    document.getElementById('admin-key-modal').style.display = 'none';
+    await db.collection(COL.USERS).doc(pendingAdminUser.uid).update({ role: 'admin' });
+    showToast('✅ Admin হিসেবে প্রবেশ করেছেন!', 'success');
+    loadAllData();
+  } else {
+    errEl.style.display = 'block';
+    document.getElementById('admin-key-input').value = '';
+    document.getElementById('admin-key-input').focus();
+    setTimeout(() => errEl.style.display = 'none', 2000);
+  }
+}
 
 function showSection(name) {
   document.querySelectorAll('[id^="section-"]').forEach(s => s.style.display = 'none');

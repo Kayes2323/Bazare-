@@ -368,10 +368,11 @@ async function loadOrders(type) {
   var uid = currentUser.uid;
   var snap;
   if (type === 'pending') {
-    snap = await db.collection(COL.ORDERS).where('sellerId','==',uid).where('status','==','pending').get();
+    snap = await db.collection(COL.ORDERS).where('sellerId','==',uid).get();
+    snap = { docs: snap.docs.filter(d => d.data().status === 'pending') };
     renderOrdersTable('pending-orders-tbody', snap.docs, true);
   } else {
-    snap = await db.collection(COL.ORDERS).where('sellerId','==',uid).orderBy('createdAt','desc').get();
+    snap = await db.collection(COL.ORDERS).where('sellerId','==',uid).get();
     renderOrdersTable('all-orders-tbody', snap.docs, true);
   }
 }

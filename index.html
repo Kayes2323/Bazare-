@@ -387,7 +387,6 @@ async function loadProducts() {
   try {
     const snap = await db.collection(COL.PRODUCTS)
       .where('status', '==', 'active')
-      .orderBy('createdAt', 'desc')
       .limit(8)
       .get();
 
