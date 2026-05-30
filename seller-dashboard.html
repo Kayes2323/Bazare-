@@ -112,8 +112,58 @@
     /* Cloudinary setup notice */
     .setup-notice { background: var(--accent-light); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; font-size: 14px; color: #92611a; display: flex; align-items: flex-start; gap: 10px; }
 
-    @media (max-width: 1024px) { .stat-cards { grid-template-columns: repeat(2,1fr); } .my-products-grid { grid-template-columns: repeat(2,1fr); } }
-    @media (max-width: 768px) { .dash-layout { grid-template-columns: 1fr; } .dash-sidebar { display: none; } .form-grid { grid-template-columns: 1fr; } .form-full { grid-column: 1; } }
+    @media (max-width: 1024px) {
+      .stat-cards { grid-template-columns: repeat(2,1fr); }
+      .my-products-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    .dash-mobile-nav { display: none; }
+    @media (max-width: 768px) {
+      body { padding-bottom: 70px; }
+      .dash-layout { grid-template-columns: 1fr; }
+      .dash-sidebar { display: none; }
+      .dash-main { padding: 16px; }
+      .stat-cards { grid-template-columns: repeat(2,1fr); gap: 10px; }
+      .stat-card-value { font-size: 22px; }
+      .stat-card { padding: 14px 16px; }
+      .dash-card { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .dash-table { min-width: 580px; }
+      .dash-table th, .dash-table td { padding: 9px 10px; font-size: 12px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-full { grid-column: 1; }
+      .my-products-grid { grid-template-columns: repeat(2,1fr); gap: 10px; }
+      .dash-topbar { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
+      .dash-page-title { font-size: 18px; }
+      .dash-mobile-nav {
+        display: flex !important;
+        position: fixed; bottom: 0; left: 0; right: 0;
+        z-index: 400; background: white;
+        border-top: 1px solid #edf2ef;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+        height: 64px; align-items: center; padding: 0 4px;
+      }
+    }
+    .dash-mobile-nav-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 3px; cursor: pointer; padding: 6px 2px;
+      border-radius: 10px; border: none; background: none;
+      font-family: 'Hind Siliguri', sans-serif;
+      color: #8aab93; font-size: 10px; font-weight: 600;
+      position: relative; transition: all 0.15s;
+    }
+    .dash-mobile-nav-item.active { color: #1a7a3c; }
+    .dash-mobile-nav-item .nav-icon { font-size: 20px; line-height: 1; }
+    .dash-mobile-nav-badge {
+      position: absolute; top: 2px; right: 6px;
+      background: #e53e3e; color: white; border-radius: 99px;
+      min-width: 16px; height: 16px; font-size: 9px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+    }
+    @media (max-width: 480px) {
+      .stat-card-value { font-size: 20px; }
+      .my-products-grid { gap: 8px; }
+      .my-product-name { font-size: 12px; }
+    }
   </style>
 </head>
 <body>
@@ -297,6 +347,27 @@
   </main>
 </div>
 
+
+<!-- MOBILE BOTTOM NAV FOR DASHBOARD -->
+<nav class="dash-mobile-nav" id="dash-mobile-nav">
+  <button class="dash-mobile-nav-item active" id="mnav-overview" onclick="mobileNav('overview',this)">
+    <span class="nav-icon">📊</span>Overview
+  </button>
+  <button class="dash-mobile-nav-item" id="mnav-orders" onclick="mobileNav('orders',this)">
+    <span class="nav-icon">🛒</span>অর্ডার
+    <span class="dash-mobile-nav-badge" id="mnav-badge" style="display:none;">0</span>
+  </button>
+  <button class="dash-mobile-nav-item" id="mnav-products" onclick="mobileNav('my-products',this)">
+    <span class="nav-icon">📦</span>পণ্য
+  </button>
+  <button class="dash-mobile-nav-item" id="mnav-add" onclick="mobileNav('add-product',this)">
+    <span class="nav-icon">➕</span>নতুন
+  </button>
+  <button class="dash-mobile-nav-item" id="mnav-earnings" onclick="mobileNav('earnings',this)">
+    <span class="nav-icon">💰</span>আয়
+  </button>
+</nav>
+
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -341,6 +412,22 @@ function showPage(name, btn) {
   if (name==='earnings') loadEarnings();
 }
 
+
+// ── Mobile Nav ──
+function mobileNav(page, btn) {
+  showPage(page, null);
+  document.querySelectorAll('.dash-mobile-nav-item').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+// ── Update mobile badge ──
+function updateMobileBadge(count) {
+  var badge = document.getElementById('mnav-badge');
+  if (!badge) return;
+  if (count > 0) { badge.style.display = 'flex'; badge.textContent = count; }
+  else { badge.style.display = 'none'; }
+}
+
 async function loadOverview() {
   if (!currentUser) return;
   var uid = currentUser.uid;
@@ -360,6 +447,7 @@ async function loadOverview() {
   if (pending.length > 0) {
     var badge = document.getElementById('pending-orders-badge');
     badge.style.display = 'flex'; badge.textContent = pending.length;
+  updateMobileBadge(pending.length);
   }
   renderOrdersTable('recent-orders-tbody', ordersSnap.docs.slice(0,5), false);
 }
