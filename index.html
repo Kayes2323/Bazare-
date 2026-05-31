@@ -118,6 +118,14 @@
       .hero-actions .btn { justify-content:center; }
       .categories-grid { grid-template-columns:repeat(3,1fr); }
     }
+
+    /* ── Navbar mobile fix — inline override ── */
+    @media(max-width:768px) {
+      #nav-all-products,
+      #nav-become-seller,
+      #nav-seller-link,
+      #nav-admin-link { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -131,7 +139,7 @@
       <button class="nav-search-btn" onclick="doSearch()">🔍 খুঁজুন</button>
     </div>
     <div class="nav-actions">
-      <a href="listing.html" class="btn btn-ghost btn-sm">🛍️ সব পণ্য</a>
+      <a href="listing.html" class="btn btn-ghost btn-sm" id="nav-all-products">🛍️ সব পণ্য</a>
       <a href="seller-register.html" class="btn btn-outline btn-sm" id="nav-become-seller">🏪 Seller হোন</a>
       <a href="seller-dashboard.html" class="btn btn-outline btn-sm" id="nav-seller-link" style="display:none">🏪 আমার দোকান</a>
       <a href="admin.html" class="btn btn-sm" id="nav-admin-link" style="display:none;background:#e53e3e;color:white;">⚙️ Admin</a>
