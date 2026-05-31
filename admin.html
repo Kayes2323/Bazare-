@@ -163,10 +163,54 @@
     }
     .tab-btn.active { background: white; color: var(--green); box-shadow: var(--shadow-xs); }
 
+    /* Admin Mobile Nav */
+    .admin-mobile-nav {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      z-index: 400; background: var(--green-deeper);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+      height: 64px;
+    }
+    .admin-mobile-nav-inner { display: flex; align-items: center; height: 100%; padding: 0 4px; }
+    .admin-mob-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 3px; cursor: pointer; padding: 6px 2px;
+      border-radius: 10px; border: none;
+      background: none; color: rgba(255,255,255,0.6);
+      font-family: 'Hind Siliguri', sans-serif;
+      font-size: 10px; font-weight: 600;
+      transition: all 0.15s; position: relative;
+    }
+    .admin-mob-item.active, .admin-mob-item:hover { color: white; background: rgba(255,255,255,0.1); }
+    .admin-mob-item .mob-icon { font-size: 20px; line-height: 1; }
+    .admin-mob-badge {
+      position: absolute; top: 0; right: 4px;
+      background: var(--accent); color: #000;
+      border-radius: 99px; min-width: 16px; height: 16px;
+      font-size: 9px; font-weight: 800;
+      display: none; align-items: center; justify-content: center;
+    }
+
+    /* Table scroll on mobile */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
     @media (max-width: 1024px) { .admin-stats { grid-template-columns: repeat(2,1fr); } }
     @media (max-width: 768px) {
+      body { padding-bottom: 70px; }
       .admin-layout { grid-template-columns: 1fr; }
       .admin-sidebar { display: none; }
+      .admin-mobile-nav { display: block; }
+      .admin-main { padding: 16px; }
+      .admin-stats { grid-template-columns: repeat(2,1fr); gap: 10px; }
+      .admin-topbar { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
+      .admin-page-title { font-size: 18px; }
+      .tab-filters { flex-wrap: wrap; gap: 6px; }
+      .tab-btn { padding: 8px 14px; font-size: 12px; }
+    }
+    @media (max-width: 480px) {
+      .admin-stats { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -268,14 +312,14 @@
           <div class="admin-card-title">⏳ Pending Seller Requests</div>
           <button class="btn btn-ghost btn-sm" onclick="showSection('pending-sellers')">সব দেখুন →</button>
         </div>
-        <table class="admin-table">
+        <div class="table-wrap"><table class="admin-table">
           <thead>
             <tr><th>নাম</th><th>দোকান</th><th>ফোন</th><th>জেলা</th><th>তারিখ</th><th>Action</th></tr>
           </thead>
           <tbody id="dashboard-pending-tbody">
             <tr class="loading-row"><td colspan="6">লোড হচ্ছে...</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
@@ -290,14 +334,14 @@
         <button class="tab-btn" onclick="filterSellers('rejected',this)">❌ Rejected</button>
       </div>
       <div class="admin-card">
-        <table class="admin-table">
+        <div class="table-wrap"><table class="admin-table">
           <thead>
             <tr><th>Seller</th><th>দোকান</th><th>ক্যাটাগরি</th><th>ফোন</th><th>জেলা</th><th>Status</th><th>Action</th></tr>
           </thead>
           <tbody id="sellers-tbody">
             <tr class="loading-row"><td colspan="7">লোড হচ্ছে...</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
@@ -307,14 +351,14 @@
         <div><div class="admin-page-title">🏪 সব Sellers</div></div>
       </div>
       <div class="admin-card">
-        <table class="admin-table">
+        <div class="table-wrap"><table class="admin-table">
           <thead>
             <tr><th>Seller</th><th>দোকান</th><th>Status</th><th>তারিখ</th><th>Action</th></tr>
           </thead>
           <tbody id="all-sellers-tbody">
             <tr class="loading-row"><td colspan="5">লোড হচ্ছে...</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
@@ -324,14 +368,14 @@
         <div><div class="admin-page-title">📦 সব পণ্য</div></div>
       </div>
       <div class="admin-card">
-        <table class="admin-table">
+        <div class="table-wrap"><table class="admin-table">
           <thead>
             <tr><th>পণ্য</th><th>Seller</th><th>দাম</th><th>Status</th><th>Action</th></tr>
           </thead>
           <tbody id="products-tbody">
             <tr class="loading-row"><td colspan="5">লোড হচ্ছে...</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
@@ -341,14 +385,14 @@
         <div><div class="admin-page-title">👥 সব Users</div></div>
       </div>
       <div class="admin-card">
-        <table class="admin-table">
+        <div class="table-wrap"><table class="admin-table">
           <thead>
             <tr><th>নাম</th><th>Email/Phone</th><th>Role</th><th>Join তারিখ</th></tr>
           </thead>
           <tbody id="users-tbody">
             <tr class="loading-row"><td colspan="4">লোড হচ্ছে...</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
 
@@ -366,6 +410,29 @@
     <div style="padding:16px 24px;border-top:1px solid var(--gray-100);display:flex;gap:10px;justify-content:flex-end;" id="modal-actions"></div>
   </div>
 </div>
+
+
+<!-- ADMIN MOBILE BOTTOM NAV -->
+<nav class="admin-mobile-nav">
+  <div class="admin-mobile-nav-inner">
+    <button class="admin-mob-item active" onclick="adminMobileNav('dashboard',this)">
+      <span class="mob-icon">📊</span>Dashboard
+    </button>
+    <button class="admin-mob-item" onclick="adminMobileNav('pending-sellers',this)">
+      <span class="mob-icon">⏳</span>Pending
+      <span class="admin-mob-badge" id="mob-pending-count">0</span>
+    </button>
+    <button class="admin-mob-item" onclick="adminMobileNav('all-sellers',this)">
+      <span class="mob-icon">🏪</span>Sellers
+    </button>
+    <button class="admin-mob-item" onclick="adminMobileNav('products',this)">
+      <span class="mob-icon">📦</span>পণ্য
+    </button>
+    <button class="admin-mob-item" onclick="adminMobileNav('orders',this)">
+      <span class="mob-icon">🛒</span>Orders
+    </button>
+  </div>
+</nav>
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -620,6 +687,23 @@ function formatDate(ts) {
 document.getElementById('seller-modal').addEventListener('click', e => {
   if (e.target === document.getElementById('seller-modal')) closeModal();
 });
+
+// Admin Mobile Nav
+function adminMobileNav(section, btn) {
+  showSection(section);
+  document.querySelectorAll('.admin-mob-item').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  // Sync sidebar
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+}
+
+// Update mobile pending badge
+function updateMobPendingBadge(count) {
+  var badge = document.getElementById('mob-pending-count');
+  if (!badge) return;
+  if (count > 0) { badge.style.display = 'flex'; badge.textContent = count; }
+  else { badge.style.display = 'none'; }
+}
 </script>
 </body>
 </html>
