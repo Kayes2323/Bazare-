@@ -112,78 +112,8 @@
     /* Cloudinary setup notice */
     .setup-notice { background: var(--accent-light); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; font-size: 14px; color: #92611a; display: flex; align-items: flex-start; gap: 10px; }
 
-    /* ── Mobile Bottom Nav ── */
-    .dash-mobile-nav {
-      display: none;
-      position: fixed; bottom: 0; left: 0; right: 0;
-      z-index: 400; background: white;
-      border-top: 1px solid #edf2ef;
-      box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-      height: 64px;
-    }
-    .dash-mobile-nav-inner {
-      display: flex; align-items: center; height: 100%; padding: 0 4px;
-    }
-    .dash-mob-item {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 3px; cursor: pointer; padding: 6px 2px;
-      border-radius: 10px; border: none; background: none;
-      font-family: 'Hind Siliguri', sans-serif;
-      color: #8aab93; font-size: 10px; font-weight: 600;
-      position: relative; transition: all 0.15s; text-decoration: none;
-    }
-    .dash-mob-item.active { color: #1a7a3c; }
-    .dash-mob-item .mob-icon { font-size: 22px; line-height: 1; }
-    .mob-badge {
-      position: absolute; top: 0px; right: 4px;
-      background: #e53e3e; color: white; border-radius: 99px;
-      min-width: 16px; height: 16px; font-size: 9px; font-weight: 800;
-      display: none; align-items: center; justify-content: center;
-    }
-
-    /* ── Order Cards (mobile) ── */
-    .order-card-mobile {
-      background: white; border: 1px solid #edf2ef;
-      border-radius: 14px; padding: 16px; margin-bottom: 12px;
-    }
-    .order-card-mobile-header {
-      display: flex; justify-content: space-between;
-      align-items: center; margin-bottom: 10px;
-    }
-    .order-card-mobile-body { font-size: 13px; color: #4a6b54; line-height: 1.8; }
-    .order-card-mobile-actions { display: flex; gap: 8px; margin-top: 12px; }
-
-    @media (max-width: 1024px) {
-      .stat-cards { grid-template-columns: repeat(2,1fr); }
-      .my-products-grid { grid-template-columns: repeat(2,1fr); }
-    }
-    @media (max-width: 768px) {
-      body { padding-bottom: 70px; }
-      .dash-layout { grid-template-columns: 1fr; }
-      .dash-sidebar { display: none; }
-      .dash-main { padding: 16px; }
-      .dash-mobile-nav { display: block; }
-      .stat-cards { grid-template-columns: repeat(2,1fr); gap: 10px; }
-      .stat-card { padding: 14px 16px; }
-      .stat-card-value { font-size: 22px; }
-      .form-grid { grid-template-columns: 1fr; }
-      .form-full { grid-column: 1; }
-      .my-products-grid { grid-template-columns: repeat(2,1fr); gap: 10px; }
-      .dash-topbar { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
-      .dash-page-title { font-size: 18px; }
-      /* Table hidden on mobile — card layout used instead */
-      .mobile-hide { display: none !important; }
-      .mobile-orders-list { display: block !important; }
-    }
-    @media (min-width: 769px) {
-      .mobile-orders-list { display: none !important; }
-    }
-    @media (max-width: 480px) {
-      .stat-card-value { font-size: 20px; }
-      .my-products-grid { gap: 8px; }
-      .my-product-name { font-size: 12px; }
-    }
+    @media (max-width: 1024px) { .stat-cards { grid-template-columns: repeat(2,1fr); } .my-products-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 768px) { .dash-layout { grid-template-columns: 1fr; } .dash-sidebar { display: none; } .form-grid { grid-template-columns: 1fr; } .form-full { grid-column: 1; } }
   </style>
 </head>
 <body>
@@ -243,8 +173,7 @@
       </div>
       <div class="dash-card">
         <div class="dash-card-header"><div class="dash-card-title">🔔 সাম্প্রতিক অর্ডার</div></div>
-        <div class="mobile-orders-list" id="recent-orders-mobile"></div>
-        <table class="dash-table mobile-hide">
+        <table class="dash-table">
           <thead><tr><th>Order ID</th><th>পণ্য</th><th>কাস্টমার</th><th>পরিমাণ</th><th>Status</th><th>Action</th></tr></thead>
           <tbody id="recent-orders-tbody"><tr><td colspan="6" style="text-align:center;padding:30px;color:var(--gray-400);">লোড হচ্ছে...</td></tr></tbody>
         </table>
@@ -255,8 +184,7 @@
     <div class="dash-section" id="page-orders">
       <div class="dash-topbar"><div><div class="dash-page-title">🛒 নতুন অর্ডার</div></div></div>
       <div class="dash-card">
-        <div class="mobile-orders-list" id="pending-orders-mobile"></div>
-        <table class="dash-table mobile-hide">
+        <table class="dash-table">
           <thead><tr><th>Order ID</th><th>পণ্য</th><th>কাস্টমার</th><th>ফোন</th><th>জেলা</th><th>পরিমাণ</th><th>Status</th><th>Action</th></tr></thead>
           <tbody id="pending-orders-tbody"><tr><td colspan="8" style="text-align:center;padding:30px;color:var(--gray-400);">লোড হচ্ছে...</td></tr></tbody>
         </table>
@@ -267,8 +195,7 @@
     <div class="dash-section" id="page-all-orders">
       <div class="dash-topbar"><div><div class="dash-page-title">📋 সব অর্ডার</div></div></div>
       <div class="dash-card">
-        <div class="mobile-orders-list" id="all-orders-mobile"></div>
-        <table class="dash-table mobile-hide">
+        <table class="dash-table">
           <thead><tr><th>Order ID</th><th>পণ্য</th><th>কাস্টমার</th><th>পরিমাণ</th><th>Payment</th><th>Status</th><th>Action</th></tr></thead>
           <tbody id="all-orders-tbody"><tr><td colspan="7" style="text-align:center;padding:30px;color:var(--gray-400);">লোড হচ্ছে...</td></tr></tbody>
         </table>
@@ -370,29 +297,6 @@
   </main>
 </div>
 
-
-<!-- ── MOBILE BOTTOM NAV ── -->
-<nav class="dash-mobile-nav">
-  <div class="dash-mobile-nav-inner">
-    <button class="dash-mob-item active" id="mob-overview" onclick="mobilePage('overview',this)">
-      <span class="mob-icon">📊</span>Overview
-    </button>
-    <button class="dash-mob-item" id="mob-orders" onclick="mobilePage('orders',this)">
-      <span class="mob-icon">🛒</span>অর্ডার
-      <span class="mob-badge" id="mob-badge">0</span>
-    </button>
-    <button class="dash-mob-item" id="mob-products" onclick="mobilePage('my-products',this)">
-      <span class="mob-icon">📦</span>পণ্য
-    </button>
-    <button class="dash-mob-item" id="mob-add" onclick="mobilePage('add-product',this)">
-      <span class="mob-icon">➕</span>নতুন
-    </button>
-    <button class="dash-mob-item" id="mob-earnings" onclick="mobilePage('earnings',this)">
-      <span class="mob-icon">💰</span>আয়
-    </button>
-  </div>
-</nav>
-
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -437,50 +341,6 @@ function showPage(name, btn) {
   if (name==='earnings') loadEarnings();
 }
 
-
-// ── Mobile Nav ──
-function mobilePage(name, btn) {
-  showPage(name, null);
-  document.querySelectorAll('.dash-mob-item').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-}
-
-// ── Render mobile order cards ──
-function renderMobileCards(containerId, docs, showAddress) {
-  var container = document.getElementById(containerId);
-  if (!container) return;
-  if (!docs.length) {
-    container.innerHTML = '<div style="text-align:center;padding:30px;color:#8aab93;">কোনো অর্ডার নেই</div>';
-    return;
-  }
-  var html = '';
-  docs.forEach(doc => {
-    var o = doc.data ? doc.data() : doc;
-    var id = doc.id || '';
-    var sid = id.slice(-6).toUpperCase();
-    var scls = {pending:'s-pending',confirmed:'s-confirmed',shipped:'s-shipped',delivered:'s-delivered',cancelled:'s-cancelled'}[o.status]||'s-pending';
-    var slbl = {pending:'⏳ Pending',confirmed:'✅ Confirmed',shipped:'🚚 Shipped',delivered:'🎉 Delivered',cancelled:'❌ Cancelled'}[o.status]||o.status;
-    var actionBtn = '';
-    if (o.status==='pending') actionBtn = '<button class="action-btn" onclick="updateOrder(\'' + id + '\',\'confirmed\')">✅ Confirm</button>';
-    if (o.status==='confirmed') actionBtn = '<button class="action-btn" onclick="updateOrder(\'' + id + '\',\'shipped\')">🚚 Ship করুন</button>';
-    if (o.status==='shipped') actionBtn = '<button class="action-btn" onclick="updateOrder(\'' + id + '\',\'delivered\')">📦 Delivered</button>';
-    html += '<div class="order-card-mobile">'
-      + '<div class="order-card-mobile-header">'
-      + '<strong style="font-size:13px;color:#1a7a3c;">#BZ-'+sid+'</strong>'
-      + '<span class="order-status '+scls+'">'+slbl+'</span>'
-      + '</div>'
-      + '<div class="order-card-mobile-body">'
-      + '📦 ' + (o.productName||o.items?.[0]?.name||'—') + '<br>'
-      + '👤 ' + (o.buyerName||'—')
-      + (showAddress ? '<br>📱 ' + (o.buyerPhone||'—') + '<br>📍 ' + (o.address?.district||'—') : '')
-      + '<br>💰 <strong style="color:#1a7a3c;">৳' + (o.total||0).toLocaleString('bn') + '</strong>'
-      + '</div>'
-      + (actionBtn ? '<div class="order-card-mobile-actions">' + actionBtn + '</div>' : '')
-      + '</div>';
-  });
-  container.innerHTML = html;
-}
-
 async function loadOverview() {
   if (!currentUser) return;
   var uid = currentUser.uid;
@@ -500,7 +360,6 @@ async function loadOverview() {
   if (pending.length > 0) {
     var badge = document.getElementById('pending-orders-badge');
     badge.style.display = 'flex'; badge.textContent = pending.length;
-  var mobBadge = document.getElementById('mob-badge'); if(mobBadge){mobBadge.style.display='flex';mobBadge.textContent=pending.length;}
   }
   renderOrdersTable('recent-orders-tbody', ordersSnap.docs.slice(0,5), false);
 }
@@ -519,9 +378,6 @@ async function loadOrders(type) {
 }
 
 function renderOrdersTable(tbodyId, docs, showAddress) {
-  // Also render mobile cards
-  var mobileId = tbodyId.replace('-tbody', '-mobile');
-  renderMobileCards(mobileId, docs, showAddress);
   var tbody = document.getElementById(tbodyId);
   if (!tbody) return;
   if (!docs.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--gray-400);">কোনো অর্ডার নেই</td></tr>'; return; }
@@ -554,7 +410,7 @@ async function updateOrder(id, status) {
 }
 
 async function loadMyProducts() {
-  var snap = await db.collection(COL.PRODUCTS).where('sellerId','==',currentUser.uid).orderBy('createdAt','desc').get();
+  var snap = await db.collection(COL.PRODUCTS).where('sellerId','==',currentUser.uid).get();
   var container = document.getElementById('my-products-container');
   if (snap.empty) {
     container.innerHTML = '<div class="empty"><div class="empty-icon">📦</div><h3>কোনো পণ্য নেই</h3><p>নতুন পণ্য যোগ করুন</p><button class="btn btn-primary btn-md" style="margin-top:16px;" onclick="showPage(\'add-product\',null)">➕ পণ্য যোগ করুন</button></div>';
