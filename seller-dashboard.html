@@ -419,7 +419,7 @@ auth.onAuthStateChanged(async (user) => {
   var sellerSnap = await db.collection(COL.SELLERS).doc(user.uid).get();
   sellerProfile = { ...profile, ...sellerSnap.data() };
   var aviEl = document.getElementById('s-avi');
-  if (sellerProfile.logoUrl) aviEl.innerHTML = '<img src="'+sellerProfile.logoUrl+'" alt="logo">';
+  if (sellerProfile.logoUrl) aviEl.innerHTML = '<img src="'+esc(safeUrl(sellerProfile.logoUrl))+'" alt="logo">';
   document.getElementById('s-name').textContent = sellerProfile.shopName || profile.name;
 
   // Cloudinary configured
@@ -470,9 +470,9 @@ function renderMobileCards(containerId, docs, showAddress) {
       + '<span class="order-status '+scls+'">'+slbl+'</span>'
       + '</div>'
       + '<div class="order-card-mobile-body">'
-      + '📦 ' + (o.productName||o.items?.[0]?.name||'—') + '<br>'
-      + '👤 ' + (o.buyerName||'—')
-      + (showAddress ? '<br>📱 ' + (o.buyerPhone||'—') + '<br>📍 ' + (o.address?.district||'—') : '')
+      + '📦 ' + esc(o.productName||o.items?.[0]?.name||'—') + '<br>'
+      + '👤 ' + esc(o.buyerName||'—')
+      + (showAddress ? '<br>📱 ' + esc(o.buyerPhone||'—') + '<br>📍 ' + esc(o.address?.district||'—') : '')
       + '<br>💰 <strong style="color:#1a7a3c;">৳' + (o.total||0).toLocaleString('bn') + '</strong>'
       + '</div>'
       + (actionBtn ? '<div class="order-card-mobile-actions">' + actionBtn + '</div>' : '')
@@ -533,9 +533,9 @@ function renderOrdersTable(tbodyId, docs, showAddress) {
     var slbl = {pending:'⏳ Pending',confirmed:'✅ Confirmed',shipped:'🚚 Shipped',delivered:'🎉 Delivered',cancelled:'❌ Cancelled'}[o.status]||o.status;
     tbody.innerHTML += '<tr>'
       +'<td><strong>#BZ-'+sid+'</strong></td>'
-      +'<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(o.productName||o.items?.[0]?.name||'—')+'</td>'
-      +'<td>'+(o.buyerName||'—')+'</td>'
-      +(showAddress ? '<td style="font-size:12px;color:var(--gray-500);">'+(o.buyerPhone||'—')+'</td><td style="font-size:12px;">'+(o.address?.district||'—')+'</td>' : '')
+      +'<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(o.productName||o.items?.[0]?.name||'—')+'</td>'
+      +'<td>'+esc(o.buyerName||'—')+'</td>'
+      +(showAddress ? '<td style="font-size:12px;color:var(--gray-500);">'+esc(o.buyerPhone||'—')+'</td><td style="font-size:12px;">'+esc(o.address?.district||'—')+'</td>' : '')
       +'<td style="font-weight:700;color:var(--green);">৳'+(o.total||0).toLocaleString('bn')+'</td>'
       +'<td><span class="order-status '+scls+'">'+slbl+'</span></td>'
       +'<td style="display:flex;gap:6px;">'
@@ -548,9 +548,13 @@ function renderOrdersTable(tbodyId, docs, showAddress) {
 }
 
 async function updateOrder(id, status) {
-  await db.collection(COL.ORDERS).doc(id).update({status, updatedAt: firebase.firestore.FieldValue.serverTimestamp()});
-  showToast('✅ অর্ডার আপডেট হয়েছে', 'success');
-  loadOverview();
+  try {
+    await apiPost('/api/update-order-status', { orderId: id, status });
+    showToast('✅ অর্ডার আপডেট হয়েছে', 'success');
+    loadOverview();
+  } catch (e) {
+    showToast('❌ ' + (e.status && e.status < 500 ? e.message : 'আপডেট করা যায়নি, আবার চেষ্টা করুন'), 'error');
+  }
 }
 
 async function loadMyProducts() {
@@ -567,11 +571,11 @@ async function loadMyProducts() {
     var sl = p.status==='active' ? '✅ Active' : p.status==='draft' ? '📝 Draft' : '❌ Inactive';
     html += '<div class="my-product-card">'
       +'<div class="my-product-img">'
-      +(p.imageUrl ? '<img src="'+p.imageUrl+'" alt="'+p.name+'">' : '<span style="font-size:56px;">'+(p.emoji||'📦')+'</span>')
+      +(p.imageUrl ? '<img src="'+esc(safeUrl(p.imageUrl))+'" alt="'+esc(p.name)+'">' : '<span style="font-size:56px;">'+esc(p.emoji||'📦')+'</span>')
       +'<span class="my-product-status" style="background:white;color:'+sc+';border:1px solid '+sc+';">'+sl+'</span>'
       +'</div>'
       +'<div class="my-product-body">'
-      +'<div class="my-product-name">'+p.name+'</div>'
+      +'<div class="my-product-name">'+esc(p.name)+'</div>'
       +'<div class="my-product-price">৳'+p.price?.toLocaleString('bn')+'</div>'
       +'<div class="my-product-stock">স্টক: '+p.stock+' · বিক্রি: '+(p.sold||0)+'</div>'
       +'<div class="my-product-actions">'
@@ -631,7 +635,7 @@ async function uploadToCloudinary(file, idx, total) {
 async function saveProduct(status) {
   var name  = document.getElementById('p-name').value.trim();
   var cat   = document.getElementById('p-category').value;
-  var price = parseFloat(document.getElementById('p-price').value);
+  var price = parseInt(document.getElementById('p-price').value, 10);
   var desc  = document.getElementById('p-desc').value.trim();
   var stock = parseInt(document.getElementById('p-stock').value);
 
@@ -664,25 +668,31 @@ async function saveProduct(status) {
     var badgeVal = document.getElementById('p-badge').value;
     var badge    = badgeVal ? { type: badgeVal.split('|')[0], label: badgeVal.split('|')[1] } : null;
 
-    var productData = {
-      sellerId:      currentUser.uid,
+    var editable = {
       sellerName:    sellerProfile.shopName || sellerProfile.name,
       name, category: cat, price,
-      originalPrice: parseFloat(document.getElementById('p-original-price').value) || null,
+      originalPrice: parseInt(document.getElementById('p-original-price').value, 10) || null,
       stock, deliveryCharge: parseInt(document.getElementById('p-delivery').value) || 60,
       description: desc,
       emoji: document.getElementById('p-emoji').value || '📦',
-      badge, imageUrl, imageUrls, status,
-      sold: 0, reviewCount: 0, rating: 5,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      badge, status,
     };
+    // Only touch images when new ones were uploaded (editing must not wipe existing photos).
+    if (imageUrls.length) { editable.imageUrl = imageUrl; editable.imageUrls = imageUrls; }
 
     var editingId = document.getElementById('editing-product-id').value;
     if (editingId) {
-      await db.collection(COL.PRODUCTS).doc(editingId).update({...productData, updatedAt: firebase.firestore.FieldValue.serverTimestamp()});
+      await db.collection(COL.PRODUCTS).doc(editingId).update({...editable, updatedAt: firebase.firestore.FieldValue.serverTimestamp()});
       showToast('✅ পণ্য আপডেট হয়েছে!', 'success');
     } else {
-      await db.collection(COL.PRODUCTS).add(productData);
+      // Counters start at zero; firestore.rules reject anything else on create.
+      await db.collection(COL.PRODUCTS).add({
+        imageUrl: '', imageUrls: [],
+        ...editable,
+        sellerId: currentUser.uid,
+        sold: 0, reviewCount: 0, rating: 0,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
       showToast(status==='active' ? '✅ পণ্য Marketplace এ দেখা যাচ্ছে!' : '📝 Draft সেভ হয়েছে', 'success');
     }
 
@@ -759,7 +769,7 @@ async function loadEarnings() {
     var scls = {pending:'s-pending',confirmed:'s-confirmed',shipped:'s-shipped',delivered:'s-delivered',cancelled:'s-cancelled'}[o.status]||'s-pending';
     var slbl = {pending:'⏳ Pending',confirmed:'✅ Confirmed',shipped:'🚚 Shipped',delivered:'🎉 Delivered',cancelled:'❌ Cancelled'}[o.status]||o.status;
     var date = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleDateString('bn-BD') : '—';
-    tbody.innerHTML += '<tr><td><strong>#BZ-'+sid+'</strong></td><td>'+(o.productName||'—')+'</td><td style="font-weight:700;color:var(--green);">৳'+(o.total||0).toLocaleString('bn')+'</td><td><span class="order-status '+scls+'">'+slbl+'</span></td><td style="font-size:12px;">'+date+'</td></tr>';
+    tbody.innerHTML += '<tr><td><strong>#BZ-'+sid+'</strong></td><td>'+esc(o.productName||'—')+'</td><td style="font-weight:700;color:var(--green);">৳'+(o.total||0).toLocaleString('bn')+'</td><td><span class="order-status '+scls+'">'+slbl+'</span></td><td style="font-size:12px;">'+date+'</td></tr>';
   });
 }
 

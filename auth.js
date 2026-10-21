@@ -3,6 +3,29 @@
 // auth.js
 // ============================================================
 
+// ── Safe rendering helpers (use for ANY user-supplied text put into innerHTML) ──
+function esc(v) {
+  return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+// Allows only http(s) URLs (blocks javascript:/data: URLs in src/href).
+function safeUrl(u) {
+  try { const x = new URL(String(u), location.href); return (x.protocol === 'https:' || x.protocol === 'http:') ? x.href : ''; } catch { return ''; }
+}
+
+// POST JSON to a Bazare server endpoint with the user's Firebase ID token.
+async function apiPost(path, body) {
+  const token = await auth.currentUser.getIdToken();
+  const res = await fetch(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    body: JSON.stringify(body),
+  });
+  let data = {};
+  try { data = await res.json(); } catch {}
+  if (!res.ok) { const e = new Error(data.error || 'অনুরোধ ব্যর্থ হয়েছে'); e.status = res.status; e.code = data.code; throw e; }
+  return data;
+}
+
 let currentUser    = null;
 let currentProfile = null;
 let pendingAction  = null;
@@ -21,7 +44,13 @@ auth.onAuthStateChanged(async (user) => {
       }
     } catch(e) { console.log('redirect result:', e); }
 
-    currentProfile = await loadOrCreateProfile(user);
+    try {
+      currentProfile = await loadOrCreateProfile(user);
+    } catch (e) {
+      // Don't leave the app half-initialised if the profile can't be read/created (offline, rules, etc.)
+      console.error('profile load failed:', e.code || e.message);
+      currentProfile = { uid: user.uid, name: user.displayName || '', role: 'buyer' };
+    }
     updateNavUI(user, currentProfile);
     if (pendingAction) { pendingAction(); pendingAction = null; }
   } else {
@@ -65,8 +94,8 @@ function updateNavUI(user, profile) {
     const name = (profile.name || user.displayName || 'আপনি').split(' ')[0];
     if (userName)   userName.textContent    = name;
     if (userAvatar) {
-      userAvatar.innerHTML = user.photoURL
-        ? `<img src="${user.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
+      userAvatar.innerHTML = safeUrl(user.photoURL)
+        ? `<img src="${esc(safeUrl(user.photoURL))}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
         : name[0].toUpperCase();
     }
     if (sellerLink) sellerLink.style.display = profile.role === 'seller' ? 'inline-flex' : 'none';

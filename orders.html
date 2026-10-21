@@ -233,10 +233,8 @@ async function loadOrders(uid) {
     const snap = await db.collection(COL.ORDERS)
       .where('buyerId', '==', uid)
       .get();
-    // Sort locally
-    allOrders.sort((a,b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
-
     allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    allOrders.sort((a,b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
     document.getElementById('orders-count').textContent = `মোট ${allOrders.length}টি অর্ডার`;
     renderOrders(allOrders);
   } catch(e) {
@@ -285,11 +283,11 @@ function buildOrderCard(o) {
   const itemsHtml = items.map(item => `
     <div class="order-items-row">
       <div class="order-item-img" style="background:${item.imageUrl ? '' : (emojiBg[item.emoji]||'#e8f5ed')}">
-        ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.name}">` : (item.emoji||'📦')}
+        ${safeUrl(item.imageUrl) ? `<img src="${esc(safeUrl(item.imageUrl))}" alt="${esc(item.name)}">` : esc(item.emoji||'📦')}
       </div>
       <div class="order-item-info">
-        <div class="order-item-name">${item.name}</div>
-        <div class="order-item-meta">পরিমাণ: ${item.qty||1} · ${o.paymentMethod === 'cod' ? 'Cash on Delivery' : o.paymentMethod}</div>
+        <div class="order-item-name">${esc(item.name)}</div>
+        <div class="order-item-meta">পরিমাণ: ${item.qty||1} · ${o.paymentMethod === 'cod' ? 'Cash on Delivery' : esc(o.paymentMethod)}</div>
       </div>
       <div class="order-item-price">৳${(item.price*(item.qty||1)).toLocaleString('bn')}</div>
     </div>`).join('');
@@ -326,7 +324,7 @@ function buildOrderCard(o) {
       <div class="order-total">মোট: <span>৳${(o.total||0).toLocaleString('bn')}</span></div>
       <div class="order-actions">
         <button class="order-action-btn" onclick="toggleTracking('${o.id}')">📍 ট্র্যাক করুন</button>
-        ${o.status === 'delivered' ? `<button class="order-action-btn primary" onclick="openReviewModal('${o.id}', '${items[0]?.name||'পণ্য'}')">⭐ রিভিউ দিন</button>` : ''}
+        ${o.status === 'delivered' ? `<button class="order-action-btn primary" onclick="openReviewModal('${o.id}')">⭐ রিভিউ দিন</button>` : ''}
         ${o.status === 'delivered' ? `<button class="order-action-btn" onclick="reorder('${o.id}')">🔄 আবার অর্ডার</button>` : ''}
         ${o.status === 'pending' ? `<button class="order-action-btn danger" onclick="cancelOrder('${o.id}')">❌ বাতিল করুন</button>` : ''}
         <a href="product.html?id=${items[0]?.id||''}" class="order-action-btn">🛍️ পণ্য দেখুন</a>
@@ -360,11 +358,11 @@ function toggleTracking(orderId) {
 async function cancelOrder(orderId) {
   if (!confirm('এই অর্ডার বাতিল করবেন?')) return;
   try {
-    await db.collection(COL.ORDERS).doc(orderId).update({ status: 'cancelled', cancelledAt: firebase.firestore.FieldValue.serverTimestamp() });
+    await apiPost('/api/update-order-status', { orderId, status: 'cancelled' });
     showToast('অর্ডার বাতিল হয়েছে', 'info');
     loadOrders(currentUser.uid);
   } catch(e) {
-    showToast('❌ সমস্যা হয়েছে', 'error');
+    showToast('❌ ' + (e.status && e.status < 500 ? e.message : 'সমস্যা হয়েছে'), 'error');
   }
 }
 
@@ -379,7 +377,8 @@ async function reorder(orderId) {
 }
 
 // ── Review ──
-function openReviewModal(orderId, productName) {
+function openReviewModal(orderId) {
+  const productName = allOrders.find(o => o.id === orderId)?.items?.[0]?.name || 'পণ্য';
   reviewOrderId = orderId;
   selectedStars = 0;
   document.getElementById('review-product-name').textContent = productName;
@@ -410,7 +409,8 @@ async function submitReview() {
   const order   = allOrders.find(o => o.id === reviewOrderId);
 
   try {
-    await db.collection('reviews').add({
+    // One review per delivered order (doc id = order id); firestore.rules verify buyer, delivery and product.
+    await db.collection('reviews').doc(reviewOrderId).set({
       orderId:   reviewOrderId,
       productId: order?.items?.[0]?.id || '',
       buyerId:   currentUser.uid,
@@ -419,17 +419,7 @@ async function submitReview() {
       comment,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
-
-    // Update product rating
-    if (order?.items?.[0]?.id) {
-      const pSnap = await db.collection(COL.PRODUCTS).doc(order.items[0].id).get();
-      if (pSnap.exists) {
-        const p = pSnap.data();
-        const newCount  = (p.reviewCount || 0) + 1;
-        const newRating = ((p.rating || 0) * (p.reviewCount || 0) + selectedStars) / newCount;
-        await db.collection(COL.PRODUCTS).doc(order.items[0].id).update({ rating: newRating, reviewCount: newCount });
-      }
-    }
+    // Product rating aggregate is no longer written from the browser (anyone could forge it). Phase 2: server-side aggregate.
 
     closeReviewModal();
     showToast('✅ রিভিউ জমা হয়েছে! ধন্যবাদ।', 'success');
@@ -443,4 +433,4 @@ document.getElementById('review-modal').addEventListener('click', e => {
 });
 </script>
 </body>
-</html>
+</html>

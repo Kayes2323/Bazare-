@@ -235,19 +235,9 @@ function updateSummary() {
 }
 
 function applyCoupon() {
-  const code = document.getElementById('coupon-input').value.trim().toUpperCase();
-  const coupons = { 'BAZARE10': 10, 'NEWUSER20': 20 };
-  if (coupons[code]) {
-    showToast(`✅ ${coupons[code]}% ছাড় প্রযোজ্য হয়েছে!`, 'success');
-    document.getElementById('discount-row').style.display = 'flex';
-    document.getElementById('discount-amount').style.display = 'block';
-    const discount = Math.round(getCartTotal() * coupons[code] / 100);
-    document.getElementById('discount-row').textContent = `-${coupons[code]}% ছাড়`;
-    document.getElementById('discount-amount').textContent = '-৳' + discount.toLocaleString('bn');
-  } else {
-    showToast('❌ Invalid coupon code', 'error');
-  }
+  // Coupons are not implemented server-side yet, so no discount is ever charged. Don't show a fake one.
+  showToast('কুপন সুবিধা এখনো চালু হয়নি', 'info');
 }
 </script>
 </body>
-</html>
+</html>

@@ -1,0 +1,126 @@
+rules_version = '2';
+
+// Bazare Firestore rules — deny by default.
+// Privileged writes (orders, stock, roles) never come from the browser:
+//   - orders + stock are written by api/place-order and api/update-order-status (Admin SDK, bypasses rules)
+//   - `role` is only changeable by an existing admin (first admin: scripts/set-admin.mjs)
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function userDoc(u) { return get(/databases/$(database)/documents/users/$(u)).data; }
+    function hasUserDoc(u) { return exists(/databases/$(database)/documents/users/$(u)); }
+    function isAdmin() { return signedIn() && hasUserDoc(request.auth.uid) && userDoc(request.auth.uid).role == 'admin'; }
+    function isSeller() { return signedIn() && hasUserDoc(request.auth.uid) && userDoc(request.auth.uid).role == 'seller'; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+
+    // ── users/{uid}: private profile ─────────────────────────────
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+
+      // Self-created profiles are always plain buyers.
+      allow create: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(['uid','name','email','phone','photoURL','role','createdAt'])
+        && request.resource.data.uid == uid
+        && request.resource.data.role == 'buyer';
+
+      allow update: if isAdmin()
+        || (isOwner(uid)
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['name','phone','photoURL','email','shopName','sellerStatus','updatedAt'])
+          // owners may only move themselves to 'pending' (seller application); approval is admin-only
+          && (!('sellerStatus' in request.resource.data.diff(resource.data).affectedKeys())
+              || (request.resource.data.sellerStatus == 'pending' && resource.data.get('sellerStatus', '') != 'approved')));
+
+      allow delete: if false;
+    }
+
+    // ── sellers/{uid}: seller application + private store data (NID, payout numbers) ──
+    match /sellers/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+
+      allow create: if isOwner(uid)
+        && request.resource.data.status == 'pending'
+        && request.resource.data.uid == uid
+        && request.resource.data.keys().hasOnly(['uid','name','phone','email','district','shopName','category',
+             'shopDesc','fbPage','bkash','nagad','nid','logoUrl','status','createdAt']);
+
+      allow update: if isAdmin()
+        || (isOwner(uid)
+          && resource.data.status != 'approved'
+          && request.resource.data.status == 'pending'
+          && request.resource.data.uid == uid
+          && request.resource.data.keys().hasOnly(['uid','name','phone','email','district','shopName','category',
+               'shopDesc','fbPage','bkash','nagad','nid','logoUrl','status','createdAt']));
+
+      allow delete: if false;
+    }
+
+    // ── products/{id}: public storefront data when active ────────
+    function validProduct(d) {
+      return d.name is string && d.name.size() >= 1 && d.name.size() <= 120
+        && d.category is string && d.category.size() <= 60
+        && d.description is string && d.description.size() <= 5000
+        && d.price is int && d.price > 0 && d.price <= 10000000
+        && d.stock is int && d.stock >= 0 && d.stock <= 1000000
+        && d.status in ['active', 'draft']
+        && d.sellerName is string && d.sellerName.size() <= 120
+        && d.imageUrls is list && d.imageUrls.size() <= 10;
+    }
+
+    match /products/{id} {
+      allow read: if resource.data.status == 'active'
+        || isOwner(resource.data.sellerId)
+        || isAdmin();
+
+      allow create: if isSeller()
+        && request.resource.data.sellerId == request.auth.uid
+        && validProduct(request.resource.data)
+        && request.resource.data.sold == 0
+        && request.resource.data.reviewCount == 0
+        && request.resource.data.rating == 0;
+
+      allow update: if isAdmin()
+        // seller edits their own product but cannot touch counters/ownership
+        || (isSeller()
+          && resource.data.sellerId == request.auth.uid
+          && request.resource.data.sellerId == request.auth.uid
+          && validProduct(request.resource.data)
+          && !request.resource.data.diff(resource.data).affectedKeys()
+               .hasAny(['sellerId','sold','rating','reviewCount','createdAt','views']))
+        // anyone may bump the public view counter by exactly 1
+        || (resource.data.status == 'active'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views'])
+          && request.resource.data.views == resource.data.get('views', 0) + 1);
+
+      allow delete: if isAdmin() || isOwner(resource.data.sellerId);
+    }
+
+    // ── orders/{id}: private; written only by the server ─────────
+    match /orders/{id} {
+      allow read: if isAdmin()
+        || isOwner(resource.data.buyerId)
+        || isOwner(resource.data.sellerId);
+      allow write: if false;
+    }
+
+    // ── reviews/{orderId}: one review per delivered order ────────
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if signedIn()
+        && request.resource.data.buyerId == request.auth.uid
+        && reviewId == request.resource.data.orderId
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
+        && request.resource.data.comment is string && request.resource.data.comment.size() <= 1000
+        && get(/databases/$(database)/documents/orders/$(reviewId)).data.buyerId == request.auth.uid
+        && get(/databases/$(database)/documents/orders/$(reviewId)).data.status == 'delivered'
+        && get(/databases/$(database)/documents/orders/$(reviewId)).data.items[0].id == request.resource.data.productId;
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}

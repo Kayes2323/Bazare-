@@ -2,7 +2,16 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/404.html" }
+    {
+      "src": "/p/([^/]+)",
+      "dest": "/api/share-product?id=$1"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/404.html"
+    }
   ]
 }

@@ -289,10 +289,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-function renderCheckoutSummary() {
-  const cart     = getCart();
+async function renderCheckoutSummary() {
+  const cart     = await getCheckoutItems();   // display only: the server recomputes every price
   const subtotal = cart.reduce((s,i) => s + (i.price*(i.qty||1)), 0);
-  const delivery = subtotal > 999 ? 0 : 60;
+  // Delivery is charged per seller order (free above ৳999), matching the server.
+  const bySeller = {};
+  cart.forEach(i => { bySeller[i.sellerId] = (bySeller[i.sellerId]||0) + i.price*(i.qty||1); });
+  const delivery = Object.values(bySeller).reduce((d, sub) => d + (sub > 999 ? 0 : 60), 0);
   const total    = subtotal + delivery;
 
   document.getElementById('c-subtotal').textContent = '৳' + subtotal.toLocaleString('bn');
@@ -301,10 +304,10 @@ function renderCheckoutSummary() {
 
   document.getElementById('checkout-items').innerHTML = cart.map(item => `
     <div class="order-item">
-      <div class="order-item-img" style="background:${item.imageUrl ? '' : (emojiBg[item.emoji]||'#e8f5ed')}">
-        ${item.imageUrl ? `<img src="${item.imageUrl}">` : item.emoji||'📦'}
+      <div class="order-item-img" style="background:${item.imageUrl ? '' : '#e8f5ed'}">
+        ${safeUrl(item.imageUrl) ? `<img src="${esc(safeUrl(item.imageUrl))}">` : esc(item.emoji||'📦')}
       </div>
-      <div class="order-item-name">${item.name}<div class="order-item-qty">× ${item.qty||1}</div></div>
+      <div class="order-item-name">${esc(item.name)}<div class="order-item-qty">× ${Number(item.qty)||1}</div></div>
       <div class="order-item-price">৳${(item.price*(item.qty||1)).toLocaleString('bn')}</div>
     </div>`).join('');
 }
@@ -330,7 +333,12 @@ function selectPayment(method, el) {
   }
 }
 
+// One key per checkout attempt: a retry or double-click reuses it, so the server returns the same order.
+let clientOrderKey = (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2)).replace(/[^A-Za-z0-9_-]/g, '');
+let placing = false;
+
 async function placeOrder() {
+  if (placing) return;
   if (!currentUser) {
     showAuthModal('অর্ডার দিতে লগইন করুন');
     return;
@@ -348,77 +356,54 @@ async function placeOrder() {
     showToast('পেমেন্ট পদ্ধতি বেছে নিন', 'error'); return;
   }
 
-  const cart = getCart();
-  if (!cart.length) {
+  const items = await getCheckoutItems();
+  if (!items.length) {
     showToast('কার্ট খালি', 'error'); window.location.href = 'cart.html'; return;
   }
 
   const btn = document.getElementById('place-order-btn');
+  placing = true;
   btn.disabled = true; btn.textContent = 'অর্ডার দেওয়া হচ্ছে...';
 
   try {
-    const subtotal = cart.reduce((s,i) => s + (i.price*(i.qty||1)), 0);
-    const delivery = subtotal > 999 ? 0 : 60;
-    const total    = subtotal + delivery;
-
-    // Group items by seller and create orders
-    const sellerGroups = {};
-    cart.forEach(item => {
-      const sid = item.sellerId || 'unknown';
-      if (!sellerGroups[sid]) sellerGroups[sid] = [];
-      sellerGroups[sid].push(item);
+    // Only product ids + quantities are sent. Prices, seller, totals and stock are decided on the server.
+    const result = await apiPost('/api/place-order', {
+      clientOrderKey,
+      items: items.map(i => ({ productId: i.id, qty: i.qty || 1 })),
+      name, phone, address, district,
+      upazila: document.getElementById('c-upazila').value,
+      note: document.getElementById('c-note').value,
+      paymentMethod: selectedPayment,
+      paymentPhone: selectedPayment === 'bkash' ? document.getElementById('bkash-number').value : selectedPayment === 'nagad' ? document.getElementById('nagad-number').value : '',
     });
 
-    const orderIds = [];
+    if (!buyNowId) saveCart([]);   // only clear the cart for cart checkouts
 
-    for (const [sellerId, items] of Object.entries(sellerGroups)) {
-      const orderTotal = items.reduce((s,i) => s + (i.price*(i.qty||1)), 0) + (delivery / Object.keys(sellerGroups).length);
-
-      const orderRef = await db.collection(COL.ORDERS).add({
-        buyerId:       currentUser.uid,
-        buyerName:     name,
-        buyerPhone:    phone,
-        sellerId,
-        items,
-        productName:   items.map(i => i.name).join(', '),
-        address: { full: address, district, upazila: document.getElementById('c-upazila').value, note: document.getElementById('c-note').value },
-        paymentMethod: selectedPayment,
-        paymentPhone:  selectedPayment === 'bkash' ? document.getElementById('bkash-number').value : selectedPayment === 'nagad' ? document.getElementById('nagad-number').value : '',
-        subtotal:      items.reduce((s,i) => s + (i.price*(i.qty||1)), 0),
-        deliveryCharge: delivery,
-        total:         orderTotal,
-        status:        'pending',
-        createdAt:     firebase.firestore.FieldValue.serverTimestamp(),
-      });
-
-      orderIds.push(orderRef.id);
-
-      // Update product sold count
-      items.forEach(item => {
-        if (item.id) {
-          db.collection(COL.PRODUCTS).doc(item.id).update({
-            sold: firebase.firestore.FieldValue.increment(item.qty || 1),
-            stock: firebase.firestore.FieldValue.increment(-(item.qty || 1)),
-          }).catch(()=>{});
-        }
-      });
-    }
-
-    // Clear cart
-    saveLocalCart([]);
-
-    // Show success
     document.getElementById('checkout-form').style.display = 'none';
     const successEl = document.getElementById('order-success');
     successEl.classList.add('show');
-    const shortId = orderIds[0].slice(-6).toUpperCase();
-    document.getElementById('success-order-id').textContent = '#BZ-' + shortId;
-
+    document.getElementById('success-order-id').textContent = '#BZ-' + result.orderIds[0].slice(-6).toUpperCase();
   } catch (err) {
-    showToast('❌ অর্ডার দিতে সমস্যা হয়েছে: ' + err.message, 'error');
+    // 4xx messages are written for buyers (out of stock, invalid phone…); keep the same key so a retry stays idempotent.
+    showToast('❌ ' + (err.status && err.status < 500 ? err.message : 'অর্ডার দিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।'), 'error');
+    placing = false;
     btn.disabled = false; btn.textContent = '✅ অর্ডার দিন';
   }
 }
+
+// "Buy now" (?buy=<productId>&qty=<n>) checks out a single product without touching the cart.
+const _params = new URLSearchParams(location.search);
+const buyNowId = _params.get('buy');
+let _buyNowItems = null;
+async function getCheckoutItems() {
+  if (!buyNowId) return getCart();
+  if (!_buyNowItems) {
+    const snap = await db.collection(COL.PRODUCTS).doc(buyNowId).get();
+    const qty = Math.max(1, Math.min(100, parseInt(_params.get('qty')) || 1));
+    _buyNowItems = snap.exists ? [{ id: snap.id, qty, ...snap.data() }] : [];
+  }
+  return _buyNowItems;
+}
 </script>
 </body>
-</html>
+</html>

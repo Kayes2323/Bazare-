@@ -428,12 +428,13 @@ async function loadProducts() {
 }
 
 function buildProductCard(p) {
+  window.productCache[p.id] = p;
   const bg       = p.imageUrl ? '' : (emojiBg[p.emoji] || '#e8f5ed');
   const imgHtml  = p.imageUrl
-    ? `<img src="${p.imageUrl}" alt="${p.name}" loading="lazy">`
+    ? `<img src="${esc(safeUrl(p.imageUrl))}" alt="${esc(p.name)}" loading="lazy">`
     : `<span style="font-size:72px;">${p.emoji || '📦'}</span>`;
   const oldPrice = p.originalPrice ? `<span class="price-old">৳${p.originalPrice.toLocaleString('bn')}</span>` : '';
-  const badge    = p.badge ? `<span class="product-badge badge-${p.badge.type}">${p.badge.label}</span>` : '';
+  const badge    = p.badge ? `<span class="product-badge badge-${esc(p.badge.type)}">${esc(p.badge.label)}</span>` : '';
 
   return `
   <div class="product-card" onclick="window.location='product.html?id=${p.id}'">
@@ -443,8 +444,8 @@ function buildProductCard(p) {
       <button class="product-wishlist" onclick="event.stopPropagation();toggleWishlist(this,'${p.id}')" title="Wishlist">🤍</button>
     </div>
     <div class="product-body">
-      <div class="product-seller"><span class="seller-tick">✓</span> ${p.sellerName || 'Bazare Seller'}</div>
-      <div class="product-name">${p.name}</div>
+      <div class="product-seller"><span class="seller-tick">✓</span> ${esc(p.sellerName || 'Bazare Seller')}</div>
+      <div class="product-name">${esc(p.name)}</div>
       <div class="product-rating">
         <span class="stars">★★★★★</span>
         <span class="rating-count">(${p.reviewCount || 0})</span>
@@ -454,7 +455,7 @@ function buildProductCard(p) {
           ${oldPrice}
           <span class="price-new">৳${p.price.toLocaleString('bn')}</span>
         </div>
-        <button class="add-cart-btn" onclick="event.stopPropagation();addToCart({id:'${p.id}',name:'${p.name.replace(/'/g,"\\'")}',price:${p.price},image:'${p.imageUrl||''}',emoji:'${p.emoji||'📦'}'},this)">+ কার্ট</button>
+        <button class="add-cart-btn" onclick="event.stopPropagation();addToCartById('${p.id}',this)">+ কার্ট</button>
       </div>
     </div>
   </div>`;

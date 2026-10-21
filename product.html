@@ -269,26 +269,27 @@ function renderProduct(p) {
   const discount = p.originalPrice ? Math.round((1 - p.price/p.originalPrice)*100) : 0;
   const stars = '★'.repeat(Math.round(p.rating||5)) + '☆'.repeat(5-Math.round(p.rating||5));
 
-  const images = p.imageUrls?.length ? p.imageUrls : (p.imageUrl ? [p.imageUrl] : []);
+  const images = (p.imageUrls?.length ? p.imageUrls : (p.imageUrl ? [p.imageUrl] : [])).filter(u => safeUrl(u));
+  window.currentImages = images;
 
   document.getElementById('product-layout').innerHTML = `
     <!-- Images -->
     <div class="product-images">
       <div class="main-image" id="main-img" style="${!images.length ? `background:${bg};` : ''}">
-        ${images.length ? `<img src="${images[0]}" id="main-img-el" alt="${p.name}">` : `<span style="font-size:120px;">${p.emoji||'📦'}</span>`}
+        ${images.length ? `<img src="${esc(safeUrl(images[0]))}" id="main-img-el" alt="${esc(p.name)}">` : `<span style="font-size:120px;">${esc(p.emoji||'📦')}</span>`}
       </div>
-      ${images.length > 1 ? `<div class="thumb-row">${images.map((url,i) => `<div class="thumb ${i===0?'active':''}" onclick="switchImg('${url}',${i})" id="thumb-${i}"><img src="${url}" alt=""></div>`).join('')}</div>` : ''}
+      ${images.length > 1 ? `<div class="thumb-row">${images.map((url,i) => `<div class="thumb ${i===0?'active':''}" onclick="switchImg(${i})" id="thumb-${i}"><img src="${esc(safeUrl(url))}" alt=""></div>`).join('')}</div>` : ''}
     </div>
 
     <!-- Info -->
     <div class="product-info">
       <div class="product-badges">
-        ${p.badge ? `<span class="product-badge badge-${p.badge.type}" style="position:static;">${p.badge.label}</span>` : ''}
+        ${p.badge ? `<span class="product-badge badge-${esc(p.badge.type)}" style="position:static;">${esc(p.badge.label)}</span>` : ''}
         ${p.stock <= 5 && p.stock > 0 ? '<span class="product-badge" style="position:static;background:#fff5f5;color:var(--red);border:1px solid #fed7d7;">⚠️ মাত্র '+p.stock+'টি বাকি</span>' : ''}
         ${p.stock === 0 ? '<span class="product-badge" style="position:static;background:var(--red-light);color:var(--red);">❌ Stock নেই</span>' : ''}
       </div>
 
-      <h1 class="product-title">${p.name}</h1>
+      <h1 class="product-title">${esc(p.name)}</h1>
 
       <div class="product-meta">
         <div class="product-rating-row">
@@ -332,10 +333,10 @@ function renderProduct(p) {
       <!-- Seller -->
       <div class="seller-card" onclick="window.location='listing.html?seller=${p.sellerId}'">
         <div class="seller-avi-lg">
-          ${p.sellerLogo ? `<img src="${p.sellerLogo}" alt="seller">` : '🏪'}
+          ${safeUrl(p.sellerLogo) ? `<img src="${esc(safeUrl(p.sellerLogo))}" alt="seller">` : '🏪'}
         </div>
         <div>
-          <div class="seller-card-name">${p.sellerName||'Bazare Seller'}</div>
+          <div class="seller-card-name">${esc(p.sellerName||'Bazare Seller')}</div>
           <div class="seller-card-meta"><span style="color:var(--green);">✓ Verified Seller</span> · দোকান দেখুন →</div>
         </div>
       </div>
@@ -349,8 +350,9 @@ function renderProduct(p) {
   }
 }
 
-function switchImg(url, idx) {
-  document.getElementById('main-img-el').src = url;
+function switchImg(idx) {
+  const url = (window.currentImages || [])[idx];
+  if (url) document.getElementById('main-img-el').src = url;
   document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
   document.getElementById('thumb-'+idx)?.classList.add('active');
 }
@@ -390,11 +392,11 @@ async function loadReviews(productId) {
     html += `<div class="review-card">
       <div class="review-header">
         <div class="reviewer-avi">${(r.userName||'?')[0]}</div>
-        <span class="reviewer-name">${r.userName||'ক্রেতা'}</span>
+        <span class="reviewer-name">${esc(r.userName||'ক্রেতা')}</span>
         <span class="review-date">${r.createdAt?.toDate().toLocaleDateString('bn-BD')||''}</span>
       </div>
       <div class="review-stars">${stars}</div>
-      <div class="review-text">${r.comment||''}</div>
+      <div class="review-text">${esc(r.comment||'')}</div>
     </div>`;
   });
   document.getElementById('reviews-container').innerHTML = html;
@@ -408,14 +410,15 @@ async function loadRelated(category, currentId) {
   const emojiBg2 = {'👗':'#fce7f3','🌿':'#d1fae5','🧴':'#fef3c7','🌸':'#ede9fe','🥚':'#fef3c7','🦜':'#dbeafe','🍯':'#ffedd5','🧶':'#fce7f3','🪴':'#d1fae5','🎁':'#fee2e2'};
   document.getElementById('related-grid').innerHTML = products.map(doc => {
     const p = { id: doc.id, ...doc.data() };
+    window.productCache[p.id] = p;
     const bg = p.imageUrl ? '' : (emojiBg2[p.emoji]||'#e8f5ed');
     return `<div class="product-card" onclick="window.location='product.html?id=${p.id}'">
-      <div class="product-img-wrap" style="background:${bg};">${p.imageUrl ? `<img src="${p.imageUrl}" loading="lazy">` : `<span style="font-size:56px;">${p.emoji||'📦'}</span>`}</div>
+      <div class="product-img-wrap" style="background:${bg};">${p.imageUrl ? `<img src="${esc(safeUrl(p.imageUrl))}" loading="lazy">` : `<span style="font-size:56px;">${esc(p.emoji||'📦')}</span>`}</div>
       <div class="product-body">
-        <div class="product-seller"><span class="seller-tick">✓</span> ${p.sellerName||''}</div>
-        <div class="product-name">${p.name}</div>
+        <div class="product-seller"><span class="seller-tick">✓</span> ${esc(p.sellerName||'')}</div>
+        <div class="product-name">${esc(p.name)}</div>
         <div class="product-footer"><div class="product-prices"><span class="price-new">৳${p.price.toLocaleString('bn')}</span></div>
-        <button class="add-cart-btn" onclick="event.stopPropagation();addToCart({id:'${p.id}',name:'${p.name.replace(/'/g,"\\'")}',price:${p.price}},this)">+ কার্ট</button></div>
+        <button class="add-cart-btn" onclick="event.stopPropagation();addToCartById('${p.id}',this)">+ কার্ট</button></div>
       </div>
     </div>`;
   }).join('');
@@ -427,4 +430,4 @@ function doSearch() {
 }
 </script>
 </body>
-</html>
+</html>

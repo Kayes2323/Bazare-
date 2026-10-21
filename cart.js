@@ -10,6 +10,16 @@ function saveCart(cart) {
   localStorage.setItem('bazare_cart', JSON.stringify(cart));
   updateCartBadge();
 }
+// Alias used by cart.html (was referenced but never defined).
+function saveLocalCart(cart) { saveCart(cart); }
+function clearCart() { saveCart([]); }
+// Pages register rendered products here so onclick handlers only need an id (no user text inside attributes).
+window.productCache = window.productCache || {};
+function addToCartById(id, btn) {
+  const p = window.productCache[id];
+  if (!p) return;
+  addToCart({ id: p.id, name: p.name, price: p.price, imageUrl: p.imageUrl || '', emoji: p.emoji || '📦', sellerId: p.sellerId }, btn);
+}
 function addToCart(product, btn) {
   requireAuth(() => {
     const cart = getCart();

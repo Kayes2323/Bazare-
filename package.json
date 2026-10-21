@@ -1,0 +1,26 @@
+{
+  "name": "bazare",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Bazare — seller order & inventory platform for Bangladesh",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test:unit": "tsx --test packages/domain/test/*.test.ts",
+    "test:rules": "npx --yes firebase-tools@15.34.0 emulators:exec --only firestore --project demo-bazare \"tsx --test --test-concurrency=1 tests/rules/*.test.ts tests/api/*.test.ts\"",
+    "test": "npm run typecheck && npm run test:unit && npm run test:rules"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "@types/node": "^26.6.5",
+    "@vercel/node": "^26.0.0",
+    "firebase": "^13.1.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.5.0"
+  }
+}
