@@ -308,8 +308,13 @@
                 <option>Organic তেল ও ঘি</option><option>ফুলের বীজ ও গাছ</option>
                 <option>দেশি ডিম ও মুরগি</option><option>পাখি</option>
                 <option>Organic খাবার</option><option>হাতের কাজ ও কারুশিল্প</option>
-                <option>গাছপালা</option><option>গিফট আইটেম</option>
+                <option>গাছপালা</option><option>গিফট আইটেম</option><option>ক্যালকুলেটর</option>
               </select>
+            </div>
+            <div class="form-group"><label class="form-label">ব্র্যান্ড (ঐচ্ছিক)</label><input type="text" class="form-control" id="p-brand" placeholder="যেমন: Casio" maxlength="60"></div>
+            <div class="form-group"><label class="form-label">মডেল (ঐচ্ছিক)</label><input type="text" class="form-control" id="p-model" placeholder="যেমন: FX-991ES" maxlength="60"></div>
+            <div class="form-group"><label class="form-label">অবস্থা</label>
+              <select class="form-control form-select" id="p-condition"><option value="">উল্লেখ নেই</option><option value="new">নতুন</option><option value="used">ব্যবহৃত (Used)</option><option value="refurbished">Refurbished</option></select>
             </div>
             <div class="form-group"><label class="form-label">মূল দাম (৳) *</label><input type="number" class="form-control" id="p-price" placeholder="০" min="0"></div>
             <div class="form-group"><label class="form-label">আগের দাম (৳) — Optional</label><input type="number" class="form-control" id="p-original-price" placeholder="ছাড়ের আগে কত ছিল"></div>
@@ -676,7 +681,12 @@ async function saveProduct(status) {
       description: desc,
       emoji: document.getElementById('p-emoji').value || '📦',
       badge, status,
+      brand: document.getElementById('p-brand').value.trim(),
+      model: document.getElementById('p-model').value.trim(),
+      categoryKey: cat === 'ক্যালকুলেটর' ? 'calculator' : '',
     };
+    var cond = document.getElementById('p-condition').value;
+    if (cond) editable.condition = cond; else if (document.getElementById('editing-product-id').value) editable.condition = firebase.firestore.FieldValue.delete();
     // Only touch images when new ones were uploaded (editing must not wipe existing photos).
     if (imageUrls.length) { editable.imageUrl = imageUrl; editable.imageUrls = imageUrls; }
 
@@ -692,6 +702,7 @@ async function saveProduct(status) {
         sellerId: currentUser.uid,
         sold: 0, reviewCount: 0, rating: 0,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),   // stock freshness for search
       });
       showToast(status==='active' ? '✅ পণ্য Marketplace এ দেখা যাচ্ছে!' : '📝 Draft সেভ হয়েছে', 'success');
     }
@@ -708,7 +719,7 @@ async function saveProduct(status) {
 }
 
 function resetProductForm() {
-  ['p-name','p-category','p-price','p-original-price','p-stock','p-badge','p-emoji','p-desc'].forEach(id => {
+  ['p-name','p-category','p-brand','p-model','p-condition','p-price','p-original-price','p-stock','p-badge','p-emoji','p-desc'].forEach(id => {
     var el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -725,6 +736,9 @@ async function editProduct(id) {
   document.getElementById('editing-product-id').value = id;
   document.getElementById('p-name').value = p.name;
   document.getElementById('p-category').value = p.category;
+  document.getElementById('p-brand').value = p.brand||'';
+  document.getElementById('p-model').value = p.model||'';
+  document.getElementById('p-condition').value = p.condition||'';
   document.getElementById('p-price').value = p.price;
   document.getElementById('p-original-price').value = p.originalPrice||'';
   document.getElementById('p-stock').value = p.stock;

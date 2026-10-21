@@ -10,7 +10,7 @@ export function deliveryChargeFor(subtotal: number): number {
 
 export class OrderError extends Error {
   constructor(
-    public code: 'not_found' | 'unavailable' | 'out_of_stock' | 'own_product' | 'forbidden' | 'bad_transition',
+    public code: 'not_found' | 'unavailable' | 'out_of_stock' | 'own_product' | 'forbidden' | 'bad_transition' | 'price_changed',
     message: string,
   ) {
     super(message);
@@ -32,16 +32,19 @@ export interface PricedOrder {
  */
 export function priceOrders(
   buyerId: string,
-  lines: { productId: string; qty: number }[],
+  lines: { productId: string; qty: number; expectedPrice?: number }[],
   products: Map<string, Pick<Product, 'sellerId' | 'name' | 'price' | 'stock' | 'status' | 'imageUrl' | 'emoji'> | undefined>,
 ): PricedOrder[] {
   const bySeller = new Map<string, OrderItem[]>();
-  for (const { productId, qty } of lines) {
+  for (const { productId, qty, expectedPrice } of lines) {
     const p = products.get(productId);
     if (!p) throw new OrderError('not_found', 'A product in your cart no longer exists');
     if (p.status !== 'active') throw new OrderError('unavailable', `${p.name} is not available`);
     if (p.sellerId === buyerId) throw new OrderError('own_product', 'You cannot buy your own product');
     if (!Number.isInteger(p.stock) || p.stock < qty) throw new OrderError('out_of_stock', `${p.name}: only ${Math.max(0, p.stock)} left`);
+    if (expectedPrice !== undefined && expectedPrice !== p.price) {
+      throw new OrderError('price_changed', `${p.name}: দাম পরিবর্তন হয়েছে (এখন ৳${p.price})`);
+    }
     const item: OrderItem = {
       id: productId,
       name: p.name,

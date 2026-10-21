@@ -252,6 +252,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     currentProduct = { id: snap.id, ...snap.data() };
     renderProduct(currentProduct);
     loadReviews(id);
+    verifyAvailability(id);
     loadRelated(currentProduct.category, id);
 
     // Update view count
@@ -348,6 +349,26 @@ function renderProduct(p) {
     document.getElementById('desc-section').style.display = 'block';
     document.getElementById('product-desc-text').textContent = p.description;
   }
+}
+
+// Fresh server-side stock/price check (never a reservation). Shows an honest warning when freshness can't be established.
+async function verifyAvailability(id) {
+  try {
+    const r = await fetch('/api/availability', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids: [id] }) });
+    const it = (await r.json()).items?.[0];
+    if (!it) return;
+    let msg = '', bad = false;
+    if (!it.available) { msg = '⛔ এই মুহূর্তে পণ্যটি পাওয়া যাচ্ছে না'; bad = true; }
+    else if (!it.availability.verified) msg = '⚠️ বিক্রেতা বহুদিন স্টক আপডেট করেননি — অর্ডারের আগে স্টক নিশ্চিত নয়';
+    else if (it.availability.status === 'low_stock') msg = '⏳ স্টক কম — অর্ডার করার সময় আবার যাচাই হবে';
+    if (it.price && currentProduct && it.price !== currentProduct.price) msg = '💲 দাম আপডেট হয়েছে: ৳' + it.price.toLocaleString('bn') + '। ' + msg;
+    if (!msg) return;
+    const box = document.createElement('div');
+    box.style.cssText = 'margin:12px 0;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;background:' + (bad ? '#fee2e2;color:#991b1b' : '#fef3c7;color:#92400e');
+    box.textContent = msg + ' (কার্টে যোগ করলে স্টক সংরক্ষিত হয় না)';
+    document.querySelector('.product-cta')?.before(box);
+    if (bad) document.querySelectorAll('#cart-btn,#mobile-cart-btn,#buy-btn,#mobile-buy-btn').forEach(b => { b.style.opacity = '0.5'; b.style.pointerEvents = 'none'; });
+  } catch (e) { /* verification is best-effort; checkout re-checks authoritatively */ }
 }
 
 function switchImg(idx) {

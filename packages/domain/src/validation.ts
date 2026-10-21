@@ -49,7 +49,8 @@ export function parsePlaceOrderRequest(raw: unknown): PlaceOrderRequest {
     if (seen.has(productId)) throw new ValidationError('Duplicate product in cart');
     seen.add(productId);
     if (!isPositiveInt(o.qty, MAX_QTY_PER_LINE)) throw new ValidationError('Invalid quantity');
-    return { productId, qty: o.qty };
+    if (o.expectedPrice !== undefined && !isPositiveInt(o.expectedPrice, 100_000_000)) throw new ValidationError('Invalid price');
+    return o.expectedPrice === undefined ? { productId, qty: o.qty } : { productId, qty: o.qty, expectedPrice: o.expectedPrice };
   });
 
   const phone = normalizeBdPhone(r.phone);

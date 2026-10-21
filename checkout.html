@@ -369,7 +369,8 @@ async function placeOrder() {
     // Only product ids + quantities are sent. Prices, seller, totals and stock are decided on the server.
     const result = await apiPost('/api/place-order', {
       clientOrderKey,
-      items: items.map(i => ({ productId: i.id, qty: i.qty || 1 })),
+      // expectedPrice = what the buyer saw; the server refuses the order if the price changed since
+      items: items.map(i => ({ productId: i.id, qty: i.qty || 1, expectedPrice: Number.isInteger(i.price) ? i.price : undefined })),
       name, phone, address, district,
       upazila: document.getElementById('c-upazila').value,
       note: document.getElementById('c-note').value,
@@ -385,10 +386,23 @@ async function placeOrder() {
     document.getElementById('success-order-id').textContent = '#BZ-' + result.orderIds[0].slice(-6).toUpperCase();
   } catch (err) {
     // 4xx messages are written for buyers (out of stock, invalid phone…); keep the same key so a retry stays idempotent.
+    if (err.code === 'price_changed') { await refreshPrices(items); }
     showToast('❌ ' + (err.status && err.status < 500 ? err.message : 'অর্ডার দিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।'), 'error');
     placing = false;
     btn.disabled = false; btn.textContent = '✅ অর্ডার দিন';
   }
+}
+
+// After a price change: pull current prices from the server so the buyer can review and confirm again.
+async function refreshPrices(items) {
+  try {
+    const r = await fetch('/api/availability', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids: items.map(i => i.id) }) });
+    const { items: fresh } = await r.json();
+    const byId = Object.fromEntries(fresh.map(f => [f.id, f]));
+    items.forEach(i => { if (byId[i.id] && byId[i.id].price) i.price = byId[i.id].price; });
+    if (!buyNowId) saveCart(items);
+    await renderCheckoutSummary();
+  } catch (e) { /* the toast below still tells the buyer to review */ }
 }
 
 // "Buy now" (?buy=<productId>&qty=<n>) checks out a single product without touching the cart.

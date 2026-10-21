@@ -114,7 +114,8 @@ export interface Order {
 export interface PlaceOrderRequest {
   /** Client-generated key, reused on retry so a double-submit cannot create two orders. */
   clientOrderKey: string;
-  items: { productId: string; qty: number }[];
+  /** `expectedPrice` = the price the buyer saw; the order is refused (409 price_changed) if it no longer matches. */
+  items: { productId: string; qty: number; expectedPrice?: number }[];
   name: string;
   phone: string;
   address: string;

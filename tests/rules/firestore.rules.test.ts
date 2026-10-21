@@ -137,3 +137,21 @@ test('unknown collections are denied', async () => {
   await assertFails(getDoc(doc(as('admin1'), 'secrets/x')));
   await assertFails(setDoc(doc(as('admin1'), 'secrets/x'), { a: 1 }));
 });
+
+// ── search metadata & server-only collections ────────────────
+test('product search metadata is validated; unauthorized seller cannot change stock/condition', async () => {
+  const s1 = as('seller1');
+  await assertSucceeds(addDoc(collection(s1, 'products'), product({ brand: 'Casio', model: 'FX-991ES', condition: 'used', categoryKey: 'calculator', aliases: ['fx991es'] })));
+  await assertFails(addDoc(collection(s1, 'products'), product({ condition: 'mint' })));
+  await assertFails(addDoc(collection(s1, 'products'), product({ brand: 123 })));
+  await assertFails(addDoc(collection(s1, 'products'), product({ aliases: Array(11).fill('a') })));
+  await assertFails(updateDoc(doc(as('seller2'), 'products/p1'), { stock: 999, condition: 'new' }));
+  await assertFails(updateDoc(doc(as('buyer1'), 'products/p1'), { stock: 999 }));
+  await assertSucceeds(updateDoc(doc(s1, 'products/p1'), { stock: 4, condition: 'used' }));
+});
+
+test('rateLimits/aiUsage are not accessible from clients', async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'rateLimits/x'), { count: 1 }); });
+  await assertFails(getDoc(doc(as('admin1'), 'rateLimits/x')));
+  await assertFails(setDoc(doc(as('buyer1'), 'rateLimits/x'), { count: 0 }));
+});

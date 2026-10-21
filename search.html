@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>AI সার্চ — Bazare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: var(--off-white); font-family: var(--font-body, 'Hind Siliguri', sans-serif); margin: 0; }
+    .s-wrap { max-width: 960px; margin: 0 auto; padding: 16px; }
+    .s-head { display:flex; align-items:center; justify-content:space-between; padding: 12px 16px; background: var(--white); border-bottom: 1px solid var(--gray-200); }
+    .s-logo { font-family:'Sora',sans-serif; font-weight:800; font-size:22px; color: var(--green); text-decoration:none; }
+    .s-logo .logo-e { color: var(--accent); }
+    .s-box { background: var(--white); border:1.5px solid var(--gray-200); border-radius:16px; padding:12px; box-shadow: var(--shadow-sm); }
+    .s-box textarea { width:100%; border:0; outline:0; resize:none; font: 16px/1.5 'Hind Siliguri',sans-serif; min-height:52px; box-sizing:border-box; }
+    .s-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+    .s-btn { background: var(--green); color:#fff; border:0; border-radius:10px; padding:10px 18px; font: 700 15px 'Hind Siliguri',sans-serif; cursor:pointer; min-height:44px; }
+    .s-btn:disabled { opacity:.6; }
+    .s-chip { background: var(--green-pale); color: var(--green-dark); border:0; border-radius:99px; padding:7px 12px; font: 500 13px 'Hind Siliguri',sans-serif; cursor:pointer; }
+    .s-filter select, .s-filter input { padding:8px 10px; border:1.5px solid var(--gray-200); border-radius:8px; font: 14px 'Hind Siliguri',sans-serif; min-height:40px; box-sizing:border-box; }
+    .s-filter input { width:120px; }
+    .s-understood { margin:14px 0 4px; font-size:13px; color: var(--gray-600); }
+    .s-tag { display:inline-block; background:#fff; border:1px solid var(--gray-200); border-radius:99px; padding:2px 10px; margin:2px 4px 2px 0; font-size:12px; }
+    .s-tag.req { border-color: var(--green); color: var(--green-dark); }
+    .s-h { font: 800 17px 'Sora','Hind Siliguri',sans-serif; margin:20px 0 4px; color: var(--gray-800); }
+    .s-sub { font-size:13px; color: var(--gray-500); margin-bottom:10px; }
+    .s-grid { display:grid; grid-template-columns: 1fr; gap:10px; }
+    @media (min-width:640px){ .s-grid { grid-template-columns: 1fr 1fr; } }
+    .s-card { background:#fff; border:1px solid var(--gray-200); border-radius:14px; display:flex; gap:12px; padding:10px; }
+    .s-img { width:92px; height:92px; flex:0 0 92px; border-radius:10px; background: var(--green-pale); display:flex; align-items:center; justify-content:center; font-size:40px; overflow:hidden; }
+    .s-img img { width:100%; height:100%; object-fit:cover; }
+    .s-body { flex:1; min-width:0; }
+    .s-name { font-weight:700; font-size:15px; color: var(--gray-800); text-decoration:none; display:block; overflow:hidden; text-overflow:ellipsis; }
+    .s-price { font: 800 17px 'Sora',sans-serif; color: var(--green); }
+    .s-old { text-decoration:line-through; color: var(--gray-400); font-size:12px; margin-left:6px; }
+    .s-meta { font-size:12px; color: var(--gray-500); margin:2px 0; }
+    .s-why { font-size:12px; color: var(--gray-700); margin:4px 0; }
+    .s-av { font-size:12px; font-weight:600; }
+    .av-ok { color: var(--green); } .av-low { color: #92400e; } .av-warn { color:#92400e; background:#fef3c7; padding:1px 6px; border-radius:6px; }
+    .s-badge { font-size:11px; font-weight:700; border-radius:6px; padding:2px 7px; margin-right:6px; }
+    .b-exact { background: var(--green-pale); color: var(--green-dark); } .b-alt { background:#fef3c7; color:#92400e; } .b-near { background:#fee2e2; color:#991b1b; }
+    .s-actions { display:flex; gap:10px; align-items:center; margin-top:6px; font-size:13px; }
+    .s-actions a { color: var(--green); font-weight:600; text-decoration:none; }
+    .s-empty { text-align:center; padding:28px 12px; background:#fff; border:1px dashed var(--gray-300); border-radius:14px; color: var(--gray-600); }
+    .s-note { font-size:12px; color: var(--gray-500); margin-top:18px; }
+    .s-compare { position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:1px solid var(--gray-200); padding:10px 16px; display:none; align-items:center; justify-content:space-between; gap:8px; z-index:50; }
+    .s-modal { position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:flex-end; justify-content:center; z-index:60; }
+    .s-modal > div { background:#fff; width:100%; max-width:760px; max-height:85vh; overflow:auto; border-radius:16px 16px 0 0; padding:16px; }
+    .s-modal table { width:100%; border-collapse:collapse; font-size:13px; } .s-modal th, .s-modal td { border-bottom:1px solid var(--gray-100); padding:8px 6px; text-align:left; vertical-align:top; }
+  </style>
+</head>
+<body>
+<div class="s-head"><a class="s-logo" href="index.html">Bazar<span class="logo-e">e</span></a><a href="listing.html" style="font-size:14px;color:var(--green);font-weight:600;text-decoration:none;">সব পণ্য →</a></div>
+
+<main class="s-wrap">
+  <h1 class="s-h" style="margin-top:8px;">🔎 কী খুঁজছেন, লিখে বলুন</h1>
+  <div class="s-sub">বাংলা, Banglish বা English — যেমন: “১৫০০ টাকার মধ্যে used Casio FX-991ES calculator চাই”। ফলাফল শুধু Bazare-এর আসল তালিকা থেকে আসে।</div>
+
+  <form class="s-box" id="s-form" autocomplete="off">
+    <textarea id="s-q" maxlength="300" placeholder="আপনার চাহিদা লিখুন…" aria-label="খোঁজার বিবরণ"></textarea>
+    <div class="s-row">
+      <button class="s-btn" id="s-go" type="submit">খুঁজুন</button>
+      <span class="s-chip" role="button" tabindex="0" data-q="১৫০০ টাকার মধ্যে used Casio FX-991ES calculator চাই">Used Casio FX-991ES ≤ ১৫০০৳</span>
+      <span class="s-chip" role="button" tabindex="0" data-q="scientific calculator under 1000 taka">Calculator ≤ 1000৳</span>
+    </div>
+    <div class="s-row s-filter">
+      <label>সর্বোচ্চ বাজেট <input id="f-max" type="number" min="1" inputmode="numeric" placeholder="৳"></label>
+      <label>অবস্থা
+        <select id="f-cond"><option value="">যেকোনো</option><option value="new">নতুন</option><option value="used">Used</option><option value="refurbished">Refurbished</option></select>
+      </label>
+    </div>
+  </form>
+
+  <div id="s-out" aria-live="polite"></div>
+  <p class="s-note">ℹ️ কার্টে যোগ করলে স্টক সংরক্ষিত হয় না; অর্ডারের সময় দাম ও স্টক আবার যাচাই হয়। “যাচাইকৃত” মানে বিক্রেতা সম্প্রতি তালিকা আপডেট করেছেন — ডেলিভারির নিশ্চয়তা নয়।</p>
+</main>
+
+<div class="s-compare" id="s-cmpbar"><span id="s-cmpcount"></span><span><button class="s-btn" onclick="openCompare()">তুলনা করুন</button> <button class="s-chip" onclick="clearCompare()">মুছুন</button></span></div>
+<div class="s-modal" id="s-cmp" onclick="if(event.target===this)this.style.display='none'"><div id="s-cmpbody"></div></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth.js"></script>
+<script src="cart.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const REASON = {
+  model_exact: d => `মডেল মিলেছে: ${d.toUpperCase()}`, model_similar: d => `কাছাকাছি মডেল (${d})`, model_mismatch: () => 'অন্য মডেল',
+  brand_match: d => `ব্র্যান্ড: ${d}`, brand_mismatch: () => 'ভিন্ন ব্র্যান্ড', condition_match: d => ({new:'নতুন',used:'Used',refurbished:'Refurbished'}[d]||d) + ' — চাওয়া অবস্থার সাথে মিল',
+  within_budget: () => 'বাজেটের মধ্যে', over_budget: () => 'বাজেটের চেয়ে বেশি', location_match: d => `আপনার এলাকা (${d})`, keyword_match: d => `শব্দ মিলেছে: ${d}`,
+  stock_unverified: () => 'স্টক সম্প্রতি যাচাই হয়নি', condition_unknown: () => 'অবস্থা উল্লেখ নেই',
+};
+const COND = { new: 'নতুন', used: 'Used', refurbished: 'Refurbished' };
+let state = { q: '', page: 1, hits: [], data: null };
+let compare = [];
+
+function availHtml(a) {
+  if (a.status === 'out_of_stock') return '<span class="s-av av-warn">স্টক নেই</span>';
+  if (!a.verified) return '<span class="s-av av-warn">⚠️ স্টক যাচাই করা হয়নি' + (a.staleDays != null ? ` (${a.staleDays} দিন আগের তালিকা)` : '') + '</span>';
+  return a.status === 'low_stock' ? '<span class="s-av av-low">স্টক কম</span>' : '<span class="s-av av-ok">✓ সম্প্রতি আপডেট করা তালিকা</span>';
+}
+function card(h) {
+  const p = h.product, img = safeUrl(p.imageUrl);
+  const why = h.reasons.map(r => (REASON[r.code] ? REASON[r.code](r.detail || '') : '')).filter(Boolean).slice(0, 4).join(' · ');
+  const badge = h.tier === 'exact' ? '<span class="s-badge b-exact">মিল আছে</span>' : h.tier === 'alternative' ? '<span class="s-badge b-alt">বিকল্প</span>' : '<span class="s-badge b-near">কাছাকাছি</span>';
+  const meta = [p.brand, p.model, p.condition ? COND[p.condition] : 'অবস্থা উল্লেখ নেই'].filter(Boolean).map(esc).join(' · ');
+  return `<div class="s-card">
+    <div class="s-img">${img ? `<img src="${esc(img)}" alt="${esc(p.name)}" loading="lazy">` : esc(p.emoji)}</div>
+    <div class="s-body">
+      <div>${badge}</div>
+      <a class="s-name" href="product.html?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a>
+      <div><span class="s-price">৳${p.price.toLocaleString('bn')}</span>${p.originalPrice ? `<span class="s-old">৳${p.originalPrice.toLocaleString('bn')}</span>` : ''}</div>
+      <div class="s-meta">${meta}</div>
+      <div class="s-why">${esc(why)}</div>
+      <div>${availHtml(p.availability)}</div>
+      <div class="s-actions">
+        <a href="product.html?id=${encodeURIComponent(p.id)}">বিস্তারিত</a>
+        <a href="listing.html?seller=${encodeURIComponent(p.sellerId)}">🏪 ${esc(p.sellerName || 'দোকান')}</a>
+        <label><input type="checkbox" onchange="toggleCompare('${esc(p.id)}',this)" ${compare.includes(p.id) ? 'checked' : ''}> তুলনা</label>
+      </div>
+    </div></div>`;
+}
+function understood(q) {
+  const tags = [];
+  const add = (text, req) => tags.push(`<span class="s-tag ${req ? 'req' : ''}">${esc(text)}</span>`);
+  if (q.categoryKey) add('ক্যাটাগরি: ক্যালকুলেটর', false);
+  if (q.budgetMax) add(`বাজেট ≤ ৳${q.budgetMax.toLocaleString('bn')}`, true);
+  if (q.budgetMin) add(`বাজেট ≥ ৳${q.budgetMin.toLocaleString('bn')}`, true);
+  if (q.condition) add(COND[q.condition], true);
+  const names = { brand: 'ব্র্যান্ড', model: 'মডেল', location: 'এলাকা' };
+  for (const k of ['brand', 'model', 'location']) if (q[k]) add(`${names[k]}: ${q[k].value.toUpperCase()}${q[k].required ? '' : ' (পছন্দ)'}`, q[k].required);
+  return tags.length ? `<div class="s-understood">যা বুঝেছি: ${tags.join('')} <small>(সবুজ বর্ডার = আবশ্যক শর্ত)</small></div>` : '';
+}
+function render(append) {
+  const d = state.data, out = $('s-out');
+  if (d.clarification) { out.innerHTML = `<div class="s-empty"><b>${esc(d.clarification.question)}</b></div>`; return; }
+  const r = d.result;
+  let html = understood(d.query);
+  if (d.notices?.includes('ai_budget')) html += '<div class="s-sub">AI ব্যবহারের দৈনিক সীমা শেষ, সাধারণ সার্চ দেখানো হচ্ছে।</div>';
+  if (!state.hits.length) {
+    html += `<div class="s-empty"><div style="font-size:34px">🔍</div><b>আপনার শর্তে মেলে এমন কোনো পণ্য এখন তালিকায় নেই।</b>
+      <div class="s-sub">${emptyHint(r.excluded)}</div></div>`;
+    if (r.nearMisses.length) html += `<div class="s-h">কাছাকাছি বিকল্প <span class="s-badge b-near">আপনার শর্তের বাইরে</span></div><div class="s-sub">বাজেট বা অবস্থা একটু শিথিল করলে এগুলো পাওয়া যায়।</div><div class="s-grid">${r.nearMisses.map(card).join('')}</div>`;
+  } else {
+    const ex = state.hits.filter(h => h.tier === 'exact'), alt = state.hits.filter(h => h.tier !== 'exact');
+    html += `<div class="s-sub">${r.total}টি পণ্য পাওয়া গেছে (মিল: ${r.exactCount}, বিকল্প: ${r.alternativeCount})</div>`;
+    if (ex.length) html += `<div class="s-h">আপনার শর্তের সাথে মিল আছে</div><div class="s-grid">${ex.map(card).join('')}</div>`;
+    if (alt.length) html += `<div class="s-h">বিকল্প <span class="s-badge b-alt">মডেল/ব্র্যান্ড ভিন্ন</span></div><div class="s-sub">বাজেট ও অবস্থা মিলেছে, কিন্তু আপনার চাওয়া মডেল/ব্র্যান্ড নয়।</div><div class="s-grid">${alt.map(card).join('')}</div>`;
+    if (r.hasMore) html += '<div style="text-align:center;margin:16px"><button class="s-btn" onclick="more()">আরও দেখুন</button></div>';
+  }
+  out.innerHTML = html;
+}
+function emptyHint(x) {
+  const m = { over_budget: 'বাজেটের বাইরে', condition_mismatch: 'অবস্থা মেলেনি', condition_unknown: 'অবস্থা উল্লেখ নেই', out_of_stock: 'স্টক শেষ', seller_ineligible: 'বিক্রেতা অনুমোদিত নয়', wrong_location: 'এলাকা মেলেনি' };
+  const parts = Object.entries(x || {}).filter(([k]) => m[k]).map(([k, n]) => `${n}টি ${m[k]}`);
+  return parts.length ? 'বাদ পড়েছে: ' + parts.join(', ') + '। ফিল্টার বদলে দেখুন।' : 'এই ক্যাটাগরিতে এখনো পণ্য যোগ হয়নি।';
+}
+async function run(page, append) {
+  const q = $('s-q').value.trim();
+  if (q.length < 2) return;
+  $('s-go').disabled = true;
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    const u = auth.currentUser; if (u) headers.Authorization = 'Bearer ' + await u.getIdToken();
+    const filters = {};
+    const mx = parseInt($('f-max').value, 10); if (mx > 0) filters.budgetMax = mx;
+    if ($('f-cond').value) filters.condition = $('f-cond').value;
+    const res = await fetch('/api/search', { method: 'POST', headers, body: JSON.stringify({ q, page, pageSize: 12, filters }) });
+    const data = await res.json();
+    if (!res.ok) {
+      $('s-out').innerHTML = `<div class="s-empty">${res.status === 503 ? 'AI সার্চ শীঘ্রই আসছে। এখনকার জন্য <a href="listing.html">সব পণ্য</a> দেখুন।' : esc(data.error || 'সমস্যা হয়েছে, আবার চেষ্টা করুন')}</div>`;
+      return;
+    }
+    state.data = data; state.page = page;
+    state.hits = append ? state.hits.concat(data.result?.hits || []) : (data.result?.hits || []);
+    render();
+  } catch (e) { $('s-out').innerHTML = '<div class="s-empty">নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন</div>'; }
+  finally { $('s-go').disabled = false; }
+}
+function more() { run(state.page + 1, true); }
+$('s-form').addEventListener('submit', e => { e.preventDefault(); run(1, false); });
+document.querySelectorAll('.s-chip[data-q]').forEach(c => { const f = () => { $('s-q').value = c.dataset.q; run(1, false); }; c.onclick = f; c.onkeydown = e => { if (e.key === 'Enter') f(); }; });
+
+function toggleCompare(id, el) {
+  if (el.checked) { if (compare.length >= 3) { el.checked = false; showToast('সর্বোচ্চ ৩টি পণ্য তুলনা করা যায়', 'info'); return; } compare.push(id); }
+  else compare = compare.filter(x => x !== id);
+  $('s-cmpbar').style.display = compare.length ? 'flex' : 'none';
+  $('s-cmpcount').textContent = `${compare.length}টি নির্বাচিত`;
+}
+function clearCompare() { compare = []; $('s-cmpbar').style.display = 'none'; render(); }
+function openCompare() {
+  const all = state.hits.concat(state.data?.result?.nearMisses || []);
+  const items = compare.map(id => all.find(h => h.product.id === id)).filter(Boolean);
+  if (items.length < 2) { showToast('কমপক্ষে ২টি পণ্য বেছে নিন', 'info'); return; }
+  const row = (label, f) => `<tr><th>${label}</th>${items.map(h => `<td>${f(h.product)}</td>`).join('')}</tr>`;
+  $('s-cmpbody').innerHTML = `<h3>তুলনা</h3><table>
+    <tr><th></th>${items.map(h => `<th><a href="product.html?id=${encodeURIComponent(h.product.id)}">${esc(h.product.name)}</a></th>`).join('')}</tr>
+    ${row('দাম', p => '৳' + p.price.toLocaleString('bn'))}${row('ব্র্যান্ড', p => esc(p.brand || '—'))}${row('মডেল', p => esc(p.model || '—'))}
+    ${row('অবস্থা', p => p.condition ? COND[p.condition] : 'উল্লেখ নেই')}${row('ডেলিভারি চার্জ', p => p.deliveryCharge == null ? '—' : p.deliveryCharge === 0 ? 'ফ্রি' : '৳' + p.deliveryCharge)}
+    ${row('স্টক', p => availHtml(p.availability))}${row('বিক্রেতা', p => esc(p.sellerName || '—'))}</table>
+    <p><button class="s-btn" onclick="document.getElementById('s-cmp').style.display='none'">বন্ধ করুন</button></p>`;
+  $('s-cmp').style.display = 'flex';
+}
+const initial = new URLSearchParams(location.search).get('q'); if (initial) { $('s-q').value = initial.slice(0, 300); run(1, false); }
+</script>
+</body>
+</html>

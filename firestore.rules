@@ -66,7 +66,13 @@ service cloud.firestore {
         && d.stock is int && d.stock >= 0 && d.stock <= 1000000
         && d.status in ['active', 'draft']
         && d.sellerName is string && d.sellerName.size() <= 120
-        && d.imageUrls is list && d.imageUrls.size() <= 10;
+        && d.imageUrls is list && d.imageUrls.size() <= 10
+        // search metadata (all optional; the search engine also works on legacy products without them)
+        && (!('brand' in d) || (d.brand is string && d.brand.size() <= 60))
+        && (!('model' in d) || (d.model is string && d.model.size() <= 60))
+        && (!('categoryKey' in d) || (d.categoryKey is string && d.categoryKey.size() <= 40))
+        && (!('condition' in d) || d.condition in ['new', 'used', 'refurbished'])
+        && (!('aliases' in d) || (d.aliases is list && d.aliases.size() <= 10));
     }
 
     match /products/{id} {
