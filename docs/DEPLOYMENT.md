@@ -18,3 +18,8 @@ Order matters — doing step 5 before step 3 would break ordering for everyone.
 8. **Rotate/restrict:** restrict the Firebase API key to your domains; lock the Cloudinary upload preset (max size, image formats only, fixed folder).
 
 Rollback: revert the merge on Vercel (instant rollback) and restore the saved rules text.
+
+## Preview findings (2026-10-22, Vercel preview of branch `ccr-6bb69d62-4erpq4`)
+- Fixed two build/runtime bugs found only on a real deployment: (1) `tsconfig.json` now uses `module: Node16` so `api/*.ts` compile to CommonJS; (2) `firebase-admin` pinned to v13 (v14 pulls ESM-only `jose`, which crashes CommonJS functions).
+- Verified on the preview: static pages (incl. `search.html`) serve; `/api/*` functions load (GET → 405 as designed); `/p/<id>` routes to its function.
+- **Not verifiable yet:** anything that touches Firestore from the functions — `FIREBASE_SERVICE_ACCOUNT` is not set in Vercel (project has no environment variables), so `/p/<id>` currently returns 500 "Something went wrong" and ordering/search would fail. Set it (step 2) before merging to `main`.
