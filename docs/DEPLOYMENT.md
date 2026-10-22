@@ -23,3 +23,8 @@ Rollback: revert the merge on Vercel (instant rollback) and restore the saved ru
 - Fixed two build/runtime bugs found only on a real deployment: (1) `tsconfig.json` now uses `module: Node16` so `api/*.ts` compile to CommonJS; (2) `firebase-admin` pinned to v13 (v14 pulls ESM-only `jose`, which crashes CommonJS functions).
 - Verified on the preview: static pages (incl. `search.html`) serve; `/api/*` functions load (GET → 405 as designed); `/p/<id>` routes to its function.
 - **Not verifiable yet:** anything that touches Firestore from the functions — `FIREBASE_SERVICE_ACCOUNT` is not set in Vercel (project has no environment variables), so `/p/<id>` currently returns 500 "Something went wrong" and ordering/search would fail. Set it (step 2) before merging to `main`.
+
+## Owner bootstrap admin (2026-10-22)
+`aakayes99@gmail.com` is hardcoded as the one account that becomes `role: admin` automatically on login (Google sign-in only, verified email). Enforced in `firestore.rules` (`isBootstrapAdminEmail()`, checked off `request.auth.token.email`/`email_verified`, never off document data) and mirrored client-side in `auth.js` (`loadOrCreateProfile`). This replaces needing `scripts/set-admin.mjs` for the first admin; that script still works for granting admin to additional accounts later.
+**Rules must be republished for this to take effect** — see the "Firestore rules" copy block below / `firestore.rules` in the repo.
+**Risk:** control of Bazare's admin panel is now equivalent to control of that one Gmail account. If it's ever compromised or access needs to be shared, revoke by editing `users/<uid>.role` back to `buyer` via Firebase Console (or another admin) and removing/changing `BOOTSTRAP_ADMIN_EMAIL` / `isBootstrapAdminEmail()` in a redeploy.

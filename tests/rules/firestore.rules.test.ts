@@ -36,6 +36,9 @@ beforeEach(async () => {
 });
 
 const as = (uid: string | null) => (uid ? env.authenticatedContext(uid).firestore() : env.unauthenticatedContext().firestore());
+const asEmail = (uid: string, email: string, verified: boolean) =>
+  env.authenticatedContext(uid, { email, email_verified: verified }).firestore();
+const OWNER_EMAIL = 'aakayes99@gmail.com';
 
 // ── privilege escalation ─────────────────────────────────────
 test('user cannot create profile with role admin or seller', async () => {
@@ -148,6 +151,32 @@ test('product search metadata is validated; unauthorized seller cannot change st
   await assertFails(updateDoc(doc(as('seller2'), 'products/p1'), { stock: 999, condition: 'new' }));
   await assertFails(updateDoc(doc(as('buyer1'), 'products/p1'), { stock: 999 }));
   await assertSucceeds(updateDoc(doc(s1, 'products/p1'), { stock: 4, condition: 'used' }));
+});
+
+// ── bootstrap owner admin ──────────────────────────────────────
+test('the owner email self-creates as admin only with a verified Firebase email claim', async () => {
+  const base = { uid: 'owner1', name: 'Owner', email: OWNER_EMAIL, phone: '', photoURL: '' };
+  await assertSucceeds(setDoc(doc(asEmail('owner1', OWNER_EMAIL, true), 'users/owner1'), { ...base, role: 'admin' }));
+  await assertFails(setDoc(doc(asEmail('owner2', OWNER_EMAIL, false), 'users/owner2'), { ...base, uid: 'owner2', role: 'admin' })); // unverified email claim
+  await assertFails(setDoc(doc(as('owner3'), 'users/owner3'), { ...base, uid: 'owner3', role: 'admin' })); // no email claim at all
+});
+
+test('a different email cannot self-create as admin even if it writes the owner email into the document', async () => {
+  const spoofed = { uid: 'evil1', name: 'E', email: OWNER_EMAIL, phone: '', photoURL: '', role: 'admin' };
+  await assertFails(setDoc(doc(asEmail('evil1', 'attacker@example.com', true), 'users/evil1'), spoofed));
+});
+
+test('an existing buyer profile under the owner email self-promotes to admin exactly once', async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'users/owner4'), { uid: 'owner4', email: OWNER_EMAIL, role: 'buyer' });
+  });
+  const db4 = asEmail('owner4', OWNER_EMAIL, true);
+  await assertSucceeds(updateDoc(doc(db4, 'users/owner4'), { role: 'admin' }));
+  // cannot be used to also smuggle other field changes in the same write
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'users/owner5'), { uid: 'owner5', email: OWNER_EMAIL, role: 'buyer', shopName: 'X' });
+  });
+  await assertFails(updateDoc(doc(asEmail('owner5', OWNER_EMAIL, true), 'users/owner5'), { role: 'admin', shopName: 'Y' }));
 });
 
 test('rateLimits/aiUsage are not accessible from clients', async () => {

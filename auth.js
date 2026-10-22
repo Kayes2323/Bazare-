@@ -59,6 +59,13 @@ auth.onAuthStateChanged(async (user) => {
   }
 });
 
+// The one owner account that becomes admin automatically on login — never trusted from anywhere but
+// Firebase's own verified-email claim (firestore.rules checks the same claim server-side).
+const BOOTSTRAP_ADMIN_EMAIL = 'aakayes99@gmail.com';
+function isBootstrapAdmin(user) {
+  return user.email === BOOTSTRAP_ADMIN_EMAIL && user.emailVerified;
+}
+
 async function loadOrCreateProfile(user) {
   const ref  = db.collection(COL.USERS).doc(user.uid);
   const snap = await ref.get();
@@ -69,13 +76,19 @@ async function loadOrCreateProfile(user) {
       email:     user.email || '',
       phone:     user.phoneNumber || '',
       photoURL:  user.photoURL || '',
-      role:      'buyer',
+      role:      isBootstrapAdmin(user) ? 'admin' : 'buyer',
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     };
     await ref.set(profile);
     return profile;
   }
-  return snap.data();
+  const data = snap.data();
+  // Promote on every login in case this account existed as a buyer before being named the owner.
+  if (isBootstrapAdmin(user) && data.role !== 'admin') {
+    await ref.update({ role: 'admin', updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    data.role = 'admin';
+  }
+  return data;
 }
 
 function updateNavUI(user, profile) {

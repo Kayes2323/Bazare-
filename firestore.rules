@@ -13,16 +13,22 @@ service cloud.firestore {
     function isAdmin() { return signedIn() && hasUserDoc(request.auth.uid) && userDoc(request.auth.uid).role == 'admin'; }
     function isSeller() { return signedIn() && hasUserDoc(request.auth.uid) && userDoc(request.auth.uid).role == 'seller'; }
     function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+    // The one hardcoded owner account; email comes from Firebase's own verified ID-token claim, never
+    // from client-supplied document data, so this cannot be spoofed by writing a matching `email` field.
+    function isBootstrapAdminEmail() {
+      return signedIn() && request.auth.token.email == 'aakayes99@gmail.com' && request.auth.token.email_verified == true;
+    }
 
     // ── users/{uid}: private profile ─────────────────────────────
     match /users/{uid} {
       allow read: if isOwner(uid) || isAdmin();
 
-      // Self-created profiles are always plain buyers.
+      // Self-created profiles are plain buyers, except the one owner email which self-bootstraps as admin.
       allow create: if isOwner(uid)
         && request.resource.data.keys().hasOnly(['uid','name','email','phone','photoURL','role','createdAt'])
         && request.resource.data.uid == uid
-        && request.resource.data.role == 'buyer';
+        && (request.resource.data.role == 'buyer'
+            || (request.resource.data.role == 'admin' && isBootstrapAdminEmail()));
 
       allow update: if isAdmin()
         || (isOwner(uid)
@@ -31,7 +37,13 @@ service cloud.firestore {
                .hasOnly(['name','phone','photoURL','email','shopName','sellerStatus','updatedAt'])
           // owners may only move themselves to 'pending' (seller application); approval is admin-only
           && (!('sellerStatus' in request.resource.data.diff(resource.data).affectedKeys())
-              || (request.resource.data.sellerStatus == 'pending' && resource.data.get('sellerStatus', '') != 'approved')));
+              || (request.resource.data.sellerStatus == 'pending' && resource.data.get('sellerStatus', '') != 'approved')))
+        // one-time self-promotion for the owner email if their profile predates being named owner
+        || (isOwner(uid)
+          && isBootstrapAdminEmail()
+          && resource.data.role != 'admin'
+          && request.resource.data.role == 'admin'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role','updatedAt']));
 
       allow delete: if false;
     }
