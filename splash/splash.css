@@ -1,0 +1,95 @@
+/* ============================================================
+   BAZARE — App intro (splash)
+   Artwork: 941×1672. Every layer is positioned in % of that canvas,
+   so the finished frame is pixel-identical to the approved design.
+   ============================================================ */
+#bz-splash{
+  position:fixed; inset:0; z-index:2147483000; overflow:hidden; cursor:pointer;
+  background:#fbf4e6;
+  transition:opacity .5s ease, transform .5s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+#bz-splash.bz-out{ opacity:0; transform:scale(1.03); pointer-events:none; }
+
+/* cover on phones, contain on wide screens */
+.bz-stage{
+  position:absolute; left:50%; top:50%; aspect-ratio:941/1672;
+  width:max(100vw, calc(100vh * 941 / 1672));
+  transform:translate(-50%,-50%);
+}
+@supports (height:100dvh){ .bz-stage{ width:max(100vw, calc(100dvh * 941 / 1672)); } }
+@media (min-aspect-ratio: 3/4){
+  .bz-stage{ width:auto; height:100vh; }
+  @supports (height:100dvh){ .bz-stage{ height:100dvh; } }
+}
+
+.bz-stage img, .bz-fx{ position:absolute; display:block; pointer-events:none; user-select:none; -webkit-user-drag:none; }
+.bz-bg     { left:0; top:0; width:100%; height:100%; }
+.bz-box    { left:32.944%; top:11.722%; width:34.113%; }
+.bz-bazar  { left:36.132%; top:18.959%; width:23.698%; }
+.bz-e, .bz-ghost1, .bz-ghost2 { left:59.724%; top:19.737%; width:4.782%; }
+.bz-swoosh { left:30.925%; top:30.502%; width:34.963%; }
+.bz-tag    { left:19.872%; top:34.091%; width:60.255%; }
+
+/* glow on the shop signboard's "e", where the logo's "e" lifts off */
+.bz-shopglow{ left:83.103%; top:74.522%; width:12%; aspect-ratio:1; translate:-50% -50%; border-radius:50%;
+  background:radial-gradient(circle, rgba(255,214,90,.95) 0%, rgba(255,190,40,.45) 35%, transparent 70%); opacity:0; }
+/* landing ring around the logo's "e" */
+.bz-ring{ left:62.115%; top:21.262%; width:7%; aspect-ratio:1; translate:-50% -50%; border-radius:50%;
+  border:2px solid rgba(240,180,41,.95); opacity:0; }
+/* the sun in the artwork breathes softly */
+.bz-sun{ left:83.422%; top:51.196%; width:26%; aspect-ratio:1; translate:-50% -50%; border-radius:50%;
+  background:radial-gradient(circle, rgba(255,240,190,.75) 0%, rgba(255,226,150,.25) 40%, transparent 70%);
+  mix-blend-mode:screen; opacity:0; }
+/* light sweep across the green tile, clipped to its shape */
+.bz-shine{ left:32.944%; top:11.722%; width:34.113%; aspect-ratio:321/301; opacity:0;
+  background:linear-gradient(110deg, transparent 38%, rgba(255,255,255,.38) 50%, transparent 62%) no-repeat;
+  background-size:260% 100%; background-position:120% 0;
+  -webkit-mask:var(--bz-mask) center/100% 100% no-repeat; mask:var(--bz-mask) center/100% 100% no-repeat; }
+
+/* resting state before play: only the background colour */
+#bz-splash:not(.bz-play) .bz-stage > *{ opacity:0; }
+
+/* ── timeline ── */
+.bz-play .bz-bg     { animation: bz-scene 2.8s cubic-bezier(.2,.7,.2,1) both; transform-origin:50% 45%; }
+.bz-play .bz-sun    { animation: bz-fade .8s ease .6s both, bz-breathe 3.2s ease-in-out 1.4s infinite; }
+.bz-play .bz-box    { animation: bz-pop .7s cubic-bezier(.3,1.4,.5,1) .35s both, bz-thump .38s ease-out 2.3s; }
+.bz-play .bz-bazar  { animation: bz-wipe .7s cubic-bezier(.22,1,.36,1) .85s both; }
+.bz-play .bz-shopglow{ animation: bz-glow .7s ease-out 1.15s both; }
+.bz-play .bz-e      { animation: bz-fly .95s cubic-bezier(.45,0,.2,1) 1.35s both; }
+.bz-play .bz-ghost1 { animation: bz-ghost .95s cubic-bezier(.45,0,.2,1) 1.41s both; }
+.bz-play .bz-ghost2 { animation: bz-ghost .95s cubic-bezier(.45,0,.2,1) 1.47s both; }
+.bz-play .bz-ring   { animation: bz-ring .6s ease-out 2.28s forwards; }
+.bz-play .bz-shine  { animation: bz-shine .9s ease-in-out 2.4s both; }
+.bz-play .bz-swoosh { animation: bz-wipe .6s ease-out 2.35s both; }
+.bz-play .bz-tag    { animation: bz-rise .55s ease-out 2.6s both; }
+
+@keyframes bz-scene { from{ opacity:0; transform:scale(1.06); } 35%{ opacity:1; } to{ opacity:1; transform:scale(1); } }
+@keyframes bz-fade  { from{ opacity:0; } to{ opacity:1; } }
+@keyframes bz-breathe{ 0%,100%{ transform:scale(1); opacity:1; } 50%{ transform:scale(1.15); opacity:.7; } }
+@keyframes bz-pop   { from{ opacity:0; transform:scale(.6); } 60%{ opacity:1; } to{ opacity:1; transform:scale(1); } }
+@keyframes bz-thump { 0%,100%{ transform:scale(1); } 40%{ transform:scale(1.03); } }
+@keyframes bz-wipe  { from{ opacity:0; clip-path:inset(0 100% 0 0); transform:translateY(6%); } 20%{ opacity:1; } to{ opacity:1; clip-path:inset(0 0 0 0); transform:translateY(0); } }
+@keyframes bz-glow  { 0%{ opacity:0; transform:scale(.4); } 45%{ opacity:1; transform:scale(1); } 100%{ opacity:0; transform:scale(1.3); } }
+@keyframes bz-fly{
+  0%  { opacity:0; transform:translate(var(--fx),var(--fy)) scale(.78); filter:drop-shadow(0 0 0 rgba(255,190,40,0)); }
+  12% { opacity:1; filter:drop-shadow(0 0 10px rgba(255,190,40,.95)); }
+  55% { transform:translate(calc(var(--fx) * .8), calc(var(--fy) * .32)) scale(1.3) rotate(-10deg); }
+  86% { transform:translate(0,-10%) scale(1.08) rotate(3deg); filter:drop-shadow(0 0 8px rgba(255,190,40,.75)); }
+  100%{ opacity:1; transform:translate(0,0) scale(1) rotate(0); filter:drop-shadow(0 0 0 rgba(255,190,40,0)); }
+}
+@keyframes bz-ghost{
+  0%  { opacity:0; transform:translate(var(--fx),var(--fy)) scale(.78); }
+  15% { opacity:.4; }
+  55% { transform:translate(calc(var(--fx) * .8), calc(var(--fy) * .32)) scale(1.3) rotate(-10deg); opacity:.3; }
+  86% { opacity:.12; }
+  100%{ opacity:0; transform:translate(0,0) scale(1); }
+}
+@keyframes bz-ring  { from{ opacity:.95; transform:scale(.3); } to{ opacity:0; transform:scale(2.4); } }
+@keyframes bz-shine { from{ opacity:1; background-position:120% 0; } to{ opacity:1; background-position:-20% 0; } }
+@keyframes bz-rise  { from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
+
+@media (prefers-reduced-motion: reduce){
+  .bz-play .bz-stage > *{ animation:none !important; opacity:1; }
+  .bz-play .bz-shopglow, .bz-play .bz-ring, .bz-play .bz-ghost1, .bz-play .bz-ghost2, .bz-play .bz-shine{ opacity:0 !important; }
+}
